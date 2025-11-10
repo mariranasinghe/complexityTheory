@@ -7,6 +7,7 @@ import altair as alt
 import time
 import random
 from itertools import permutations
+import copy
 
 # --- Utility Functions ---
 
@@ -37,6 +38,108 @@ def generate_random_cities(n):
         chr(65 + i): {"x": random.randint(0, 100), "y": random.randint(0, 100)}
         for i in range(n)
     }
+    
+# --- Algorithm for VC Approximation ---
+def solve_vc_approx(adj_list):
+    """
+    Implements the 2-approximation algorithm for Vertex Cover.
+    1. Pick an arbitrary edge (u, v).
+    2. Add both u and v to the cover.
+    3. Remove all edges covered by u or v.
+    4. Repeat until no edges are left.
+    This is O(E) time and guarantees a cover no more than 2x the optimal size.
+    """
+    start_time = time.time()
+    op_count = 0
+    
+    # Deep copy to avoid modifying the original
+    edges = set()
+    for u, neighbors in adj_list.items():
+        for v in neighbors:
+            if u < v: # Avoid duplicate edges and self-loops
+                edges.add(tuple(sorted((u, v))))
+                
+    approx_cover = set()
+    
+    while edges:
+        op_count += 1
+        # 1. Pick an arbitrary edge (u, v)
+        u, v = edges.pop()
+        
+        # 2. Add both u and v to the cover
+        approx_cover.add(u)
+        approx_cover.add(v)
+        
+        # 3. Remove all edges covered by u or v
+        edges_to_remove = set()
+        for edge in edges:
+            op_count += 1
+            if edge[0] in (u, v) or edge[1] in (u, v):
+                edges_to_remove.add(edge)
+        edges -= edges_to_remove
+        
+    end_time = time.time()
+    return approx_cover, op_count, (end_time - start_time)
+
+# --- Algorithm for TSP Heuristic ---
+def get_dist(city_a, city_b):
+    """Calculates Euclidean distance between two cities."""
+    return math.sqrt((city_a['x'] - city_b['x'])**2 + (city_a['y'] - city_b['y'])**2)
+
+def solve_tsp_heuristic(cities):
+    """
+    Implements the Nearest Neighbor heuristic for TSP.
+    1. Start at a random city.
+    2. Repeatedly move to the *closest* unvisited city.
+    3. Once all cities are visited, return to the start.
+    This is O(n^2) time and provides a "good enough" solution.
+    """
+    start_time = time.time()
+    op_count = 0
+    
+    city_names = list(cities.keys())
+    if not city_names:
+        return [], 0, 0, 0
+        
+    start_city = city_names[0]
+    tour = [start_city]
+    unvisited = set(city_names[1:])
+    total_dist = 0
+    
+    current_city_name = start_city
+    
+    while unvisited:
+        op_count += 1
+        nearest_city = None
+        min_dist = float('inf')
+        
+        current_city_coords = cities[current_city_name]
+        
+        for city_name in unvisited:
+            op_count += 1
+            city_coords = cities[city_name]
+            dist = get_dist(current_city_coords, city_coords)
+            
+            if dist < min_dist:
+                min_dist = dist
+                nearest_city = city_name
+        
+        if nearest_city:
+            total_dist += min_dist
+            current_city_name = nearest_city
+            tour.append(current_city_name)
+            unvisited.remove(current_city_name)
+        else:
+            # Should not happen in a connected graph
+            break
+            
+    # Add distance back to start
+    total_dist += get_dist(cities[current_city_name], cities[start_city])
+    tour.append(start_city)
+    
+    end_time = time.time()
+    return tour, total_dist, op_count, (end_time - start_time)
+
 
 # --- Module: Home ---
 def show_home():
@@ -77,23 +180,23 @@ def show_home():
     
     with col2:
         st.header("How To Use This Tool")
-        # Use r""" for raw string to correctly render inline LaTeX
+        # UPDATED HOW-TO-USE
         st.markdown(r"""
         Follow these steps to build an intuition for complexity:
 
-        1.  **<span style='color: #06b6d4;'>Explore the Charts:</span>**
-            Go to **Module 1** and see the difference between polynomial ($O(n^2)$) and exponential ($O(2^n)$) growth.
+        1.  **<span style='color: #06b6d4;'>Explore the Charts (Module 1):</span>**
+            See the difference between polynomial ($O(n^2)$) and exponential ($O(2^n)$) growth.
             
-        2.  **<span style='color: #06b6d4;'>Feel the P vs. NP Gap:</span>**
-            Go to **Module 2 (Vertex Cover)**.
-            - **Verify (P):** Enter a solution and click 'Verify'. It's instant, $O(|V| \cdot |E|)$.
-            - **Solve (NP):** Click 'Find Smallest Cover'. For a small graph (n=10), it's fast. Try a larger one (n=18). You will *feel* the exponential $O(2^n \cdot |E|)$ delay.
+        2.  **<span style='color: #06b6d4;'>Feel the P vs. NP Gap (Module 2):</span>**
+            - **Verify (P):** Click 'Verify'. It's instant, $O(|V| \cdot |E|)$.
+            - **Solve (NP):** Click 'Find Smallest Cover'. For a small graph (n=18), you will *feel* the exponential $O(2^n \cdot |E|)$ delay.
             
-        3.  **<span style='color: #06b6d4;'>Experience Reductions:</span>**
-            Go to **Module 5 (Reductions)**. Learn how the **Independent Set** problem is just a "mirror image" of **Vertex Cover**. This proves that if you can solve one, you can solve the other, making them equally hard.
+        3.  **<span style='color: #06b6d4;'>Compare Brute-Force vs. Heuristic (Module 3):</span>**
+            - **Solve (NP):** Click 'Find Shortest Tour' with 9 cities. It takes a few seconds ($O(n!)$).
+            - **Approx. (P):** Click 'Find Heuristic Tour' with 9 cities. It's *instant* ($O(n^2)$). The answer will be *good*, but may not be the *best* one found by the slow solver. This is the real-world tradeoff.
             
-        4.  **<span style='color: #06b6d4;'>Experience Factorial Explosion:</span>**
-            Go to **Module 3 (TSP)**. Generate 9 cities. The solver takes a few seconds. ($9!$). Now, generate 10 cities. The time increases 10-fold. ($10!$). *That* is the $O(n!)$ factorial wall.
+        4.  **<span style='color: #06b6d4;'>Experience Reductions (Module 5):</span>**
+            Learn how the **Independent Set** problem is just a "mirror image" of **Vertex Cover**. This proves that if you can solve one, you can solve the other, making them equally hard.
         """, unsafe_allow_html=True)
 
     st.divider()
@@ -104,7 +207,6 @@ def show_home():
     in the field of computational complexity:
     """)
     
-    # UPDATED Summaries
     st.info(
         """
         **Cook, S. A. (1971). "The complexity of theorem-proving procedures."**
@@ -207,46 +309,33 @@ def show_vertex_cover():
 
     with tab1:
         st.header("What is Vertex Cover?")
-        # Use r""" for raw string to correctly render inline LaTeX
         st.markdown(r"""
         A <span style='color: #06b6d4;'>**Vertex Cover**</span> is a subset of vertices in a graph such that every edge in the graph
         is "covered" (i.e., at least one of its two endpoints is in the subset).
         
         ### Formal Definition
-        Given a graph $G = (V, E)$, where $V$ is the set of vertices and $E$ is the set of edges.
-        A vertex cover is a subset $V' \subseteq V$ such that for every edge $(u, v) \in E$, at least one of $u$ or $v$ is in $V'$.
-        
-        Formally:
+        Given a graph $G = (V, E)$, a vertex cover is a subset $V' \subseteq V$ such that for every edge $(u, v) \in E$, at least one of $u$ or $v$ is in $V'$.
         """, unsafe_allow_html=True)
-        # Use st.latex() for block-level equations
         st.latex(r"V' \subseteq V \text{ s.t. } \forall (u, v) \in E, \{u, v\} \cap V' \neq \emptyset")
 
-        # Use r""" for raw string
         st.markdown(r"""
         ### The NP-Complete Problem
-        The *optimization* problem is "Find the *minimum* vertex cover," (i.e., find a $V'$ that satisfies the property and has the smallest possible size $|V'|$).
-        
-        The *decision* problem (which is proven to be NP-Complete) is **K-VERTEX-COVER**:
+        The *optimization* problem is "Find the *minimum* vertex cover."
+        The *decision* problem (NP-Complete) is **K-VERTEX-COVER**:
         > "Given a graph $G$ and an integer $k$, does $G$ have a vertex cover of size $k$ or less?"
-        > (Formally:
         """, unsafe_allow_html=True)
-        # Use st.latex() for block-level equations
         st.latex(r"\text{Does a } V' \subseteq V \text{ exist s.t. } |V'| \le k \text{ and } V' \text{ is a vertex cover for } G?")
         
-        # Use r""" for raw string
         st.markdown(r"""
         ### The P vs. NP Demonstration
-        This is a classic <span style='color: #f43f5e;'>**NP-Complete**</span> problem.
-        
         - **<span style='color: #22c55e;'>Verifying a Solution is FAST (in P):</span>**
-          If you give me a proposed cover $V'$ and a number $k$, I can check two things in polynomial time:
-          1. Check if $|V'| \le k$. (Time: $O(|V'|)$)
-          2. Check if $V'$ is a valid cover. (Loop through all edges $e \in E$ and check $\{u,v\} \cap V' \neq \emptyset$. Time: $O(|E|)$)
+          If you give me a proposed cover $V'$, I can check if it's valid in polynomial time ($O(|V| + |E|)$).
           
-        - **<span style='color: #f43f5e;'>Finding a Solution is SLOW (in NP):</span>**
-          Finding the *smallest* vertex cover is hard. The brute-force way is to check every possible subset $V'$ of $V$.
-          There are $2^|V|$ such subsets. For each, we check if it's a cover ($O(|E|)$).
-          Total time: $O(2^|V| \cdot |E|)$. This is exponential time.
+        - **<span style='color: #f43f5e;'>Finding an Optimal Solution is SLOW (in NP):</span>**
+          Finding the *smallest* cover is hard. The brute-force way is to check all $2^{|V|}$ subsets. Total time: $O(2^|V| \cdot |E|)$.
+          
+        - **<span style='color: #3b82f6;'>Finding an Approx. Solution is FAST (in P):</span>**
+          We can't find the *optimal* cover quickly, but we can find a *good enough* one. The 2-approximation algorithm in the demo runs in polynomial time ($O(|E|)$) and is *guaranteed* to find a cover that is no more than 2x the size of the true optimal solution.
         """, unsafe_allow_html=True)
         
         st.divider()
@@ -258,18 +347,20 @@ def show_vertex_cover():
         st.markdown("**Adjacency List**")
         st.markdown("A way to represent a graph. It's a collection where each vertex has a list of all the other vertices it is connected to (its 'neighbors'). This is what the JSON in the demo represents.")
 
-        st.markdown("**Brute Force**")
-        st.markdown("An algorithm design technique that consists of systematically checking every possible solution to a problem until the correct or best one is found. This is often simple to implement but very slow.")
-        
         st.markdown("**Decision Problem vs. Optimization Problem**")
         st.markdown("An **Optimization Problem** asks for the *best* solution (e.g., \"Find the *smallest* vertex cover\"). A **Decision Problem** asks a \"yes/no\" question (e.g., \"Is there a vertex cover of size *k* or less?\"). NP-Completeness is formally defined using decision problems.")
+        
+        # NEW KEY CONCEPT
+        st.markdown("**Approximation Algorithm**")
+        st.markdown("A fast (P-time) algorithm for an NP-hard optimization problem that does not guarantee the *best* solution, but guarantees a solution that is "
+                    "'close' to the optimal one. For Vertex Cover, we have a **2-approximation**, meaning the cover it finds is at most $2 \times$ the size of the *true* smallest cover.")
 
     with tab2:
         st.header("Graph Generators")
         st.markdown("Click a button to generate a graph, or edit the JSON manually.")
         
         if 'vc_graph_text' not in st.session_state:
-            st.session_state.vc_graph_text = '{"A": ["B", "C"], "B": ["A", "C", "D"], "C": ["A", "B", "D"], "D": ["B", "C", "E"], "E": ["D"]}'
+            st.session_state.vc_graph_text = '{"A": ["B", "C"], "B": ["A", "C", "D"], "C": ["A", "B", "D"], "D": ["B",C", "E"], "E": ["D"]}'
 
         col1, col2, col3 = st.columns(3)
         if col1.button("Generate Random Graph (n=10, p=0.3)", use_container_width=True):
@@ -312,52 +403,69 @@ def show_vertex_cover():
             except Exception as e:
                 st.error(f"Error parsing input: {e}")
 
-        st.header("2. Find Smallest Solution (Exponential Time)")
-        if st.button("Find Smallest Cover (Slow)", use_container_width=True, type="primary"):
-            with st.spinner("Solving (Brute Force)... This may take a moment."):
-                try:
-                    adj_list = json.loads(graph_text)
-                    vertices = list(adj_list.keys())
-                    n = len(vertices)
-                    
-                    if n > 18:
-                        st.error("Graph is too large for client-side brute-force (n > 18). This demonstrates exponential complexity!")
-                        return
+        st.header("2. Find a Solution")
+        st.markdown("Compare the P-time approximation with the exponential brute-force solver.")
+        
+        col1, col2 = st.columns(2)
+        
+        # NEW: APPROXIMATION BUTTON
+        with col1:
+            if st.button("Find 2-Approximation (Fast)", use_container_width=True, type="secondary"):
+                with st.spinner("Finding approximation..."):
+                    try:
+                        adj_list = json.loads(graph_text)
+                        approx_cover, op_count, time_taken = solve_vc_approx(adj_list)
+                        st.info(f"APPROXIMATION FOUND!\nCover: {approx_cover}\nSize: {len(approx_cover)}\nOperations: ~{op_count} (polynomial)\nTime taken: {time_taken:.6f} seconds")
+                    except Exception as e:
+                        st.error(f"Error: {e}")
 
-                    edges = set()
-                    for u, neighbors in adj_list.items():
-                        for v in neighbors:
-                            edge = tuple(sorted((u, v)))
-                            edges.add(edge)
-                    
-                    smallest_cover = None
-                    op_count = 0
-                    
-                    start_time = time.time()
-                    # Iterate through all 2^n subsets
-                    for i in range(1 << n):
-                        op_count += 1
-                        subset = set()
-                        for j in range(n):
-                            if (i >> j) & 1:
-                                subset.add(vertices[j])
+        # OPTIMAL SOLVER BUTTON
+        with col2:
+            if st.button("Find Optimal Solution (Slow)", use_container_width=True, type="primary"):
+                with st.spinner("Solving (Brute Force)... This may take a moment."):
+                    try:
+                        adj_list = json.loads(graph_text)
+                        vertices = list(adj_list.keys())
+                        n = len(vertices)
                         
-                        is_cover = True
-                        for u, v in edges:
+                        if n > 18:
+                            st.error("Graph is too large for client-side brute-force (n > 18). This demonstrates exponential complexity!")
+                            return
+
+                        edges = set()
+                        for u, neighbors in adj_list.items():
+                            for v in neighbors:
+                                edge = tuple(sorted((u, v)))
+                                edges.add(edge)
+                        
+                        smallest_cover = None
+                        op_count = 0
+                        
+                        start_time = time.time()
+                        # Iterate through all 2^n subsets
+                        for i in range(1 << n):
                             op_count += 1
-                            if u not in subset and v not in subset:
-                                is_cover = False
-                                break
+                            subset = set()
+                            for j in range(n):
+                                if (i >> j) & 1:
+                                    subset.add(vertices[j])
+                            
+                            is_cover = True
+                            for u, v in edges:
+                                op_count += 1
+                                if u not in subset and v not in subset:
+                                    is_cover = False
+                                    break
+                            
+                            if is_cover:
+                                if smallest_cover is None or len(subset) < len(smallest_cover):
+                                    smallest_cover = subset
                         
-                        if is_cover:
-                            if smallest_cover is None or len(subset) < len(smallest_cover):
-                                smallest_cover = subset
+                        end_time = time.time()
+                        st.success(f"OPTIMAL SOLVED!\nCover: {smallest_cover}\nSize: {len(smallest_cover)}\nOperations: ~{op_count} (exponential)\nTime taken: {end_time - start_time:.4f} seconds")
                     
-                    end_time = time.time()
-                    st.success(f"SOLVER COMPLETE!\nSmallest Cover Found: {smallest_cover}\nSize: {len(smallest_cover)}\nOperations: ~{op_count} (exponential)\nTime taken: {end_time - start_time:.4f} seconds")
-                
-                except Exception as e:
-                    st.error(f"Error parsing input: {e}")
+                    except Exception as e:
+                        st.error(f"Error parsing input: {e}")
 
 # --- Module: Traveling Salesperson (TSP) ---
 def show_tsp():
@@ -367,39 +475,31 @@ def show_tsp():
 
     with tab1:
         st.header("What is the Traveling Salesperson (TSP)?")
-        # Use r""" for raw string
         st.markdown(r"""
         Given a list of cities and the distances between them, what is the <span style='color: #06b6d4;'>**shortest possible route**</span> 
         that visits each city exactly once and returns to the origin city?
         
         ### Formal Definition
-        Given a complete weighted graph $G = (V, E, w)$, where $w(e)$ is the "weight" or "distance" of edge $e$.
-        Find a **Hamiltonian cycle** (a tour that visits every vertex $v \in V$ exactly once)
+        Given a complete weighted graph $G = (V, E, w)$, find a **Hamiltonian cycle**
         with the minimum total weight.
-        
-        Formally: Find a permutation $\pi$ of vertices $V=\{v_1, ..., v_n\}$ that minimizes:
         """, unsafe_allow_html=True)
-        # Use st.latex() for block-level equations
         st.latex(r"w(v_{\pi(n)}, v_{\pi(1)}) + \sum_{i=1}^{n-1} w(v_{\pi(i)}, v_{\pi(i+1)})")
 
-        # Use r""" for raw string
         st.markdown(r"""
         ### The NP-Complete Problem
         The *optimization* problem is "Find the *shortest* tour."
-        The *decision* problem (which is NP-Complete) is **K-TSP**:
+        The *decision* problem (NP-Complete) is **K-TSP**:
         > "Given a graph $G$, distances $w$, and an integer $k$, does $G$ have a tour with a total weight less than or equal to $k$?"
         
         ### The P vs. NP Demonstration
-        TSP is another classic <span style='color: #f43f5e;'>**NP-Complete**</span> problem.
-        
         - **<span style='color: #22c55e;'>Verifying a Solution is FAST (in P):</span>**
-          If you give me a path (a tour $\pi$), I can quickly add up the distances to find its total length.
-          This is polynomial time ($O(n)$).
+          If you give me a path (a tour $\pi$), I can quickly add up the distances ($O(n)$).
           
-        - **<span style='color: #f43f5e;'>Finding a Solution is SLOW (in NP):</span>**
-          Finding the *shortest* tour is hard. The brute-force way is to check every possible permutation (ordering) of cities.
-          There are $(n-1)!$ possible tours.
-          Total time: $O(n!)$. This is factorial time, which is even slower than the $O(2^n)$ for Vertex Cover!
+        - **<span style='color: #f43f5e;'>Finding an Optimal Solution is SLOW (in NP):</span>**
+          Finding the *shortest* tour is hard. The brute-force way is to check all $(n-1)!$ possible tours. Total time: $O(n!)$.
+          
+        - **<span style='color: #3b82f6;'>Finding a Heuristic Solution is FAST (in P):</span>**
+          We can use a "greedy" heuristic like **Nearest Neighbor**: always go to the closest unvisited city. This is very fast ($O(n^2)$) and gives a "good enough" answer for many cases, though it can sometimes be very far from optimal.
         """, unsafe_allow_html=True)
         
         st.divider()
@@ -411,11 +511,12 @@ def show_tsp():
         st.markdown("**Hamiltonian Cycle (or Tour)**")
         st.markdown("A path in a graph that visits each vertex *exactly once* and returns to the starting vertex. This is the 'tour' the salesperson is looking for.")
 
-        st.markdown("**Permutation**")
-        st.markdown("An arrangement of items in a specific order. For TSP, each possible tour is a permutation of the cities. The number of permutations of $n$ items is $n!$ (n-factorial).")
-        
         st.markdown("**Factorial ($n!$)**")
         st.markdown("The product of all positive integers less than or equal to $n$. ($n! = n \cdot (n-1) \cdot ... \cdot 1$). This function grows *extremely* fast, much faster than $2^n$.")
+        
+        # NEW KEY CONCEPT
+        st.markdown("**Heuristic Algorithm**")
+        st.markdown("A fast (P-time) algorithm or 'rule of thumb' for solving a problem. Unlike an approximation algorithm, a heuristic gives *no guarantee* on how close its answer is to the optimal one. The 'Nearest Neighbor' heuristic is simple and fast, but can sometimes produce very poor routes.")
 
     with tab2:
         st.header("City Generators")
@@ -436,9 +537,6 @@ def show_tsp():
             st.rerun()
 
         cities_text = st.text_area("Cities JSON:", value=st.session_state.tsp_cities_text, height=150)
-        
-        def get_dist(city_a, city_b):
-            return math.sqrt((city_a['x'] - city_b['x'])**2 + (city_a['y'] - city_b['y'])**2)
 
         st.header("1. Verify a Tour Length (Polynomial Time)")
         tour_text = st.text_input("Proposed Tour (e.g., A,B,C,D,A):", value="A,C,B,D,A")
@@ -469,46 +567,63 @@ def show_tsp():
             except Exception as e:
                 st.error(f"Error parsing input: {e}")
 
-        st.header("2. Find Shortest Tour (Factorial Time)")
-        if st.button("Find Shortest Tour (Very Slow)", use_container_width=True, type="primary"):
-            with st.spinner(f"Solving (Brute Force)... This will be very slow if n > 9."):
-                try:
-                    cities = json.loads(cities_text)
-                    city_names = list(cities.keys())
-                    n = len(city_names)
+        st.header("2. Find a Solution")
+        st.markdown("Compare the P-time heuristic with the factorial brute-force solver.")
+        
+        col1, col2 = st.columns(2)
+        
+        # NEW: HEURISTIC BUTTON
+        with col1:
+            if st.button("Find Heuristic Tour (Fast)", use_container_width=True, type="secondary"):
+                with st.spinner("Finding heuristic tour (Nearest Neighbor)..."):
+                    try:
+                        cities = json.loads(cities_text)
+                        tour, total_dist, op_count, time_taken = solve_tsp_heuristic(cities)
+                        st.info(f"HEURISTIC FOUND!\nTour: {' -> '.join(tour)}\nLength: {total_dist:.2f}\nOperations: ~{op_count} (polynomial, $O(n^2)$)\nTime taken: {time_taken:.6f} seconds")
+                    except Exception as e:
+                        st.error(f"Error: {e}")
+        
+        # OPTIMAL SOLVER BUTTON
+        with col2:
+            if st.button("Find Optimal Tour (Very Slow)", use_container_width=True, type="primary"):
+                with st.spinner(f"Solving (Brute Force)... This will be very slow if n > 9."):
+                    try:
+                        cities = json.loads(cities_text)
+                        city_names = list(cities.keys())
+                        n = len(city_names)
 
-                    if n > 9:
-                        st.error(f"Too many cities (n={n}). n > 9 will crash your browser with O(n!) complexity. This is the lesson!")
-                        return
+                        if n > 9:
+                            st.error(f"Too many cities (n={n}). n > 9 will crash your browser with O(n!) complexity. This is the lesson!")
+                            return
 
-                    start_city = city_names[0]
-                    other_cities = city_names[1:]
-                    
-                    shortest_dist = float('inf')
-                    shortest_tour = []
-                    op_count = 0
-                    
-                    start_time = time.time()
-                    for perm in permutations(other_cities):
-                        op_count += 1
-                        current_dist = 0
-                        current_tour = [start_city] + list(perm) + [start_city]
+                        start_city = city_names[0]
+                        other_cities = city_names[1:]
                         
-                        for i in range(len(current_tour) - 1):
+                        shortest_dist = float('inf')
+                        shortest_tour = []
+                        op_count = 0
+                        
+                        start_time = time.time()
+                        for perm in permutations(other_cities):
                             op_count += 1
-                            city_a = cities[current_tour[i]]
-                            city_b = cities[current_tour[i+1]]
-                            current_dist += get_dist(city_a, city_b)
+                            current_dist = 0
+                            current_tour = [start_city] + list(perm) + [start_city]
+                            
+                            for i in range(len(current_tour) - 1):
+                                op_count += 1
+                                city_a = cities[current_tour[i]]
+                                city_b = cities[current_tour[i+1]]
+                                current_dist += get_dist(city_a, city_b)
+                            
+                            if current_dist < shortest_dist:
+                                shortest_dist = current_dist
+                                shortest_tour = current_tour
                         
-                        if current_dist < shortest_dist:
-                            shortest_dist = current_dist
-                            shortest_tour = current_tour
+                        end_time = time.time()
+                        st.success(f"OPTIMAL SOLVED!\nTour: {' -> '.join(shortest_tour)}\nLength: {shortest_dist:.2f}\nOperations (Permutations): ~{op_count} (factorial)\nTime taken: {end_time - start_time:.4f} seconds")
                     
-                    end_time = time.time()
-                    st.success(f"SOLVER COMPLETE!\nShortest Tour: {' -> '.join(shortest_tour)}\nLength: {shortest_dist:.2f}\nOperations (Permutations): ~{op_count} (factorial)\nTime taken: {end_time - start_time:.4f} seconds")
-                
-                except Exception as e:
-                    st.error(f"Error parsing input: {e}")
+                    except Exception as e:
+                        st.error(f"Error parsing input: {e}")
 
 # --- Module: Open Problems (with Popovers) ---
 def show_open_problems():
@@ -523,7 +638,6 @@ def show_open_problems():
 
     # --- 1. P vs NP ---
     st.subheader("1. Is P = NP?")
-    # Use r""" for raw string
     st.markdown(r"""
     **The Question:** Is every problem that can be *verified* quickly also *solvable* quickly?
     
@@ -536,7 +650,6 @@ def show_open_problems():
 
     # --- 2. NP vs co-NP ---
     st.subheader("2. Is NP = co-NP?")
-    # Use r""" for raw string
     st.markdown(r"""
     **The Question:** If a problem's "yes" answers are easy to verify, are its "no" answers also easy to verify?
     
@@ -544,7 +657,6 @@ def show_open_problems():
     """)
     
     with st.popover("Define: co-NP"):
-        # Use r""" for raw string
         st.markdown(r"""
         **co-NP** is the class of problems where "no" instances have a short, verifiable proof (a "counterexample").
         
@@ -552,18 +664,14 @@ def show_open_problems():
         - **Problem:** Is this Boolean formula *always* true?
         - **"No" Proof:** If the answer is "no," you can provide a counterexample: an assignment of variables (like $A=\text{true}, B=\text{false}$) that makes the formula *false*.
         - We can verify this counterexample quickly, so TAUTOLOGY is in co-NP.
-        
-        We don't know if TAUTOLOGY is in NP. Finding a *proof* that a formula is *always* true is hard.
         """)
 
-    # Use r""" for raw string
     st.markdown(r"""
-    If NP $\neq$ co-NP (which is widely believed), it would imply that proving something is *always* true (TAUTOLOGY) is fundamentally harder than proving it's *sometimes* true (SAT). It would also be a free-bee proof that P $\neq$ NP, since P is closed under complement (i.e., $\text{P} = \text{co-P}$).
+    If NP $\neq$ co-NP (which is widely believed), it would imply that proving something is *always* true (TAUTOLOGY) is fundamentally harder than proving it's *sometimes* true (SAT). It would also be a free-bee proof that P $\neq$ NP.
     """)
 
     # --- 3. ETH ---
     st.subheader("3. The Exponential Time Hypothesis (ETH)")
-    # Use r""" for raw string
     st.markdown(r"""
     **The Question:** Does the 3-SAT problem *really* require exponential time to solve?
     
@@ -571,7 +679,6 @@ def show_open_problems():
     """)
 
     with st.popover("Define: Sub-exponential Time"):
-        # Use r""" for raw string
         st.markdown(r"""
         An algorithm that is faster than $O(2^{\delta n})$ for all $\delta > 0$, but still slower than polynomial time.
         
@@ -579,16 +686,15 @@ def show_open_problems():
         - **Sub-exponential:** $O(2^{n^{0.5}})$ or $O(2^{\log n})$
         - **Polynomial:** $O(n^2)$
         
-        ETH claims you can't even get a "mildly" exponential algorithm like $O(2^{\sqrt{n}})$ for 3-SAT. You're stuck with "strong" exponential time.
+        ETH claims you can't even get a "mildly" exponential algorithm like $O(2^{\sqrt{n}})$ for 3-SAT.
         """)
 
     st.markdown(r"""
-    P vs. NP just asks if there's a *polynomial* algorithm. ETH makes a stronger claim: that 3-SAT *requires* a "strong" exponential-time $O(2^n)$ algorithm. This hypothesis is the *foundation* for many "hardness" results.
+    P vs. NP just asks if there's a *polynomial* algorithm. ETH makes a stronger claim: that 3-SAT *requires* a "strong" exponential-time $O(2^n)$ algorithm.
     """)
     
     # --- 4. P vs PSPACE ---
     st.subheader("4. Is P = PSPACE?")
-    # Use r""" for raw string
     st.markdown(r"""
     **The Question:** Can every problem that is solvable using a *polynomial amount of memory* also be solved using a *polynomial amount of time*?
     
@@ -596,7 +702,6 @@ def show_open_problems():
     """)
     
     with st.popover("Define: PSPACE"):
-        # Use r""" for raw string
         st.markdown(r"""
         **PSPACE** is the set of all problems that can be solved by an algorithm using a *polynomial* amount of memory (space), regardless of how much *time* it takes.
         
@@ -605,14 +710,12 @@ def show_open_problems():
         We know $\text{P} \subseteq \text{NP} \subseteq \text{PSPACE}$.
         """)
     
-    # Use r""" for raw string
     st.markdown(r"""
     We strongly believe $\text{P} \neq \text{PSPACE}$, meaning some problems are *fundamentally* space-efficient but time-inefficient.
     """)
     
     # --- 5. BPP vs BQP ---
     st.subheader("5. Is BPP = BQP? (Quantum Computing)")
-    # Use r""" for raw string
     st.markdown(r"""
     **The Question:** Can quantum computers solve problems that classical computers can't?
     
@@ -620,23 +723,20 @@ def show_open_problems():
     """)
 
     with st.popover("Define: BPP & BQP"):
-        # Use r""" for raw string
         st.markdown(r"""
         - **BPP (Bounded-error Probabilistic Polynomial time):**
-          The class of problems that a *classical* computer can solve efficiently using randomness (like a Monte Carlo simulation). "Efficiently" means it gets the right answer >2/3 of the time in P-time.
+          The class of problems that a *classical* computer can solve efficiently using randomness (like a Monte Carlo simulation).
           
         - **BQP (Bounded-error Quantum Polynomial time):**
           The class of problems that a *quantum* computer can solve efficiently.
         """)
         
-    # Use r""" for raw string
     st.markdown(r"""
     We know $\text{BPP} \subseteq \text{BQP}$. The big question is whether the inclusion is strict. Shor's algorithm for **integer factorization** is in BQP but is *not* believed to be in BPP. If $\text{BPP} \neq \text{BQP}$, it proves quantum computers have a fundamental speedup.
     """)
     
     # --- 6. Factoring ---
     st.subheader("6. The Status of Integer Factorization")
-    # Use r""" for raw string
     st.markdown(r"""
     **The Question:** Can we factor a large number into its primes in polynomial time (on a classical computer)?
     
@@ -644,7 +744,6 @@ def show_open_problems():
     """)
 
     with st.popover("Define: NP-Intermediate"):
-        # Use r""" for raw string
         st.markdown(r"""
         Problems that are in **NP**, but are *not* in **P** and are also *not* **NP-Complete**.
         
@@ -659,7 +758,6 @@ def show_open_problems():
 
     # --- 7. Graph Isomorphism ---
     st.subheader("7. The Status of Graph Isomorphism")
-    # Use r""" for raw string
     st.markdown(r"""
     **The Question:** Can we efficiently determine if two graphs are identical (just with the nodes labeled differently)?
     
@@ -667,21 +765,20 @@ def show_open_problems():
     """)
 
     with st.popover("Define: Quasi-polynomial Time"):
-        # Use r""" for raw string
         st.markdown(r"""
         An algorithm that is *almost* polynomial.
         
         - **Polynomial:** $O(n^2)$ or $O(n^k)$
         - **Quasi-polynomial:** $O(2^{(\log n)^c})$ for a constant $c$.
         
-        This is *much* faster than exponential ($O(2^n)$) but slightly slower than any true polynomial. It's a huge hint that Graph Isomorphism is *not* NP-Complete.
+        This is *much* faster than exponential ($O(2^n)$) but slightly slower than any true polynomial.
         """)
 
     st.markdown(r"""
     This breakthrough suggests the problem is *probably* not NP-Complete, but it's still not known to be in P.
     """)
 
-# --- NEW Module: Reductions ---
+# --- Module: Reductions ---
 def show_reductions():
     st.title("Module 5: Reductions (Independent Set)")
     
@@ -779,7 +876,7 @@ def main():
         "2. P vs. NP (Vertex Cover)", 
         "3. NP-Complete (TSP)",
         "4. Open Problems & The Future",
-        "5. Reductions (IS to VC)" # NEW MODULE
+        "5. Reductions (IS to VC)"
     ])
 
     if page == "Home: Start Here":
@@ -792,7 +889,7 @@ def main():
         show_tsp()
     elif page == "4. Open Problems & The Future":
         show_open_problems()
-    elif page == "5. Reductions (IS to VC)": # NEW MODULE
+    elif page == "5. Reductions (IS to VC)":
         show_reductions()
 
 if __name__ == "__main__":

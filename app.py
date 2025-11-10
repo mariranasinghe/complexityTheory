@@ -398,7 +398,7 @@ def show_visualizer():
     2.  After `n=20`, the $O(n!)$ line disappears as it hits infinity (the "factorial wall").
     """)
 
-    n_range_np = range(1, 26) # n from 1 to 25
+    n_range_np = range(1, 21) # n from 1 to 20
     data_np = []
     for n in n_range_np:
         data_np.append({'n': n, 'Operations': n**2, 'Complexity': 'O(n²)'})

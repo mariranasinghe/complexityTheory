@@ -159,7 +159,6 @@
         class="nav-link block w-full text-left px-4 py-2 rounded-lg text-gray-200 hover:bg-gray-700"
         >4. Open Problems & The Future</a
       >
-      <!-- NEW MODULE LINK -->
       <a
         href="#"
         data-module="reductions"
@@ -187,7 +186,7 @@
         vertexCover: showVertexCover,
         tsp: showTSP,
         openProblems: showOpenProblems,
-        reductions: showReductions, // NEW MODULE
+        reductions: showReductions,
       };
 
       // Simple router to show a module
@@ -264,60 +263,56 @@
                         </div>
                     </div>
 
-                    <!-- Column 2: How to Use -->
+                    <!-- Column 2: How to Use (UPDATED) -->
                     <div class="w-full lg:w-1/2 px-4">
                         <div class="bg-gray-800 p-6 rounded-lg h-full">
                             <h3 class="text-xl font-semibold text-gray-200 mb-3">How To Use This Tool</h3>
                             <p class="text-gray-300 mb-4">Follow these steps to build an intuition for complexity:</p>
                             <ol class="list-decimal list-inside text-gray-300 space-y-4">
                                 <li>
-                                    <span class="font-bold text-cyan-400">Explore the Charts:</span>
-                                    Go to <span class="font-semibold">Module 1</span>. Use the two charts to see the difference between polynomial ($O(n^2)$) and exponential ($O(2^n)$) growth.
+                                    <span class="font-bold text-cyan-400">Explore the Charts (Module 1):</span>
+                                    See the difference between polynomial ($O(n^2)$) and exponential ($O(2^n)$) growth.
                                 </li>
                                 <li>
-                                    <span class="font-bold text-cyan-400">Feel the P vs. NP Gap:</span>
-                                    Go to <span class="font-semibold">Module 2 (Vertex Cover)</span>.
-                                    - Click 'Verify'. It's instant ($O(|V| \cdot |E|)$).
-                                    - Click 'Solve'. For a small graph (n=10), it's fast. Try a larger one (n=18). You will *feel* the exponential $O(2^n \cdot |E|)$ delay.
-                                </li>
-                                <!-- NEW STEP -->
-                                <li>
-                                    <span class="font-bold text-cyan-400">Experience Reductions:</span>
-                                    Go to <span class="font-semibold">Module 5</span>. Learn how the **Independent Set** problem is just a "mirror image" of **Vertex Cover**. This proves that if you can solve one, you can solve the other, making them equally hard.
+                                    <span class="font-bold text-cyan-400">Feel the P vs. NP Gap (Module 2):</span>
+                                    - **Verify (P):** Click 'Verify'. It's instant ($O(|V| \cdot |E|)$).
+                                    <br>
+                                    - **Solve (NP):** Click 'Find Optimal'. For a small graph (n=18), you will *feel* the exponential $O(2^n \cdot |E|)$ delay.
                                 </li>
                                 <li>
-                                    <span class="font-bold text-cyan-400">Experience Factorial Explosion:</span>
-                                    Go to <span class="font-semibold">Module 3 (TSP)</span>.
-                                    - Generate 9 cities. The solver takes a few seconds ($9!$).
-                                    - Generate 10 cities. The time increases 10-fold ($10!$). *That* is the $O(n!)$ factorial wall.
+                                    <span class="font-bold text-cyan-400">Compare Brute-Force vs. Heuristic (Module 3):</span>
+                                    - **Solve (NP):** Click 'Find Optimal Tour' with 9 cities. It takes a few seconds ($O(n!)$).
+                                    <br>
+                                    - **Approx. (P):** Click 'Find Heuristic Tour' with 9 cities. It's *instant* ($O(n^2)$). The answer will be *good*, but may not be the *best* one found by the slow solver. This is the real-world tradeoff.
+                                </li>
+                                <li>
+                                    <span class="font-bold text-cyan-400">Experience Reductions (Module 5):</span>
+                                    Learn how the **Independent Set** problem is just a "mirror image" of **Vertex Cover**. This proves that if you can solve one, you can solve the other.
                                 </li>
                             </ol>
                         </div>
                     </div>
                 </div>
 
-                <!-- Foundational Research -->
+                <!-- Foundational Research (UPDATED) -->
                 <div class="mt-8 pt-6 border-t border-gray-700">
                     <h3 class="text-2xl font-semibold text-cyan-400 mb-4">Learn More: Foundational Research</h3>
                     <p class="text-gray-300 mb-6">
                         The concepts in this tool are built on decades of research. These are some of the most important papers in the field:
                     </p>
                     <div class="space-y-4 text-gray-300">
-                        <!-- UPDATED SUMMARY 1 -->
                         <div class="bg-gray-800 p-4 rounded-lg">
                             <p class="font-semibold text-gray-200">Cook, S. A. (1971). "The complexity of theorem-proving procedures."</p>
                             <p class="text-sm mt-1">
                                 **Summary:** This is the foundational paper that birthed the field of NP-Completeness. Cook proved that the **Satisfiability (SAT)** problem has a special property: *any* problem in NP can be "reduced" to it. This means if you could solve SAT efficiently, you could solve *every* problem in NP efficiently. He called this property "NP-Complete."
                             </p>
                         </div>
-                        <!-- UPDATED SUMMARY 2 -->
                         <div class="bg-gray-800 p-4 rounded-lg">
                             <p class="font-semibold text-gray-200">Karp, R. M. (1972). "Reducibility among combinatorial problems."</p>
                             <p class="text-sm mt-1">
                                 **Summary:** Karp's paper showed that Cook's discovery wasn't a fluke. He took the idea of "reducibility" and ran with it, identifying 21 other famous, seemingly unrelated problems (including Vertex Cover and TSP) that were also NP-Complete. This established that a vast "web" of problems were all fundamentally the same hard problem, just in different disguises.
                             </p>
                         </div>
-                        <!-- UPDATED SUMMARY 3 -->
                         <div class="bg-gray-800 p-4 rounded-lg">
                             <p class="font-semibold text-gray-200">Garey, M. R., & Johnson, D. S. (1979). "Computers and Intractability: A Guide to the Theory of NP-Completeness."</p>
                             <p class="text-sm mt-1">
@@ -557,7 +552,8 @@
                     <!-- Tab Content: Demo -->
                     <div id="vc-demo" class="tab-content active">
                         <p class="text-lg text-gray-300 mb-6">
-                            Experiment with the P vs. NP gap. **Verify** a solution (fast) vs. **Solve** for a solution (slow).
+                            Experiment with the P vs. NP gap. **Verify** a solution (fast) vs. **Solve** for a solution (slow)
+                            vs. **Approximate** a solution (fast).
                         </p>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Left Column: Demo -->
@@ -586,17 +582,22 @@
                                     <button id="vc-verify-btn" class="mt-2 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg">Verify (Polynomial Time)</button>
                                 </div>
 
-                                <!-- Solve Action -->
+                                <!-- Solve Actions -->
                                 <div>
-                                    <h3 class="text-xl font-semibold mb-2 text-red-400">2. Find Smallest Solution (Slow - NP)</h3>
-                                    <p class="text-sm text-gray-400 mb-3">Find the *smallest* cover. This is the hard part!</p>
-                                    <button id="vc-solve-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Find Smallest Cover (Brute Force)</button>
+                                    <h3 class="text-xl font-semibold mb-2 text-cyan-400">2. Find a Solution</h3>
+                                    <p class="text-sm text-gray-400 mb-3">Compare the fast approximation vs. the slow optimal solver.</p>
+                                    <div class="flex space-x-2">
+                                        <!-- NEW: APPROXIMATION BUTTON -->
+                                        <button id="vc-approx-btn" class="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Find 2-Approximation (Fast)</button>
+                                        <!-- OPTIMAL SOLVER BUTTON -->
+                                        <button id="vc-solve-btn" class="w-1/2 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Find Optimal Solution (Slow)</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Tab Content: What is VC? -->
+                    <!-- Tab Content: What is VC? (UPDATED) -->
                     <div id="vc-what-is" class="tab-content bg-gray-800 p-6 rounded-lg">
                         <h3 class="text-xl font-semibold mb-2">What is Vertex Cover?</h3>
                         <p class="mb-4">
@@ -604,22 +605,23 @@
                             is "covered" (i.e., at least one of its two endpoints is in the subset).
                         </p>
                         <h4 class="text-lg font-semibold mb-2">Formal Definition</h4>
-                        <p class="mb-2">Given a graph $G = (V, E)$, where $V$ is the set of vertices and $E$ is the set of edges. A vertex cover is a subset $V' \\subseteq V$ such that for every edge $(u, v) \\in E$, at least one of $u$ or $v$ is in $V'$.</p>
+                        <p class="mb-2">Given a graph $G = (V, E)$, a vertex cover is a subset $V' \\subseteq V$ such that for every edge $(u, v) \\in E$, at least one of $u$ or $v$ is in $V'$.</p>
                         <p class="mb-4 p-4 bg-gray-900 rounded-lg text-cyan-300">$$V' \\subseteq V \\text{ s.t. } \\forall (u, v) \\in E, \\{u, v\\} \\cap V' \\neq \\emptyset$$</p>
                         
                         <h4 class="text-lg font-semibold mb-2">The NP-Complete Problem</h4>
-                        <p class="mb-2">The *optimization* problem is "Find the *minimum* vertex cover," (i.e., find a $V'$ that has the smallest possible size $|V'|$).</p>
-                        <p class="mb-2">The *decision* problem (which is proven to be NP-Complete) is **K-VERTEX-COVER**: "Given a graph $G$ and an integer $k$, does $G$ have a vertex cover of size $k$ or less?"</p>
+                        <p class="mb-2">The *optimization* problem is "Find the *minimum* vertex cover."</p>
+                        <p class="mb-2">The *decision* problem (NP-Complete) is **K-VERTEX-COVER**: "Given $G$ and $k$, does $G$ have a vertex cover of size $k$ or less?"</p>
                         <p class="mb-4 p-4 bg-gray-900 rounded-lg text-cyan-300">$$\\text{Does a } V' \\subseteq V \\text{ exist s.t. } |V'| \\le k \\text{ and } V' \\text{ is a VC for } G?$$</p>
                         
                         <h4 class="text-lg font-semibold mb-2">The P vs. NP Demonstration</h4>
                         <ul class="list-disc list-inside space-y-2">
-                            <li><span class="font-bold text-green-400">Verifying is FAST (in P):</span> If you give me a proposed cover $V'$, I can check if it's valid in polynomial time. (Time: $O(|V| + |E|)$).</li>
-                            <li><span class="font-bold text-red-400">Finding is SLOW (in NP):</span> Finding the *smallest* cover is hard. The brute-force way is to check every possible subset $V'$ of $V$. There are $2^{|V|}$ such subsets. Total time: $O(2^{|V|} \cdot |E|)$.</li>
+                            <li><span class="font-bold text-green-400">Verifying is FAST (in P):</span> Check a solution in $O(|V| + |E|)$ time.</li>
+                            <li><span class="font-bold text-blue-400">Approximating is FAST (in P):</span> Find a *good* solution in $O(|E|)$ time. The 2-approximation algorithm guarantees a cover no more than 2x the optimal size.</li>
+                            <li><span class="font-bold text-red-400">Finding Optimal is SLOW (in NP):</span> Find the *best* solution in $O(2^{|V|} \cdot |E|)$ time (brute force).</li>
                         </ul>
                     </div>
                     
-                    <!-- Tab Content: Key Concepts -->
+                    <!-- Tab Content: Key Concepts (UPDATED) -->
                     <div id="vc-concepts" class="tab-content bg-gray-800 p-6 rounded-lg">
                         <h3 class="text-xl font-semibold mb-4">Key Concepts</h3>
                         <dl class="space-y-4">
@@ -632,12 +634,13 @@
                                 <dd>A way to represent a graph. It's a collection where each vertex has a list of all the other vertices it is connected to (its 'neighbors'). This is what the JSON in the demo represents.</dd>
                             </div>
                             <div>
-                                <dt class="font-bold text-sky-400">Brute Force</dt>
-                                <dd>An algorithm design technique that consists of systematically checking every possible solution to a problem until the correct or best one is found. This is often simple to implement but very slow.</dd>
-                            </div>
-                            <div>
                                 <dt class="font-bold text-sky-400">Decision Problem vs. Optimization Problem</dt>
                                 <dd>An **Optimization Problem** asks for the *best* solution (e.g., "Find the *smallest* vertex cover"). A **Decision Problem** asks a "yes/no" question (e.g., "Is there a vertex cover of size *k* or less?"). NP-Completeness is formally defined using decision problems.</dd>
+                            </div>
+                            <!-- NEW DEFINITION -->
+                            <div>
+                                <dt class="font-bold text-sky-400">Approximation Algorithm</dt>
+                                <dd>A fast (P-time) algorithm for an NP-hard optimization problem that does not guarantee the *best* solution, but guarantees a solution that is "close" to the optimal one. For Vertex Cover, we have a **2-approximation**, meaning the cover it finds is at most $2 \times$ the size of the *true* smallest cover.</dd>
                             </div>
                         </dl>
                     </div>
@@ -650,8 +653,11 @@
           .getElementById("vc-verify-btn")
           .addEventListener("click", verifyVertexCover);
         document
+          .getElementById("vc-approx-btn")
+          .addEventListener("click", solveVertexCoverApprox); // NEW
+        document
           .getElementById("vc-solve-btn")
-          .addEventListener("click", solveVertexCover);
+          .addEventListener("click", solveVertexCoverOptimal);
 
         // Wire up tab switching
         setupTabs("vc-container");
@@ -675,6 +681,21 @@
           });
       }
 
+      function getVCEdges(adjList) {
+        const edges = new Set();
+        for (const u in adjList) {
+          for (const v of adjList[u]) {
+            const uKey = isNaN(Number(u)) ? u : Number(u);
+            const vKey = isNaN(Number(v)) ? v : Number(v);
+            const edge = [uKey, vKey]
+              .sort((a, b) => String(a).localeCompare(String(b)))
+              .join("-");
+            edges.add(edge);
+          }
+        }
+        return edges;
+      }
+
       function verifyVertexCover() {
         const output = document.getElementById("vc-output");
         try {
@@ -687,19 +708,7 @@
               .filter(Boolean)
           );
 
-          const edges = new Set();
-          for (const u in adjList) {
-            for (const v of adjList[u]) {
-              // Use numbers for sorting if they are numbers, else string sort
-              const uKey = isNaN(Number(u)) ? u : Number(u);
-              const vKey = isNaN(Number(v)) ? v : Number(v);
-              const edge = [uKey, vKey]
-                .sort((a, b) => String(a).localeCompare(String(b)))
-                .join("-");
-              edges.add(edge);
-            }
-          }
-
+          const edges = getVCEdges(adjList);
           let uncovered = [];
           let opCount = 0;
           for (const edge of edges) {
@@ -728,7 +737,63 @@
         }
       }
 
-      function solveVertexCover() {
+      // NEW APPROXIMATION ALGORITHM
+      function solveVertexCoverApprox() {
+        const output = document.getElementById("vc-output");
+        output.className =
+          "mt-4 p-4 bg-yellow-900 text-yellow-200 rounded-lg min-h-[50px]";
+        output.textContent = "Finding 2-approximation (fast)...";
+
+        setTimeout(() => {
+          try {
+            const adjList = JSON.parse(
+              document.getElementById("vc-graph").value
+            );
+            let edges = getVCEdges(adjList); // This is a Set
+            const approxCover = new Set();
+            let opCount = 0;
+            const startTime = performance.now();
+
+            while (edges.size > 0) {
+              opCount++;
+              // 1. Pick an arbitrary edge
+              const [u, v] = edges.values().next().value.split("-");
+
+              // 2. Add both nodes to cover
+              approxCover.add(u);
+              approxCover.add(v);
+
+              // 3. Remove all covered edges
+              const edgesToRemove = [];
+              for (const edge of edges) {
+                opCount++;
+                const [e_u, e_v] = edge.split("-");
+                if (approxCover.has(e_u) || approxCover.has(e_v)) {
+                  edgesToRemove.push(edge);
+                }
+              }
+              edgesToRemove.forEach((edge) => edges.delete(edge));
+            }
+            const endTime = performance.now();
+
+            output.className =
+              "mt-4 p-4 bg-blue-900 text-blue-200 rounded-lg min-h-[50px]";
+            output.innerHTML = `<strong>APPROXIMATION FOUND:</strong> Cover: {${[
+              ...approxCover,
+            ].join(", ")}} (Size: ${
+              approxCover.size
+            }).<br>(~${opCount} operations, P-time)<br>Time: ${(
+              endTime - startTime
+            ).toFixed(2)} ms`;
+          } catch (e) {
+            output.className =
+              "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
+            output.textContent = `Error: ${e.message}`;
+          }
+        }, 50);
+      }
+
+      function solveVertexCoverOptimal() {
         const output = document.getElementById("vc-output");
         output.className =
           "mt-4 p-4 bg-yellow-900 text-yellow-200 rounded-lg min-h-[50px]";
@@ -750,20 +815,10 @@
               return;
             }
 
-            const edges = new Set();
-            for (const u in adjList) {
-              for (const v of adjList[u]) {
-                const uKey = isNaN(Number(u)) ? u : Number(u);
-                const vKey = isNaN(Number(v)) ? v : Number(v);
-                const edge = [uKey, vKey]
-                  .sort((a, b) => String(a).localeCompare(String(b)))
-                  .join("-");
-                edges.add(edge);
-              }
-            }
-
+            const edges = getVCEdges(adjList);
             let smallestCover = null;
             let opCount = 0;
+            const startTime = performance.now();
 
             for (let i = 0; i < 1 << n; i++) {
               opCount++;
@@ -793,14 +848,17 @@
                 }
               }
             }
+            const endTime = performance.now();
 
             output.className =
               "mt-4 p-4 bg-green-900 text-green-200 rounded-lg min-h-[50px]";
-            output.innerHTML = `<strong>SOLVED:</strong> Smallest cover is {${[
+            output.innerHTML = `<strong>OPTIMAL SOLVED:</strong> Cover is {${[
               ...smallestCover,
             ].join(", ")}} (Size: ${
               smallestCover.size
-            }).<br>(~${opCount} operations, $O(2^n)$)`;
+            }).<br>(~${opCount} operations, $O(2^n)$)<br>Time: ${(
+              endTime - startTime
+            ).toFixed(2)} ms`;
           } catch (e) {
             output.className =
               "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
@@ -854,17 +912,22 @@
                                     <button id="tsp-verify-btn" class="mt-2 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg">Verify (Polynomial Time)</button>
                                 </div>
 
-                                <!-- Solve Action -->
+                                <!-- Solve Actions -->
                                 <div>
-                                    <h3 class="text-xl font-semibold mb-2 text-red-400">2. Find Shortest Tour (Very Slow - NP)</h3>
-                                    <p class="text-sm text-gray-400 mb-3">Find the *shortest* tour. (Max n=9 for demo)</p>
-                                    <button id="tsp-solve-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Find Shortest Tour (Brute Force)</button>
+                                    <h3 class="text-xl font-semibold mb-2 text-cyan-400">2. Find a Solution</h3>
+                                    <p class="text-sm text-gray-400 mb-3">Compare the fast heuristic vs. the *very* slow optimal solver.</p>
+                                    <div class="flex space-x-2">
+                                        <!-- NEW: HEURISTIC BUTTON -->
+                                        <button id="tsp-heuristic-btn" class="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Find Heuristic Tour (Fast)</button>
+                                        <!-- OPTIMAL SOLVER BUTTON -->
+                                        <button id="tsp-solve-btn" class="w-1/2 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Find Optimal Tour (Very Slow)</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Tab Content: What is TSP? -->
+                    <!-- Tab Content: What is TSP? (UPDATED) -->
                     <div id="tsp-what-is" class="tab-content bg-gray-800 p-6 rounded-lg">
                         <h3 class="text-xl font-semibold mb-2">What is the Traveling Salesperson (TSP)?</h3>
                         <p class="mb-4">
@@ -872,22 +935,23 @@
                             that visits each city exactly once and returns to the origin city?
                         </p>
                         <h4 class="text-lg font-semibold mb-2">Formal Definition</h4>
-                        <p class="mb-2">Given a complete weighted graph $G = (V, E, w)$, where $w(e)$ is the "weight" or "distance" of edge $e$. Find a **Hamiltonian cycle** (a tour that visits every vertex $v \\in V$ exactly once) with the minimum total weight.</p>
+                        <p class="mb-2">Given a complete weighted graph $G = (V, E, w)$, find a **Hamiltonian cycle** (a tour that visits every vertex $v \\in V$ exactly once) with the minimum total weight.</p>
                         <p class="mb-4 p-4 bg-gray-900 rounded-lg text-cyan-300">Find a permutation $\\pi$ of vertices $V=\\{v_1, ..., v_n\\}$ that minimizes:
                             $$w(v_{\\pi(n)}, v_{\\pi(1)}) + \\sum_{i=1}^{n-1} w(v_{\\pi(i)}, v_{\\pi(i+1)})$$
                         </p>
                         
                         <h4 class="text-lg font-semibold mb-2">The NP-Complete Problem</h4>
-                        <p class="mb-2">The *decision* problem (which is NP-Complete) is **K-TSP**: "Given a graph $G$, distances $w$, and an integer $k$, does $G$ have a tour with a total weight less than or equal to $k$?"</p>
+                        <p class="mb-2">The *decision* problem (NP-Complete) is **K-TSP**: "Given $G$, $w$, and $k$, does $G$ have a tour with a total weight less than or equal to $k$?"</p>
                         
                         <h4 class="text-lg font-semibold mb-2">The P vs. NP Demonstration</h4>
                         <ul class="list-disc list-inside space-y-2">
-                            <li><span class="font-bold text-green-400">Verifying is FAST (in P):</span> If you give me a path (a tour $\\pi$), I can quickly add up the distances ($O(n)$).</li>
-                            <li><span class="font-bold text-red-400">Finding is SLOW (in NP):</span> Finding the *shortest* tour is hard. The brute-force way is to check every possible permutation (ordering) of cities. There are $(n-1)!$ possible tours. Total time: $O(n!)$.</li>
+                            <li><span class="font-bold text-green-400">Verifying is FAST (in P):</span> Check a tour's length in $O(n)$ time.</li>
+                            <li><span class="font-bold text-blue-400">Approximating is FAST (in P):</span> Find a *good* tour using a heuristic like "Nearest Neighbor" in $O(n^2)$ time. This gives *no guarantee* but is often good.</li>
+                            <li><span class="font-bold text-red-400">Finding Optimal is SLOW (in NP):</span> Find the *best* tour in $O(n!)$ time (brute force).</li>
                         </ul>
                     </div>
 
-                    <!-- Tab Content: Key Concepts -->
+                    <!-- Tab Content: Key Concepts (UPDATED) -->
                     <div id="tsp-concepts" class="tab-content bg-gray-800 p-6 rounded-lg">
                         <h3 class="text-xl font-semibold mb-4">Key Concepts</h3>
                         <dl class="space-y-4">
@@ -900,12 +964,13 @@
                                 <dd>A path in a graph that visits each vertex *exactly once* and returns to the starting vertex. This is the 'tour' the salesperson is looking for.</dd>
                             </div>
                             <div>
-                                <dt class="font-bold text-sky-400">Permutation</dt>
-                                <dd>An arrangement of items in a specific order. For TSP, each possible tour is a permutation of the cities. The number of permutations of $n$ items is $n!$ (n-factorial).</dd>
-                            </div>
-                            <div>
                                 <dt class="font-bold text-sky-400">Factorial ($n!$)</dt>
                                 <dd>The product of all positive integers less than or equal to $n$. ($n! = n \times (n-1) \times ... \times 1$). This function grows *extremely* fast, much faster than $2^n$.</dd>
+                            </div>
+                            <!-- NEW DEFINITION -->
+                            <div>
+                                <dt class="font-bold text-sky-400">Heuristic Algorithm</dt>
+                                <dd>A fast (P-time) algorithm or 'rule of thumb' for solving a problem. Unlike an approximation algorithm, a heuristic gives *no guarantee* on how close its answer is to the optimal one. The 'Nearest Neighbor' heuristic is simple and fast ($O(n^2)$), but can sometimes produce very poor routes.</dd>
                             </div>
                         </dl>
                     </div>
@@ -918,8 +983,11 @@
           .getElementById("tsp-verify-btn")
           .addEventListener("click", verifyTSP);
         document
+          .getElementById("tsp-heuristic-btn")
+          .addEventListener("click", solveTSPHeuristic); // NEW
+        document
           .getElementById("tsp-solve-btn")
-          .addEventListener("click", solveTSP);
+          .addEventListener("click", solveTSPOptimal);
 
         // Wire up tab switching
         setupTabs("tsp-container");
@@ -983,7 +1051,82 @@
         }
       }
 
-      function solveTSP() {
+      // NEW HEURISTIC ALGORITHM
+      function solveTSPHeuristic() {
+        const output = document.getElementById("tsp-output");
+        output.className =
+          "mt-4 p-4 bg-yellow-900 text-yellow-200 rounded-lg min-h-[50px]";
+        output.textContent = "Finding heuristic tour (Nearest Neighbor)...";
+
+        setTimeout(() => {
+          try {
+            const cities = JSON.parse(
+              document.getElementById("tsp-cities").value
+            );
+            const cityNames = Object.keys(cities);
+            if (cityNames.length === 0) throw new Error("No cities provided.");
+
+            const startTime = performance.now();
+            let opCount = 0;
+
+            const startCity = cityNames[0];
+            const tour = [startCity];
+            const unvisited = new Set(cityNames.slice(1));
+            let totalDist = 0;
+            let currentCityName = startCity;
+
+            while (unvisited.size > 0) {
+              opCount++;
+              let nearestCity = null;
+              let minDist = Infinity;
+
+              const currentCityCoords = cities[currentCityName];
+
+              for (const cityName of unvisited) {
+                opCount++;
+                const cityCoords = cities[cityName];
+                const dist = getDist(currentCityCoords, cityCoords);
+
+                if (dist < minDist) {
+                  minDist = dist;
+                  nearestCity = cityName;
+                }
+              }
+
+              if (nearestCity) {
+                totalDist += minDist;
+                currentCityName = nearestCity;
+                tour.push(currentCityName);
+                unvisited.delete(currentCityName);
+              } else {
+                break; // Should not happen
+              }
+            }
+
+            // Add distance back to start
+            totalDist += getDist(cities[currentCityName], cities[startCity]);
+            tour.push(startCity);
+
+            const endTime = performance.now();
+
+            output.className =
+              "mt-4 p-4 bg-blue-900 text-blue-200 rounded-lg min-h-[50px]";
+            output.innerHTML = `<strong>HEURISTIC FOUND:</strong> Tour: ${tour.join(
+              " -> "
+            )}<br>Length: ${totalDist.toFixed(
+              2
+            )}<br>(~${opCount} operations, $O(n^2)$)<br>Time: ${(
+              endTime - startTime
+            ).toFixed(2)} ms`;
+          } catch (e) {
+            output.className =
+              "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
+            output.textContent = `Error: ${e.message}`;
+          }
+        }, 50);
+      }
+
+      function solveTSPOptimal() {
         const output = document.getElementById("tsp-output");
         output.className =
           "mt-4 p-4 bg-yellow-900 text-yellow-200 rounded-lg min-h-[50px]";
@@ -1011,39 +1154,19 @@
             let shortestDist = Infinity;
             let shortestTour = [];
             let opCount = 0;
+            const startTime = performance.now();
 
-            // A simple but inefficient permutation generator
-            function* getPermutations(arr) {
-              if (arr.length === 0) {
-                yield [];
-                return;
-              }
-              const first = arr[0];
-              const rest = arr.slice(1);
-
-              for (const p of getPermutations(rest)) {
-                for (let i = 0; i <= p.length; i++) {
-                  opCount++; // Count permutations as operations
-                  const start = p.slice(0, i);
-                  const end = p.slice(i);
-                  yield [...start, first, ...end];
-                }
-              }
-            }
-
-            // A more efficient permutation generator (Heap's Algorithm)
+            // Heap's Algorithm permutation generator
             function* permute(arr) {
               const n = arr.length;
               const c = new Array(n).fill(0);
               let a = [...arr];
-
-              yield a; // Yield the initial array
-
+              yield a;
               let i = 1;
               while (i < n) {
                 if (c[i] < i) {
                   const k = i % 2 === 0 ? 0 : c[i];
-                  [a[i], a[k]] = [a[k], a[i]]; // Swap
+                  [a[i], a[k]] = [a[k], a[i]];
                   c[i]++;
                   i = 1;
                   opCount++;
@@ -1070,14 +1193,17 @@
                 shortestTour = currentTour;
               }
             }
+            const endTime = performance.now();
 
             output.className =
               "mt-4 p-4 bg-green-900 text-green-200 rounded-lg min-h-[50px]";
-            output.innerHTML = `<strong>SOLVED:</strong> Shortest Tour: ${shortestTour.join(
+            output.innerHTML = `<strong>OPTIMAL SOLVED:</strong> Tour: ${shortestTour.join(
               " -> "
             )}<br>Length: ${shortestDist.toFixed(
               2
-            )}<br>(~${opCount} permutations checked, $O(n!)$)`;
+            )}<br>(~${opCount} permutations, $O(n!)$)<br>Time: ${(
+              endTime - startTime
+            ).toFixed(2)} ms`;
           } catch (e) {
             output.className =
               "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
@@ -1233,7 +1359,7 @@
         });
       }
 
-      // --- NEW Module 6: Reductions ---
+      // --- Module 6: Reductions ---
       function showReductions() {
         const template = `
                 <div id="reductions-container">
@@ -1257,7 +1383,7 @@
                         <h4 class="text-lg font-semibold mb-2">Why do this?</h4>
                         <ol class="list-decimal list-inside space-y-2 mb-4">
                             <li><strong>To Solve Problems:</strong> If you have a "magic" (fast) solver for problem $L'$, you can now use it to solve problem $L$ for free.</li>
-                            <li><strong>To Prove Hardness:</strong> This is the big one. If we know $L$ is "hard" (e.g., NP-Complete), and we can reduce $L$ to $L'$, then $L'$ must *also* be "hard".</li>
+                            <li><strong>To Prove Hardness:</strong> This is the big one. If we know $L$ is "hard" (e.Example: NP-Complete), and we can reduce $L$ to $L'$, then $L'$ must *also* be "hard".</li>
                         </ol>
                         
                         <p class="mb-2">Formally, a problem $L$ is reducible to $L'$ ($L \\le_p L'$) if there's a P-time

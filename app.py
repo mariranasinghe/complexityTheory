@@ -1250,37 +1250,27 @@ def show_bpp():
 # --- Main App ---
 def main():
     st.set_page_config(page_title="Complexity Explorer", layout="wide")
-    
+
+    # --- Define pages and their functions ---
+    PAGE_MAP = {
+        "Home: Start Here": show_home,
+        "1. Time Complexity Visualizer": show_visualizer,
+        "2. P vs. NP (Vertex Cover)": show_vertex_cover,
+        "3. NP-Complete (TSP)": show_tsp,
+        "4. Open Problems & The Future": show_open_problems,
+        "5. Reductions (IS to VC)": show_reductions,
+        "6. PSPACE (TQBF)": show_pspace,
+        "7. Randomized Algos (BPP)": show_bpp,
+    }
+
     # Sidebar for navigation
     st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Go to:", [
-        "Home: Start Here", 
-        "1. Time Complexity Visualizer", 
-        "2. P vs. NP (Vertex Cover)", 
-        "3. NP-Complete (TSP)",
-        "4. Open Problems & The Future",
-        "5. Reductions (IS to VC)",
-        "6. PSPACE (TQBF)",
-        "7. Randomized Algos (BPP)"  # <-- New Module Added
-    ])
+    page_selection = st.sidebar.radio("Go to:", list(PAGE_MAP.keys()))
 
-    # Simple router to show the correct module
-    if page == "Home: Start Here":
-        show_home()
-    elif page == "1. Time Complexity Visualizer":
-        show_visualizer()
-    elif page == "2. P vs. NP (Vertex Cover)":
-        show_vertex_cover()
-    elif page == "3. NP-Complete (TSP)":
-        show_tsp()
-    elif page == "4. Open Problems & The Future":
-        show_open_problems()
-    elif page == "5. Reductions (IS to VC)":
-        show_reductions()
-    elif page == "6. PSPACE (TQBF)":
-        show_pspace()
-    elif page == "7. Randomized Algos (BPP)": # <-- New Module Routed
-        show_bpp()
+    # --- Call the selected function ---
+    page_function = PAGE_MAP[page_selection]
+    page_function()
+
 
 if __name__ == "__main__":
     main()

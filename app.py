@@ -8,6 +8,7 @@ import time
 import random
 from itertools import permutations
 import copy
+from typing import List, Dict
 
 # --- Utility Functions ---
 
@@ -18,9 +19,9 @@ def factorial(n):
     return math.factorial(n)
 
 # --- Graph Generator Functions ---
-def generate_random_graph(n, p):
+def generate_random_graph(n: int, p: float) -> Dict[str, List[str]]:
     """Generates a random graph as an adjacency list."""
-    adj_list = {str(i): [] for i in range(n)}
+    adj_list: Dict[str, List[str]] = {str(i): [] for i in range(n)}
     for i in range(n):
         for j in range(i + 1, n):
             if random.random() < p:

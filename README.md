@@ -6,33 +6,39 @@ This project is an interactive web application built entirely in Python using th
 
 ### Core Principles
 
-**Python-First:** The entire application logic, UI, and state management are handled in a single Python file (app.py). This is ideal for students and researchers who are more comfortable in Python than in JavaScript.
+1. **Python-First:** The entire application logic, UI, and state management are handled in a single Python file (`app.py`).
 
-**Modular Functions:** The application is divided into "modules." Each module is a distinct Python function (e.g., show_home(), show_visualizer()) that is responsible for rendering one page of the application.
+2. **Modular Functions:** The application is divided into "modules." Each module is a distinct Python function (e.g., `show_home()`, `show_visualizer()`) that is responsible for rendering one page.
 
-**Interactive Components:** The app uses various Streamlit components (st.button, st.text_area, st.tabs, st.popover) to create a rich, interactive learning experience.
+3. **Interactive Components:** The app uses various Streamlit components (`st.button`, `st.text_area`, `st.tabs`, `st.popover`) to create a rich, interactive learning experience.
 
-**State Management:** Streamlit's st.session_state is used to store data (like the JSON for the current graph) between button clicks and page re-renders.
+4. **State Management:** Streamlit's `st.session_state` is used to store data (like the JSON for the current graph) between button clicks and page re-renders.
 
-**Visualization:** The app uses Altair and Pandas to create clean, interactive, and zoomable charts for visualizing complexity classes.
+5. **Visualization:** The app uses **Altair** and **Pandas** to create clean, interactive, and zoomable charts for visualizing complexity classes.
+
+6. **Core Lesson: P vs. NP vs. Approximation:** The demo modules (VC and TSP) are built around a three-way comparison:
+
+   - Verify (P-time): Checking a solution is fast.
+   - Approximate (P-time): Finding a good enough solution (via heuristic or approximation) is also fast.
+   - Optimal (NP-hard): Finding the perfect solution (via brute force) is intractably slow.
 
 ### File Structure
 
-- app.py: The entire application.
+- `app.py`: The entire application.
 
-- Imports: Loads streamlit, pandas, altair, etc.
+- Imports: Loads `streamlit`, `pandas`, `altair`, etc.
 
-- Helper Functions: factorial(), generate_random_graph(), etc.
+- Helper Functions: `factorial()`, `generate_random_graph()`, `solve_vc_approx()`, etc.
 
-- Module Functions (show\_...): Each function (e.g., show_home(), show_vertex_cover(), show_reductions()) defines one "page" of the app.
+- Module Functions (`show\_...`): Each function (e.g., `show_home()`, `show_vertex_cover()`, `show_reductions()`) defines one "page" of the app.
 
-- main() Function: The app's entry point. It sets up the page layout and sidebar navigation (st.sidebar.radio) and calls the correct module function based on the user's selection.
+- `main()` **Function:** The app's entry point. It sets up the page layout and sidebar navigation (`st.sidebar.radio`) and calls the correct module function based on the user's selection.
 
-- requirements.txt: A list of the Python dependencies (streamlit, pandas, numpy, altair) needed to run the project.
+- `requirements.txt`: A list of the Python dependencies (`streamlit`, `pandas`, `numpy`, `altair`) needed to run the project.
 
-- README.md: This file, explaining the project's Streamlit-based architecture.
+- `README.md`: This file, explaining the project's Streamlit-based architecture.
 
-- CONTRIBUTIONS.md: Explains the purpose of each function within app.py.
+- `CONTRIBUTIONS.md`: Explains the purpose of each function within `app.py`.
 
 ### Project Structure Visualization
 
@@ -48,42 +54,23 @@ complexity-explorer/
 
 ### How to Run This Project
 
-Save the files:
+1. Save the files:
 
-Save the main application file as app.py.
+   - Save the main application file as `app.py`.
 
-Save the dependencies list as requirements.txt.
+   - Save the dependencies list as `requirements.txt`.
 
-#### Set up a Python environment:
+2. Set up a Python environment:
 
-Open your terminal or command prompt.
+   - Open your terminal or command prompt and create a virtual environment: `python -m venv venv`
+   - Activate it: (macOS/Linux: `source venv/bin/activate`) (Windows: `venv\Scripts\activate`)
 
-Create a virtual environment:
+3. Install the dependencies:
 
-```bash
-python -m venv venv
-```
+   - Run: `pip install -r requirements.txt`
 
-#### Activate the environment:
+4. Run the app:
 
-macOS/Linux: source `venv/bin/activate`
+   - Run: `streamlit run app.py`
 
-Windows: `venv\Scripts\activate`
-
-#### Install the dependencies:
-
-#### Run the following command:
-
-```bash
-pip install -r requirements.txt
-```
-
-#### Run the app:
-
-#### Run this command in your terminal:
-
-```bash
-streamlit run app.py
-```
-
-Your web browser will automatically open with the running application.
+   - Your web browser will automatically open with the running application.

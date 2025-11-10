@@ -48,6 +48,7 @@
         background-color: #111827; /* gray-900 */
         color: #38bdf8; /* sky-400 */
       }
+      /* Custom scrollbar for the main content area */
       .module-content {
         overflow-y: auto;
         max-height: 100vh;
@@ -66,6 +67,7 @@
         background: #6b7280; /* gray-500 */
       }
 
+      /* Tab styles */
       .tab-btn {
         padding: 0.5rem 1rem;
         border-radius: 0.5rem;
@@ -85,6 +87,7 @@
         display: block;
       }
 
+      /* Popover/Details styles for Module 4 */
       details.popover-def {
         display: inline;
         cursor: pointer;
@@ -101,7 +104,7 @@
         user-select: none;
       }
       details.popover-def summary::-webkit-details-marker {
-        display: none;
+        display: none; /* Hide the disclosure triangle */
       }
       details.popover-def:hover summary {
         background-color: #2563eb; /* blue-600 */
@@ -175,6 +178,12 @@
         class="nav-link block w-full text-left px-4 py-2 rounded-lg text-gray-200 hover:bg-gray-700"
         >5. Reductions (IS to VC)</a
       >
+      <a
+        href="#"
+        data-module="pspace"
+        class="nav-link block w-full text-left px-4 py-2 rounded-lg text-gray-200 hover:bg-gray-700"
+        >6. PSPACE (TQBF)</a
+      >
     </nav>
 
     <!-- Main Content Area -->
@@ -187,7 +196,10 @@
     <script>
       // --- Core Application Logic ---
 
+      // Global store for chart instances to destroy them
       let charts = {};
+
+      // Module definitions
       const modules = {
         home: showHome,
         visualizer: showVisualizer,
@@ -195,25 +207,32 @@
         tsp: showTSP,
         openProblems: showOpenProblems,
         reductions: showReductions,
+        pspace: showPSPACE, // New module
       };
 
+      // Simple router to show a module
       function showModule(moduleName) {
+        // Destroy any existing charts before loading new content
         destroyCharts();
+
         const moduleFunction = modules[moduleName];
         if (moduleFunction) {
           moduleFunction();
+          // Update active nav link
           document.querySelectorAll("nav a").forEach((a) => {
             a.classList.remove("active", "bg-gray-900", "text-sky-400");
             if (a.dataset.module === moduleName) {
               a.classList.add("active", "bg-gray-900", "text-sky-400");
             }
           });
+          // After content is loaded, tell MathJax to re-scan the page
           if (window.MathJax) {
             MathJax.typesetPromise();
           }
         }
       }
 
+      // Function to destroy Chart.js instances
       function destroyCharts() {
         Object.values(charts).forEach((chart) => chart.destroy());
         charts = {};
@@ -230,7 +249,7 @@
                 </div>
 
                 <div class="flex flex-wrap -mx-4 mt-8">
-                    <!-- Column 1: What is P? -->
+                    <!-- Column 1: Definitions -->
                     <div class="w-full lg:w-1/2 px-4 mb-4 md:mb-0">
                         <div class="bg-gray-800 p-6 rounded-lg h-full">
                             <h3 class="text-xl font-semibold text-gray-200 mb-3">What is Complexity Theory?</h3>
@@ -268,7 +287,7 @@
                             <h3 class="text-xl font-semibold text-gray-200 mb-3">How To Use This Tool</h3>
                             <ol class="list-decimal list-inside text-gray-300 space-y-4">
                                 <li>
-                                    <span class="font-bold text-cyan-400">Explore the Charts (Module 1):</span>
+                                    <span class="font-bold text-cyan-400">Explore Growth (Module 1):</span>
                                     See the difference between $O(n^2)$ and $O(2^n)$ growth.
                                 </li>
                                 <li>
@@ -281,15 +300,19 @@
                                     <span class="font-bold text-cyan-400">Compare Brute-Force vs. Heuristic (Module 3):</span>
                                     - **Solve (NP):** Click 'Find Optimal Tour' with 9 cities. It takes seconds ($O(n!)$).
                                     <br>
-                                    - **Approx. (P):** Click 'Find Heuristic Tour'. It's *instant* ($O(n^2)$). Compare the (good) result to the (perfect) one.
+                                    - **Approx. (P):** Click 'Find Heuristic Tour'. It's *instant* ($O(n^2)$).
                                 </li>
                                 <li>
-                                    <span class="font-bold text-cyan-400">Experience Reductions (Module 5):</span>
+                                    <span class="font-bold text-cyan-400">See Reductions (Module 5):</span>
                                     Learn how **Independent Set** is a "mirror image" of **Vertex Cover**.
                                 </li>
                                 <li>
+                                    <span class="font-bold text-cyan-400">Explore PSPACE (Module 6):</span>
+                                    See how the TQBF solver uses exponential *time* (recursive calls) but only polynomial *space* (recursion depth).
+                                </li>
+                                <li>
                                     <span class="font-bold text-cyan-400">Read the Research (Module 4):</span>
-                                    See the actual papers that defined these "hard questions" and read Stephen Cook's thoughts on P vs. NP.
+                                    See the actual papers that defined these "hard questions".
                                 </li>
                             </ol>
                         </div>
@@ -332,6 +355,7 @@
                     A single chart can't show everything. Here are two charts to understand the two key scenarios.
                 </p>
                 
+                <!-- Chart 1: Polynomial -->
                 <h3 class="text-xl font-semibold text-gray-200 mb-3">Chart 1: The 'Fast' Algorithms (Polynomial Time)</h3>
                 <p class="text-gray-300 mb-4">
                     This chart shows *only* the "fast" algorithms on a **linear scale**.
@@ -341,6 +365,7 @@
                     <canvas id="complexity-chart-p"></canvas>
                 </div>
 
+                <!-- Chart 2: P vs NP -->
                 <h3 class="text-xl font-semibold text-gray-200 mb-3">Chart 2: The 'Explosion' (P vs. NP)</h3>
                 <p class="text-gray-300 mb-4">
                     This chart compares $O(n^2)$ to the "slow" ones on a **logarithmic scale**.
@@ -352,6 +377,7 @@
             `;
         document.getElementById("module-content").innerHTML = template;
 
+        // Chart.js configuration
         const chartOptions = (title, isLog) => ({
           responsive: true,
           maintainAspectRatio: false,
@@ -384,7 +410,7 @@
           animation: false,
         });
 
-        // Chart 1: Polynomial
+        // Data for Chart 1 (Polynomial)
         const nRangeP = Array.from({ length: 100 }, (_, i) => i + 1);
         const dataP = {
           labels: nRangeP,
@@ -424,7 +450,7 @@
           }
         );
 
-        // Chart 2: Exponential
+        // Data for Chart 2 (Exponential)
         const nRangeNP = Array.from({ length: 25 }, (_, i) => i + 1);
         const factorial = (n) =>
           n > 20
@@ -480,10 +506,13 @@
 
         tabButtons.forEach((button) => {
           button.addEventListener("click", () => {
+            // Deactivate all
             tabButtons.forEach((btn) => btn.classList.remove("active"));
             tabContents.forEach((content) =>
               content.classList.remove("active")
             );
+
+            // Activate clicked
             button.classList.add("active");
             document.getElementById(button.dataset.tab).classList.add("active");
           });
@@ -531,19 +560,20 @@
                 <div id="vc-container">
                     <h2 class="text-3xl font-bold mb-4 text-sky-400">Module 2: P vs. NP (Vertex Cover)</h2>
                     
+                    <!-- Tab Navigation -->
                     <div class="flex space-x-2 mb-4">
                         <button class="tab-btn active" data-tab="vc-demo">Interactive Demo</button>
                         <button class="tab-btn" data-tab="vc-what-is">What is Vertex Cover?</button>
                         <button class="tab-btn" data-tab="vc-concepts">Key Concepts</button>
                     </div>
 
-                    <!-- Tab Content: Demo -->
+                    <!-- Tab Content: Interactive Demo -->
                     <div id="vc-demo" class="tab-content active">
                         <p class="text-lg text-gray-300 mb-6">
                             Experiment with the P vs. NP gap. **Verify** (fast) vs. **Solve** (slow) vs. **Approximate** (fast).
                         </p>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Left Column: Demo -->
+                            <!-- Left Column: Graph Input -->
                             <div class="bg-gray-800 p-6 rounded-lg">
                                 <h3 class="text-xl font-semibold mb-4">Graph Generators</h3>
                                 <div class="flex space-x-2 mb-4">
@@ -560,6 +590,7 @@
 
                             <!-- Right Column: Actions -->
                             <div class="bg-gray-800 p-6 rounded-lg space-y-6">
+                                <!-- Verify Action -->
                                 <div>
                                     <h3 class="text-xl font-semibold mb-2 text-green-400">1. Verify a Solution (Fast - P)</h3>
                                     <label class="block text-sm font-medium text-gray-300">Proposed Cover (e.g., A,D)</label>
@@ -567,6 +598,7 @@
                                     <button id="vc-verify-btn" class="mt-2 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg">Verify (Polynomial Time)</button>
                                 </div>
 
+                                <!-- Find Solution Actions -->
                                 <div>
                                     <h3 class="text-xl font-semibold mb-2 text-cyan-400">2. Find a Solution</h3>
                                     <p class="text-sm text-gray-400 mb-3">Compare the fast approximation vs. the slow optimal solver.</p>
@@ -616,13 +648,13 @@
             `;
         document.getElementById("module-content").innerHTML = template;
 
-        // Event Listeners
+        // Wire up event listeners
         document
           .getElementById("vc-verify-btn")
           .addEventListener("click", verifyVertexCover);
         document
           .getElementById("vc-approx-btn")
-          .addEventListener("click", solveVertexCoverApprox); // NEW
+          .addEventListener("click", solveVertexCoverApprox);
         document
           .getElementById("vc-solve-btn")
           .addEventListener("click", solveVertexCoverOptimal);
@@ -645,10 +677,12 @@
           });
       }
 
+      // Helper function to get all unique edges from an adjacency list
       function getVCEdges(adjList) {
         const edges = new Set();
         for (const u in adjList) {
           for (const v of adjList[u]) {
+            // Sort to avoid duplicates like A-B and B-A
             const uKey = isNaN(Number(u)) ? u : Number(u);
             const vKey = isNaN(Number(v)) ? v : Number(v);
             const edge = [uKey, vKey]
@@ -660,6 +694,7 @@
         return edges;
       }
 
+      // P-time algorithm to verify a VC solution
       function verifyVertexCover() {
         const output = document.getElementById("vc-output");
         try {
@@ -699,12 +734,15 @@
         }
       }
 
+      // P-time 2-approximation algorithm
       function solveVertexCoverApprox() {
         const output = document.getElementById("vc-output");
         output.className =
           "mt-4 p-4 bg-yellow-900 text-yellow-200 rounded-lg min-h-[50px]";
         output.textContent = "Finding 2-approximation (fast)...";
+
         setTimeout(() => {
+          // Use timeout to allow UI to update
           try {
             const adjList = JSON.parse(
               document.getElementById("vc-graph").value
@@ -713,11 +751,17 @@
             const approxCover = new Set();
             let opCount = 0;
             const startTime = performance.now();
+
             while (edges.size > 0) {
               opCount++;
+              // 1. Pick an arbitrary edge
               const [u, v] = edges.values().next().value.split("-");
+
+              // 2. Add both nodes to cover
               approxCover.add(u);
               approxCover.add(v);
+
+              // 3. Remove all covered edges
               const edgesToRemove = [];
               for (const edge of edges) {
                 opCount++;
@@ -729,6 +773,7 @@
               edgesToRemove.forEach((edge) => edges.delete(edge));
             }
             const endTime = performance.now();
+
             output.className =
               "mt-4 p-4 bg-blue-900 text-blue-200 rounded-lg min-h-[50px]";
             output.innerHTML = `<strong>APPROXIMATION FOUND:</strong> Cover: {${[
@@ -746,18 +791,23 @@
         }, 50);
       }
 
+      // NP-hard (brute-force) algorithm to find the optimal VC
       function solveVertexCoverOptimal() {
         const output = document.getElementById("vc-output");
         output.className =
           "mt-4 p-4 bg-yellow-900 text-yellow-200 rounded-lg min-h-[50px]";
         output.textContent = "Solving (brute force)... This may take a moment.";
+
         setTimeout(() => {
+          // Use timeout to allow UI to update
           try {
             const adjList = JSON.parse(
               document.getElementById("vc-graph").value
             );
             const vertices = Object.keys(adjList);
             const n = vertices.length;
+
+            // Safety cap
             if (n > 20) {
               output.className =
                 "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
@@ -765,10 +815,13 @@
                 "Error: Graph is too large for client-side brute force (n > 20). This demonstrates exponential complexity!";
               return;
             }
+
             const edges = getVCEdges(adjList);
             let smallestCover = null;
             let opCount = 0;
             const startTime = performance.now();
+
+            // Iterate through all 2^n subsets
             for (let i = 0; i < 1 << n; i++) {
               opCount++;
               const subset = new Set();
@@ -777,6 +830,8 @@
                   subset.add(vertices[j]);
                 }
               }
+
+              // Check if this subset is a valid cover
               let isCover = true;
               for (const edge of edges) {
                 opCount++;
@@ -786,6 +841,8 @@
                   break;
                 }
               }
+
+              // If it's a cover, see if it's the smallest
               if (isCover) {
                 if (
                   smallestCover === null ||
@@ -796,6 +853,7 @@
               }
             }
             const endTime = performance.now();
+
             output.className =
               "mt-4 p-4 bg-green-900 text-green-200 rounded-lg min-h-[50px]";
             output.innerHTML = `<strong>OPTIMAL SOLVED:</strong> Cover is {${[
@@ -890,20 +948,20 @@
                             <div><dt class="font-bold text-sky-400">Complete Graph</dt><dd>A graph where every pair of distinct vertices is connected by a unique edge.</dd></div>
                             <div><dt class="font-bold text-sky-400">Hamiltonian Cycle (or Tour)</dt><dd>A path in a graph that visits each vertex *exactly once* and returns to the starting vertex.</dd></div>
                             <div><dt class="font-bold text-sky-400">Factorial ($n!$)</dt><dd>The product of all positive integers less than or equal to $n$ ($n! = n \times ... \times 1$). This function grows *extremely* fast.</dd></div>
-                            <div><dt class="font-bold text-sky-400">Heuristic Algorithm</dt><dd>A fast (P-time) algorithm or 'rule of thumb' for solving a problem. Unlike an approximation algorithm, a heuristic gives *no guarantee* on how close its answer is to the optimal one. The 'Nearest Neighbor' heuristic is simple and fast ($O(n^2)$), but can sometimes produce very poor routes.</dd></div>
+                            <div><dt class="font-bold text-sky-400">Heuristic Algorithm</dt><dd>A fast (P-time) algorithm or 'rule of thumb' for solving a problem. Unlike an approximation algorithm, a heuristic gives *no guarantee* on how close its answer is to the optimal one.</dd></div>
                         </dl>
                     </div>
                 </div>
             `;
         document.getElementById("module-content").innerHTML = template;
 
-        // Event Listeners
+        // Wire up event listeners
         document
           .getElementById("tsp-verify-btn")
           .addEventListener("click", verifyTSP);
         document
           .getElementById("tsp-heuristic-btn")
-          .addEventListener("click", solveTSPHeuristic); // NEW
+          .addEventListener("click", solveTSPHeuristic);
         document
           .getElementById("tsp-solve-btn")
           .addEventListener("click", solveTSPOptimal);
@@ -920,6 +978,7 @@
         });
       }
 
+      // P-time algorithm to verify a TSP tour
       function getDist(cityA, cityB) {
         return Math.sqrt((cityA.x - cityB.x) ** 2 + (cityA.y - cityB.y) ** 2);
       }
@@ -963,6 +1022,7 @@
         }
       }
 
+      // P-time Nearest Neighbor heuristic
       function solveTSPHeuristic() {
         const output = document.getElementById("tsp-output");
         output.className =
@@ -1002,7 +1062,7 @@
                 tour.push(currentCityName);
                 unvisited.delete(currentCityName);
               } else {
-                break; // Should not happen
+                break;
               }
             }
             totalDist += getDist(cities[currentCityName], cities[startCity]);
@@ -1025,6 +1085,7 @@
         }, 50);
       }
 
+      // NP-hard (brute-force) algorithm to find the optimal TSP tour
       function solveTSPOptimal() {
         const output = document.getElementById("tsp-output");
         output.className =
@@ -1038,12 +1099,15 @@
             );
             const cityNames = Object.keys(cities);
             const n = cityNames.length;
+
+            // Safety cap
             if (n > 9) {
               output.className =
                 "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
               output.textContent = `Error: Too many cities (n=${n}). n > 9 will crash your browser with O(n!) complexity. This is the lesson!`;
               return;
             }
+
             const startCity = cityNames[0];
             const otherCities = cityNames.slice(1);
             let shortestDist = Infinity;
@@ -1051,6 +1115,7 @@
             let opCount = 0;
             const startTime = performance.now();
 
+            // Permutation generator
             function* permute(arr) {
               const n = arr.length;
               const c = new Array(n).fill(0);
@@ -1072,6 +1137,7 @@
               }
             }
 
+            // Check all (n-1)! permutations
             for (const perm of permute(otherCities)) {
               let currentDist = 0;
               const currentTour = [startCity, ...perm, startCity];
@@ -1086,6 +1152,7 @@
               }
             }
             const endTime = performance.now();
+
             output.className =
               "mt-4 p-4 bg-green-900 text-green-200 rounded-lg min-h-[50px]";
             output.innerHTML = `<strong>OPTIMAL SOLVED:</strong> Tour: ${shortestTour.join(
@@ -1103,8 +1170,9 @@
         }, 50);
       }
 
-      // --- Module 5: Open Problems (UPDATED) ---
+      // --- Module 5: Open Problems ---
       function showOpenProblems() {
+        // This is the HTML template for the Open Problems module
         const template = `
                 <h2 class="text-3xl font-bold mb-4 text-sky-400">Module 4: Open Problems & The Future</h2>
                 <p class="text-lg text-gray-300 mb-6">
@@ -1245,7 +1313,7 @@
             `;
         document.getElementById("module-content").innerHTML = template;
 
-        // Close other popovers when one is opened
+        // Add click-to-close for other popovers
         document.querySelectorAll("details.popover-def").forEach((detail) => {
           detail.addEventListener("toggle", (e) => {
             if (e.target.open) {
@@ -1276,7 +1344,7 @@
                         <p class="mb-4">
                             A **reduction** is a way to solve one problem using an algorithm for *another* problem.
                             A polynomial-time reduction ($L \\le_p L'$) is a "fast" transformation that turns an instance
-                            of problem $L$ into an instance of problem $L'$.
+                            of problem $L$ into an instance of $L'$.
                         </p>
                         
                         <h4 class="text-lg font-semibold mb-2">Why do this?</h4>
@@ -1346,13 +1414,257 @@
         setupTabs("reductions-container");
       }
 
+      // --- Module 7: PSPACE (TQBF) ---
+
+      // This object will hold the stats for the TQBF solver
+      let tqbfStats = { opCount: 0, maxDepth: 0 };
+
+      // Helper to evaluate a CNF formula with given assignments
+      function evaluateCNF_JS(formula, assignments) {
+        tqbfStats.opCount++;
+        for (const clause of formula) {
+          let clauseSatisfied = false;
+          for (const literal of clause) {
+            const varName = literal.replace("-", "");
+            const isNegated = literal.startsWith("-");
+
+            if (!(varName in assignments)) continue;
+
+            const assignedVal = assignments[varName];
+            if ((isNegated && !assignedVal) || (!isNegated && assignedVal)) {
+              clauseSatisfied = true;
+              break;
+            }
+          }
+          if (!clauseSatisfied) return false;
+        }
+        return true;
+      }
+
+      // The core recursive TQBF solver
+      function solveRecursive_JS(
+        quantifiers,
+        formula,
+        assignments,
+        index,
+        currentDepth
+      ) {
+        tqbfStats.opCount++;
+        if (currentDepth > tqbfStats.maxDepth) {
+          tqbfStats.maxDepth = currentDepth;
+        }
+
+        // Base case: All variables assigned
+        if (index === quantifiers.length) {
+          return evaluateCNF_JS(formula, assignments);
+        }
+
+        const varInfo = quantifiers[index];
+        const varName = varInfo.var;
+        const quantifier = varInfo.q;
+
+        if (quantifier === "∀") {
+          // 'For All' player: must be true for BOTH
+          let assignmentsTrue = { ...assignments, [varName]: true };
+          let resTrue = solveRecursive_JS(
+            quantifiers,
+            formula,
+            assignmentsTrue,
+            index + 1,
+            currentDepth + 1
+          );
+
+          let assignmentsFalse = { ...assignments, [varName]: false };
+          let resFalse = solveRecursive_JS(
+            quantifiers,
+            formula,
+            assignmentsFalse,
+            index + 1,
+            currentDepth + 1
+          );
+
+          return resTrue && resFalse;
+        } else {
+          // quantifier === '∃'
+          // 'Exists' player: must be true for AT LEAST ONE
+          let assignmentsTrue = { ...assignments, [varName]: true };
+          let resTrue = solveRecursive_JS(
+            quantifiers,
+            formula,
+            assignmentsTrue,
+            index + 1,
+            currentDepth + 1
+          );
+
+          if (resTrue) return true; // Short-circuit
+
+          let assignmentsFalse = { ...assignments, [varName]: false };
+          let resFalse = solveRecursive_JS(
+            quantifiers,
+            formula,
+            assignmentsFalse,
+            index + 1,
+            currentDepth + 1
+          );
+
+          return resFalse;
+        }
+      }
+
+      // Main function to launch the TQBF solver
+      function solveTQBF() {
+        const output = document.getElementById("tqbf-output");
+        output.className =
+          "mt-4 p-4 bg-yellow-900 text-yellow-200 rounded-lg min-h-[50px]";
+        output.textContent =
+          "Solving TQBF (Exponential Time, Polynomial Space)...";
+
+        setTimeout(() => {
+          // Timeout for UI update
+          try {
+            const data = JSON.parse(
+              document.getElementById("tqbf-input").value
+            );
+            const { quantifiers, formula } = data;
+
+            // Reset stats
+            tqbfStats = { opCount: 0, maxDepth: 0 };
+
+            const startTime = performance.now();
+            const result = solveRecursive_JS(quantifiers, formula, {}, 0, 0);
+            const endTime = performance.now();
+
+            if (result) {
+              output.className =
+                "mt-4 p-4 bg-green-900 text-green-200 rounded-lg min-h-[50px]";
+              output.innerHTML = `<strong>Result: TRUE</strong><br>Time: ${(
+                endTime - startTime
+              ).toFixed(2)} ms`;
+            } else {
+              output.className =
+                "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
+              output.innerHTML = `<strong>Result: FALSE</strong><br>Time: ${(
+                endTime - startTime
+              ).toFixed(2)} ms`;
+            }
+
+            // Add stats
+            output.innerHTML += `<div class="mt-4 pt-4 border-t border-gray-600">
+                        <p><strong>Total Recursive Calls (Time):</strong> ${tqbfStats.opCount}</p>
+                        <p><strong>Max Recursion Depth (Space):</strong> ${tqbfStats.maxDepth}</p>
+                    </div>`;
+          } catch (e) {
+            output.className =
+              "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
+            output.textContent = `Error: ${e.message}`;
+          }
+        }, 50);
+      }
+
+      function showPSPACE() {
+        const template = `
+                <div id="pspace-container">
+                    <h2 class="text-3xl font-bold mb-4 text-sky-400">Module 6: PSPACE-Complete (TQBF)</h2>
+                    
+                    <div class="flex space-x-2 mb-4">
+                        <button class="tab-btn active" data-tab="pspace-what-is">What is PSPACE?</button>
+                        <button class="tab-btn" data-tab="pspace-demo">Interactive TQBF Demo</button>
+                    </div>
+
+                    <!-- Tab Content: What is PSPACE? -->
+                    <div id="pspace-what-is" class="tab-content active bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2">What is PSPACE?</h3>
+                        <p class="mb-4">
+                            **PSPACE** is the class of problems solvable by an algorithm that uses a **Polynomial amount of SPACE (memory)**,
+                            regardless of how much *time* it takes.
+                        </p>
+                        <ul class="list-disc list-inside mb-4">
+                            <li>We know $\\text{P} \\subseteq \\text{NP} \\subseteq \\text{PSPACE}$.</li>
+                            <li>We strongly suspect $\\text{P} \\neq \\text{PSPACE}$ and $\\text{NP} \\neq \\text{PSPACE}$, but it's not proven.</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold mb-2">TQBF: The PSPACE-Complete Problem</h4>
+                        <p class="mb-2">
+                            The "hardest" problem in PSPACE is **TQBF (True Quantified Boolean Formulas)**.
+                            It's like SAT, but with alternating "for all" ($\\forall$) and "there exists" ($\\exists$) quantifiers.
+                        </p>
+                        <p class="p-4 bg-gray-900 rounded-lg text-cyan-300">
+                            $$\\forall x \\exists y \\forall z \\dots \\phi(x, y, z, \\dots)$$
+                        </p>
+                        
+                        <h4 class="text-lg font-semibold my-2">Time vs. Space: The Key Lesson</h4>
+                        <p class="mb-4">
+                            We can solve TQBF with a simple recursive algorithm (like the one in the demo).
+                            <br>
+                            - **Time Complexity:** The algorithm branches for every variable, leading to $O(2^n)$ time. **(Exponential!)**
+                            <br>
+                            - **Space Complexity:** The algorithm only needs to store the current path down the recursion tree. The depth of this tree is $n$ (the number of variables). Therefore, it only uses $O(n)$ space. **(Polynomial!)**
+                        </p>
+                        <p class="font-bold">TQBF is the perfect example of a problem that is **easy on space** but **hard on time**.</p>
+                        
+                        <h4 class="text-lg font-semibold my-2">Two-Player Game Analogy</h4>
+                        <p>
+                            You can think of TQBF as a game:
+                            <br>
+                            - The **$\\exists$ player** wins if the formula is *True*.
+                            <br>
+                            - The **$\\forall$ player** wins if the formula is *False*.
+                            <br>
+                            The $\\exists$ player gets to pick values for $\\exists$ variables.
+                            The $\\forall$ player gets to pick values for $\\forall$ variables.
+                            <br>
+                            The TQBF formula is *True* if the $\\exists$ player has a **winning strategy**, no matter what the $\\forall$ player does.
+                        </p>
+                    </div>
+                    
+                    <!-- Tab Content: Demo -->
+                    <div id="pspace-demo" class="tab-content bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2">Interactive TQBF Solver</h3>
+                        <p class="text-gray-300 mb-4">Note: The formula must be in CNF (an array of clauses).</p>
+                        
+                        <label class="block text-sm font-medium text-gray-300">TQBF JSON:</label>
+                        <textarea id="tqbf-input" class="w-full h-48 bg-gray-900 text-gray-200 p-2 rounded-lg border border-gray-700">
+{
+  "quantifiers": [
+    {"var": "x", "q": "∀"},
+    {"var": "y", "q": "∃"}
+  ],
+  "formula": [
+    ["x", "y"],
+    ["-x", "-y"]
+  ]
+}
+                        </textarea>
+                        
+                        <button id="tqbf-solve-btn" class="mt-4 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Solve TQBF (Exponential Time)</button>
+                        
+                        <div id="tqbf-output" class="mt-4 p-4 bg-gray-900 rounded-lg text-gray-300 min-h-[50px]">
+                            Click "Solve TQBF" to see the result. The default formula $\\forall x \\exists y (x \lor y) \land (\\neg x \lor \\neg y)$ should evaluate to **True**.
+                        </div>
+                    </div>
+                </div>
+            `;
+        document.getElementById("module-content").innerHTML = template;
+        setupTabs("pspace-container");
+
+        // Wire up TQBF solver button
+        document
+          .getElementById("tqbf-solve-btn")
+          .addEventListener("click", solveTQBF);
+      }
+
       // --- Initialization ---
+
+      // Setup nav link listeners
       document.querySelectorAll("nav a").forEach((link) => {
         link.addEventListener("click", (e) => {
           e.preventDefault();
-          showModule(e.currentTarget.dataset.module);
+          const moduleName = e.currentTarget.dataset.module;
+          showModule(moduleName);
         });
       });
+
+      // Show home module on initial load
       window.onload = () => showModule("home");
     </script>
   </body>

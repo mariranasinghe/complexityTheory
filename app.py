@@ -662,8 +662,8 @@ def show_open_problems():
         **Stephen Cook's View (2000):**
         
         In his paper for the Clay Mathematics Institute (which established the $1M prize),
-        Stephen Cook wrote: *"My guess is that the answer is 'no'. ... a proof that P $\neq$ NP
-        would be a milestone in mathematics ... a proof that P = NP would be even more
+        Stephen Cook wrote: *"My guess is that the answer is 'no'. ... a proof that
+        P ≠ NP would be a milestone in mathematics ... a proof that P = NP would be even more
         stunning. It would mean that ... a computer could find a formal proof of any theorem
         which has a proof of reasonable length."*
         

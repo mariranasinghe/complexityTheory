@@ -42,12 +42,7 @@ def generate_random_cities(n):
 # --- Algorithm for VC Approximation ---
 def solve_vc_approx(adj_list):
     """
-    Implements the 2-approximation algorithm for Vertex Cover.
-    1. Pick an arbitrary edge (u, v).
-    2. Add both u and v to the cover.
-    3. Remove all edges covered by u or v.
-    4. Repeat until no edges are left.
-    This is O(E) time and guarantees a cover no more than 2x the optimal size.
+    Implements the 2-approximation algorithm for Vertex Cover. O(E) time.
     """
     start_time = time.time()
     op_count = 0
@@ -63,14 +58,10 @@ def solve_vc_approx(adj_list):
     
     while edges:
         op_count += 1
-        # 1. Pick an arbitrary edge (u, v)
         u, v = edges.pop()
-        
-        # 2. Add both u and v to the cover
         approx_cover.add(u)
         approx_cover.add(v)
         
-        # 3. Remove all edges covered by u or v
         edges_to_remove = set()
         for edge in edges:
             op_count += 1
@@ -88,11 +79,7 @@ def get_dist(city_a, city_b):
 
 def solve_tsp_heuristic(cities):
     """
-    Implements the Nearest Neighbor heuristic for TSP.
-    1. Start at a random city.
-    2. Repeatedly move to the *closest* unvisited city.
-    3. Once all cities are visited, return to the start.
-    This is O(n^2) time and provides a "good enough" solution.
+    Implements the Nearest Neighbor heuristic for TSP. O(n^2) time.
     """
     start_time = time.time()
     op_count = 0
@@ -130,7 +117,6 @@ def solve_tsp_heuristic(cities):
             tour.append(current_city_name)
             unvisited.remove(current_city_name)
         else:
-            # Should not happen in a connected graph
             break
             
     # Add distance back to start
@@ -159,7 +145,6 @@ def show_home():
         """)
         
         st.header("The Big Classes: P vs. NP")
-        # Use r""" for raw string to correctly render inline LaTeX
         st.markdown(r"""
         - **<span style='color: #22c55e;'>P (Polynomial Time):</span>**
           These are "efficiently solvable" problems. We can find a solution in a time that is a polynomial function of the input size $n$.
@@ -175,12 +160,11 @@ def show_home():
         - **<span style='color: #f43f5e;'>NP-Complete:</span>**
           These are the "hardest" problems in NP. They have two properties:
           1.  They are in NP.
-          2.  Every other problem in NP can be **reduced** to this problem in polynomial time. (Formally: $L \le_p L_{npc}$ for all $L \in \text{NP}$). This means if you found a fast (P-time) solver for *one* NP-Complete problem, you've found one for *all* of them.
+          2.  Every other problem in NP can be **reduced** to this problem in polynomial time. (Formally: $L \le_p L_{npc}$ for all $L \in \text{NP}$).
         """, unsafe_allow_html=True)
     
     with col2:
         st.header("How To Use This Tool")
-        # UPDATED HOW-TO-USE
         st.markdown(r"""
         Follow these steps to build an intuition for complexity:
 
@@ -189,23 +173,23 @@ def show_home():
             
         2.  **<span style='color: #06b6d4;'>Feel the P vs. NP Gap (Module 2):</span>**
             - **Verify (P):** Click 'Verify'. It's instant, $O(|V| \cdot |E|)$.
-            - **Solve (NP):** Click 'Find Smallest Cover'. For a small graph (n=18), you will *feel* the exponential $O(2^n \cdot |E|)$ delay.
+            - **Solve (NP):** Click 'Find Optimal Solution'. For a small graph (n=18), you will *feel* the exponential $O(2^n \cdot |E|)$ delay.
             
         3.  **<span style='color: #06b6d4;'>Compare Brute-Force vs. Heuristic (Module 3):</span>**
-            - **Solve (NP):** Click 'Find Shortest Tour' with 9 cities. It takes a few seconds ($O(n!)$).
-            - **Approx. (P):** Click 'Find Heuristic Tour' with 9 cities. It's *instant* ($O(n^2)$). The answer will be *good*, but may not be the *best* one found by the slow solver. This is the real-world tradeoff.
+            - **Solve (NP):** Click 'Find Optimal Tour' with 9 cities. It takes a few seconds ($O(n!)$).
+            - **Approx. (P):** Click 'Find Heuristic Tour' with 9 cities. It's *instant* ($O(n^2)$). The answer will be *good*, but may not be the *best* one. This is the real-world tradeoff.
             
         4.  **<span style='color: #06b6d4;'>Experience Reductions (Module 5):</span>**
-            Learn how the **Independent Set** problem is just a "mirror image" of **Vertex Cover**. This proves that if you can solve one, you can solve the other, making them equally hard.
+            Learn how the **Independent Set** problem is just a "mirror image" of **Vertex Cover**.
+            
+        5.  **<span style='color: #06b6d4;'>Read the Research (Module 4):</span>**
+            See the actual papers that defined these "hard questions" and read Stephen Cook's thoughts on P vs. NP.
         """, unsafe_allow_html=True)
 
     st.divider()
     
     st.header("Learn More: Foundational Research")
-    st.markdown("""
-    The concepts in this tool are built on decades of research. These are some of the most important papers
-    in the field of computational complexity:
-    """)
+    st.markdown("These are some of the most important papers in the field of computational complexity:")
     
     st.info(
         """
@@ -237,18 +221,13 @@ def show_home():
 # --- Module: Time Complexity Visualizer ---
 def show_visualizer():
     st.title("Module 1: Time Complexity Visualizer")
-    st.markdown("""
-    Visualizing complexity can be hard because the numbers grow so differently.
-    A single chart can't show everything. Instead, let's use **two different charts**
-    to understand the two key scenarios.
-    """)
+    st.markdown("Here are **two different charts** to understand the two key scenarios.")
 
     # --- Chart 1: The Polynomial World (P) ---
     st.header("Chart 1: The 'Fast' Algorithms (Polynomial Time)")
     st.markdown(r"""
     This chart shows *only* the "fast" algorithms on a **linear scale**, for `n` up to 100.
-    This lets you see the real, practical difference between $O(n)$, $O(n \log n)$, and $O(n^2)$
-    without them being "squashed" by the slow algorithms.
+    This lets you see the real, practical difference between $O(n)$, $O(n \log n)$, and $O(n^2)$.
     """)
     
     n_range_p = range(1, 101) # n from 1 to 100
@@ -275,8 +254,7 @@ def show_visualizer():
     st.header("Chart 2: The 'Explosion' (P vs. NP)")
     st.markdown(r"""
     This chart compares a "fast" algorithm ($O(n^2)$) to the "slow" ones ($O(2^n)$, $O(n!)$)
-    on a **logarithmic scale**. This is the only way to see them on the same graph.
-    Notice two things:
+    on a **logarithmic scale**.
     1.  At small 'n' (zoom in!), the lines are "jumbled" and cross over.
     2.  After `n=20`, the $O(n!)$ line disappears as it hits infinity (the "factorial wall").
     """)
@@ -310,11 +288,8 @@ def show_vertex_cover():
     with tab1:
         st.header("What is Vertex Cover?")
         st.markdown(r"""
-        A <span style='color: #06b6d4;'>**Vertex Cover**</span> is a subset of vertices in a graph such that every edge in the graph
-        is "covered" (i.e., at least one of its two endpoints is in the subset).
-        
-        ### Formal Definition
-        Given a graph $G = (V, E)$, a vertex cover is a subset $V' \subseteq V$ such that for every edge $(u, v) \in E$, at least one of $u$ or $v$ is in $V'$.
+        A <span style='color: #06b6d4;'>**Vertex Cover**</span> is a subset of vertices $V' \subseteq V$ in a graph $G=(V, E)$ such that every edge $(u, v) \in E$
+        is "covered" (i.e., $\{u, v\} \cap V' \neq \emptyset$).
         """, unsafe_allow_html=True)
         st.latex(r"V' \subseteq V \text{ s.t. } \forall (u, v) \in E, \{u, v\} \cap V' \neq \emptyset")
 
@@ -322,42 +297,39 @@ def show_vertex_cover():
         ### The NP-Complete Problem
         The *optimization* problem is "Find the *minimum* vertex cover."
         The *decision* problem (NP-Complete) is **K-VERTEX-COVER**:
-        > "Given a graph $G$ and an integer $k$, does $G$ have a vertex cover of size $k$ or less?"
+        > "Given $G$ and $k$, does $G$ have a vertex cover of size $k$ or less?"
         """, unsafe_allow_html=True)
         st.latex(r"\text{Does a } V' \subseteq V \text{ exist s.t. } |V'| \le k \text{ and } V' \text{ is a vertex cover for } G?")
         
         st.markdown(r"""
-        ### The P vs. NP Demonstration
+        ### The P vs. NP vs. Approximation Tradeoff
         - **<span style='color: #22c55e;'>Verifying a Solution is FAST (in P):</span>**
-          If you give me a proposed cover $V'$, I can check if it's valid in polynomial time ($O(|V| + |E|)$).
-          
-        - **<span style='color: #f43f5e;'>Finding an Optimal Solution is SLOW (in NP):</span>**
-          Finding the *smallest* cover is hard. The brute-force way is to check all $2^{|V|}$ subsets. Total time: $O(2^|V| \cdot |E|)$.
+          Given $V'$, check if it's a cover. ($O(|V| + |E|)$ time).
           
         - **<span style='color: #3b82f6;'>Finding an Approx. Solution is FAST (in P):</span>**
-          We can't find the *optimal* cover quickly, but we can find a *good enough* one. The 2-approximation algorithm in the demo runs in polynomial time ($O(|E|)$) and is *guaranteed* to find a cover that is no more than 2x the size of the true optimal solution.
+          The 2-approximation algorithm in the demo runs in $O(|E|)$ time and is *guaranteed* to find a cover no more than 2x the optimal size.
+          
+        - **<span style='color: #f43f5e;'>Finding an Optimal Solution is SLOW (in NP):</span>**
+          Finding the *smallest* cover is hard. The brute-force way is $O(2^|V| \cdot |E|)$ time.
         """, unsafe_allow_html=True)
         
         st.divider()
         st.header("Key Concepts")
         
         st.markdown("**Graph $G=(V, E)$**")
-        st.markdown("A graph is a mathematical structure used to model pairwise relations. It consists of a set of **Vertices (V)** (or nodes) and a set of **Edges (E)** (or links) that connect pairs of vertices.")
+        st.markdown("A set of **Vertices (V)** (nodes) and **Edges (E)** (links) that connect pairs of vertices.")
 
         st.markdown("**Adjacency List**")
-        st.markdown("A way to represent a graph. It's a collection where each vertex has a list of all the other vertices it is connected to (its 'neighbors'). This is what the JSON in the demo represents.")
+        st.markdown("A representation of a graph where each vertex has a list of its neighbors. This is what the JSON in the demo represents.")
 
         st.markdown("**Decision Problem vs. Optimization Problem**")
-        st.markdown("An **Optimization Problem** asks for the *best* solution (e.g., \"Find the *smallest* vertex cover\"). A **Decision Problem** asks a \"yes/no\" question (e.g., \"Is there a vertex cover of size *k* or less?\"). NP-Completeness is formally defined using decision problems.")
+        st.markdown("An **Optimization Problem** asks for the *best* solution (e.g., \"Find the *smallest* vertex cover\"). A **Decision Problem** asks a \"yes/no\" question (e.g., \"Is there a vertex cover of size *k* or less?\").")
         
-        # NEW KEY CONCEPT
         st.markdown("**Approximation Algorithm**")
-        st.markdown("A fast (P-time) algorithm for an NP-hard optimization problem that does not guarantee the *best* solution, but guarantees a solution that is "
-                    "'close' to the optimal one. For Vertex Cover, we have a **2-approximation**, meaning the cover it finds is at most $2 \times$ the size of the *true* smallest cover.")
+        st.markdown("A fast (P-time) algorithm for an NP-hard optimization problem that guarantees a solution 'close' to the optimal one. For Vertex Cover, we have a **2-approximation**, meaning the cover it finds is at most $2 \times$ the size of the *true* smallest cover.")
 
     with tab2:
         st.header("Graph Generators")
-        st.markdown("Click a button to generate a graph, or edit the JSON manually.")
         
         if 'vc_graph_text' not in st.session_state:
             st.session_state.vc_graph_text = '{"A": ["B", "C"], "B": ["A", "C", "D"], "C": ["A", "B", "D"], "D": ["B",C", "E"], "E": ["D"]}'
@@ -408,7 +380,6 @@ def show_vertex_cover():
         
         col1, col2 = st.columns(2)
         
-        # NEW: APPROXIMATION BUTTON
         with col1:
             if st.button("Find 2-Approximation (Fast)", use_container_width=True, type="secondary"):
                 with st.spinner("Finding approximation..."):
@@ -419,7 +390,6 @@ def show_vertex_cover():
                     except Exception as e:
                         st.error(f"Error: {e}")
 
-        # OPTIMAL SOLVER BUTTON
         with col2:
             if st.button("Find Optimal Solution (Slow)", use_container_width=True, type="primary"):
                 with st.spinner("Solving (Brute Force)... This may take a moment."):
@@ -442,7 +412,6 @@ def show_vertex_cover():
                         op_count = 0
                         
                         start_time = time.time()
-                        # Iterate through all 2^n subsets
                         for i in range(1 << n):
                             op_count += 1
                             subset = set()
@@ -489,38 +458,36 @@ def show_tsp():
         ### The NP-Complete Problem
         The *optimization* problem is "Find the *shortest* tour."
         The *decision* problem (NP-Complete) is **K-TSP**:
-        > "Given a graph $G$, distances $w$, and an integer $k$, does $G$ have a tour with a total weight less than or equal to $k$?"
+        > "Given $G$, $w$, and $k$, does $G$ have a tour with a total weight less than or equal to $k$?"
         
-        ### The P vs. NP Demonstration
+        ### The P vs. NP vs. Heuristic Tradeoff
         - **<span style='color: #22c55e;'>Verifying a Solution is FAST (in P):</span>**
-          If you give me a path (a tour $\pi$), I can quickly add up the distances ($O(n)$).
-          
-        - **<span style='color: #f43f5e;'>Finding an Optimal Solution is SLOW (in NP):</span>**
-          Finding the *shortest* tour is hard. The brute-force way is to check all $(n-1)!$ possible tours. Total time: $O(n!)$.
+          Given a path $\pi$, add up the distances ($O(n)$ time).
           
         - **<span style='color: #3b82f6;'>Finding a Heuristic Solution is FAST (in P):</span>**
-          We can use a "greedy" heuristic like **Nearest Neighbor**: always go to the closest unvisited city. This is very fast ($O(n^2)$) and gives a "good enough" answer for many cases, though it can sometimes be very far from optimal.
+          The **Nearest Neighbor** heuristic (always go to the closest unvisited city) is $O(n^2)$ time. It provides a "good enough" solution, but no guarantee on its quality.
+          
+        - **<span style='color: #f43f5e;'>Finding an Optimal Solution is SLOW (in NP):</span>**
+          Finding the *shortest* tour is hard. The brute-force way is to check all $(n-1)!$ possible tours ($O(n!)$ time).
         """, unsafe_allow_html=True)
         
         st.divider()
         st.header("Key Concepts")
 
         st.markdown("**Complete Graph**")
-        st.markdown("A graph where every pair of distinct vertices is connected by a unique edge. In the TSP, this means there is a direct path from every city to every other city.")
+        st.markdown("A graph where every pair of distinct vertices is connected by a unique edge.")
 
         st.markdown("**Hamiltonian Cycle (or Tour)**")
-        st.markdown("A path in a graph that visits each vertex *exactly once* and returns to the starting vertex. This is the 'tour' the salesperson is looking for.")
+        st.markdown("A path in a graph that visits each vertex *exactly once* and returns to the starting vertex.")
 
         st.markdown("**Factorial ($n!$)**")
-        st.markdown("The product of all positive integers less than or equal to $n$. ($n! = n \cdot (n-1) \cdot ... \cdot 1$). This function grows *extremely* fast, much faster than $2^n$.")
+        st.markdown("The product of all positive integers less than or equal to $n$. ($n! = n \cdot (n-1) \cdot ... \cdot 1$). This function grows *extremely* fast.")
         
-        # NEW KEY CONCEPT
         st.markdown("**Heuristic Algorithm**")
         st.markdown("A fast (P-time) algorithm or 'rule of thumb' for solving a problem. Unlike an approximation algorithm, a heuristic gives *no guarantee* on how close its answer is to the optimal one. The 'Nearest Neighbor' heuristic is simple and fast, but can sometimes produce very poor routes.")
 
     with tab2:
         st.header("City Generators")
-        st.markdown("Click a button to generate cities, or edit the JSON manually.")
 
         if 'tsp_cities_text' not in st.session_state:
             st.session_state.tsp_cities_text = '{"A": {"x": 0, "y": 0}, "B": {"x": 10, "y": 5}, "C": {"x": 5, "y": 10}, "D": {"x": 15, "y": 0}}'
@@ -572,7 +539,6 @@ def show_tsp():
         
         col1, col2 = st.columns(2)
         
-        # NEW: HEURISTIC BUTTON
         with col1:
             if st.button("Find Heuristic Tour (Fast)", use_container_width=True, type="secondary"):
                 with st.spinner("Finding heuristic tour (Nearest Neighbor)..."):
@@ -583,7 +549,6 @@ def show_tsp():
                     except Exception as e:
                         st.error(f"Error: {e}")
         
-        # OPTIMAL SOLVER BUTTON
         with col2:
             if st.button("Find Optimal Tour (Very Slow)", use_container_width=True, type="primary"):
                 with st.spinner(f"Solving (Brute Force)... This will be very slow if n > 9."):
@@ -625,7 +590,7 @@ def show_tsp():
                     except Exception as e:
                         st.error(f"Error parsing input: {e}")
 
-# --- Module: Open Problems (with Popovers) ---
+# --- Module: Open Problems (UPDATED) ---
 def show_open_problems():
     st.title("Module 4: Open Problems & The Future")
     st.markdown("""
@@ -636,19 +601,28 @@ def show_open_problems():
 
     st.header("The 7 Big Questions")
 
-    # --- 1. P vs NP ---
+    # --- 1. P vs NP (UPDATED) ---
     st.subheader("1. Is P = NP?")
     st.markdown(r"""
     **The Question:** Is every problem that can be *verified* quickly also *solvable* quickly?
     
     **Formally:** Does $\text{P} = \text{NP}$?
     
-    This is the most famous problem in computer science. If P=NP, it would mean that for any problem where a solution is easy to check (like SAT or Vertex Cover), a solution is also easy to find. This would revolutionize science, engineering, and cryptography (by breaking it).
+    This is the most famous problem in computer science. The consensus is that **P $\neq$ NP**, but proving it remains one of the hardest challenges ever conceived.
+    """)
     
-    The consensus is that **P $\neq$ NP**, but proving it remains one of the hardest challenges ever conceived.
+    st.info("""
+        **Stephen Cook's View (2000):**
+        In his paper for the Clay Mathematics Institute (which established the $1M prize),
+        Stephen Cook wrote: *"My guess is that the answer is 'no'. ... a proof that P $\neq$ NP
+        would be a milestone in mathematics ... a proof that P = NP would be even more
+        stunning. It would mean that ... a computer could find a formal proof of any theorem
+        which has a proof of reasonable length."*
+        
+        **Seminal Paper:** Cook, S. A. (2000). *The P vs. NP problem*. Clay Mathematics Institute.
     """)
 
-    # --- 2. NP vs co-NP ---
+    # --- 2. NP vs co-NP (UPDATED) ---
     st.subheader("2. Is NP = co-NP?")
     st.markdown(r"""
     **The Question:** If a problem's "yes" answers are easy to verify, are its "no" answers also easy to verify?
@@ -662,15 +636,22 @@ def show_open_problems():
         
         **Example: TAUTOLOGY.**
         - **Problem:** Is this Boolean formula *always* true?
-        - **"No" Proof:** If the answer is "no," you can provide a counterexample: an assignment of variables (like $A=\text{true}, B=\text{false}$) that makes the formula *false*.
+        - **"No" Proof:** If the answer is "no," you can provide a counterexample: an assignment of variables that makes the formula *false*.
         - We can verify this counterexample quickly, so TAUTOLOGY is in co-NP.
         """)
 
     st.markdown(r"""
-    If NP $\neq$ co-NP (which is widely believed), it would imply that proving something is *always* true (TAUTOLOGY) is fundamentally harder than proving it's *sometimes* true (SAT). It would also be a free-bee proof that P $\neq$ NP.
+    If NP $\neq$ co-NP (which is widely believed), it would imply that proving something is *always* true is fundamentally harder than proving it's *sometimes* true (SAT). It would also prove P $\neq$ NP.
+    """)
+    
+    st.info("""
+        **Seminal Paper:** Pratt, V. (1975). *Every prime has a succinct certificate*.
+        
+        This paper famously showed that PRIMES (the problem of checking if a number is prime)
+        is in both NP and co-NP, long before it was proven to be in P.
     """)
 
-    # --- 3. ETH ---
+    # --- 3. ETH (UPDATED) ---
     st.subheader("3. The Exponential Time Hypothesis (ETH)")
     st.markdown(r"""
     **The Question:** Does the 3-SAT problem *really* require exponential time to solve?
@@ -685,15 +666,21 @@ def show_open_problems():
         - **Exponential:** $O(2^n)$
         - **Sub-exponential:** $O(2^{n^{0.5}})$ or $O(2^{\log n})$
         - **Polynomial:** $O(n^2)$
-        
-        ETH claims you can't even get a "mildly" exponential algorithm like $O(2^{\sqrt{n}})$ for 3-SAT.
         """)
 
     st.markdown(r"""
-    P vs. NP just asks if there's a *polynomial* algorithm. ETH makes a stronger claim: that 3-SAT *requires* a "strong" exponential-time $O(2^n)$ algorithm.
+    P vs. NP just asks if there's a *polynomial* algorithm. ETH makes a stronger claim: that 3-SAT *requires* a "strong" exponential-time $O(2^{\delta n})$ algorithm.
     """)
     
-    # --- 4. P vs PSPACE ---
+    st.info("""
+        **Seminal Paper:** Impagliazzo, R., & Paturi, R. (1999). *On the complexity of k-SAT*.
+        
+        This paper introduced the Exponential Time Hypothesis (ETH) and its variant,
+        the Strong Exponential Time Hypothesis (SETH), which are now central assumptions
+        in fine-grained complexity.
+    """)
+    
+    # --- 4. P vs PSPACE (UPDATED) ---
     st.subheader("4. Is P = PSPACE?")
     st.markdown(r"""
     **The Question:** Can every problem that is solvable using a *polynomial amount of memory* also be solved using a *polynomial amount of time*?
@@ -714,7 +701,14 @@ def show_open_problems():
     We strongly believe $\text{P} \neq \text{PSPACE}$, meaning some problems are *fundamentally* space-efficient but time-inefficient.
     """)
     
-    # --- 5. BPP vs BQP ---
+    st.info("""
+        **Seminal Paper:** Savitch, W. J. (1970). *Relationships between nondeterministic and deterministic tape complexities*.
+        
+        This paper contains **Savitch's Theorem**, which proves $\text{NSPACE}(S(n)) \subseteq \text{DSPACE}(S(n)^2)$.
+        A key corollary is that $\text{PSPACE} = \text{NPSPACE}$, a foundational result.
+    """)
+    
+    # --- 5. BPP vs BQP (UPDATED) ---
     st.subheader("5. Is BPP = BQP? (Quantum Computing)")
     st.markdown(r"""
     **The Question:** Can quantum computers solve problems that classical computers can't?
@@ -732,10 +726,16 @@ def show_open_problems():
         """)
         
     st.markdown(r"""
-    We know $\text{BPP} \subseteq \text{BQP}$. The big question is whether the inclusion is strict. Shor's algorithm for **integer factorization** is in BQP but is *not* believed to be in BPP. If $\text{BPP} \neq \text{BQP}$, it proves quantum computers have a fundamental speedup.
+    We know $\text{BPP} \subseteq \text{BQP}$. The big question is whether the inclusion is strict. Shor's algorithm for **integer factorization** is in BQP but is *not* believed to be in BPP.
     """)
     
-    # --- 6. Factoring ---
+    st.info("""
+        **Seminal Papers:**
+        1.  Bernstein, E., & Vazirani, U. (1997). *Quantum complexity theory*. (Formally defined BQP).
+        2.  Shor, P. W. (1994). *Algorithms for quantum computation: discrete logarithms and factoring*. (Showed Factoring is in BQP).
+    """)
+    
+    # --- 6. Factoring (UPDATED) ---
     st.subheader("6. The Status of Integer Factorization")
     st.markdown(r"""
     **The Question:** Can we factor a large number into its primes in polynomial time (on a classical computer)?
@@ -749,33 +749,47 @@ def show_open_problems():
         
         They are "hard," but not the "hardest" problems in NP. A fast solver for factoring *would not* mean a fast solver for SAT.
         
-        The existence of this class depends on $\text{P} \neq \text{NP}$. If $\text{P} = \text{NP}$, this class doesn't exist.
+        The existence of this class depends on $\text{P} \neq \text{NP}$.
         """)
         
     st.markdown(r"""
-    Factoring is in NP (easy to verify) but not believed to be in P. However, it's also not believed to be NP-Complete. (But as mentioned, it *is* in BQP).
+    Factoring is in NP (easy to verify) but not believed to be in P. It's also not believed to be NP-Complete.
+    """)
+    
+    st.info("""
+        **Seminal Paper:** Shor, P. W. (1994). *Algorithms for quantum computation: discrete logarithms and factoring*.
+        
+        This paper is so important it's cited twice. It's the key paper for both the power of
+        quantum computers (BQP) and the weakness of Factoring.
     """)
 
-    # --- 7. Graph Isomorphism ---
+    # --- 7. Graph Isomorphism (UPDATED) ---
     st.subheader("7. The Status of Graph Isomorphism")
     st.markdown(r"""
     **The Question:** Can we efficiently determine if two graphs are identical (just with the nodes labeled differently)?
     
-    This is another famous problem, like Factoring, that is believed to be in **NP-Intermediate**. In 2015, a "quasi-polynomial" time algorithm was announced by László Babai.
+    This is another famous "NP-Intermediate" candidate. In 2015, a "quasi-polynomial" time algorithm was announced.
     """)
 
     with st.popover("Define: Quasi-polynomial Time"):
         st.markdown(r"""
         An algorithm that is *almost* polynomial.
         
-        - **Polynomial:** $O(n^2)$ or $O(n^k)$
-        - **Quasi-polynomial:** $O(2^{(\log n)^c})$ for a constant $c$.
+        - **Polynomial:** $O(n^k)$
+        - **Quasi-polynomial:** $O(2^{(\log n)^c})$
         
         This is *much* faster than exponential ($O(2^n)$) but slightly slower than any true polynomial.
         """)
 
     st.markdown(r"""
-    This breakthrough suggests the problem is *probably* not NP-Complete, but it's still not known to be in P.
+    This breakthrough strongly suggests the problem is *not* NP-Complete, but it's still not known to be in P.
+    """)
+    
+    st.info("""
+        **Seminal Paper:** Babai, L. (2015). *Graph Isomorphism in Quasipolynomial Time*.
+        
+        This paper presented the breakthrough $O(2^{(\log n)^c})$ algorithm,
+        a major result that reshaped our understanding of this problem's complexity.
     """)
 
 # --- Module: Reductions ---
@@ -795,13 +809,10 @@ def show_reductions():
         1.  **To Solve Problems:** If you have a "magic" solver for $L'$, you can now solve $L$.
         2.  **To Prove Hardness:** If we know $L$ is "hard" (e.g., NP-Complete), then $L'$ must *also* be "hard." This is how Karp proved 21 problems were NP-Complete.
         
-        Formally, a problem $L$ is reducible to $L'$ ($L \le_p L'$) if there's a P-time
+        Formally, $L \le_p L'$ if there's a P-time
         function $f$ that converts any instance $x$ of $L$ into an instance $f(x)$ of $L'$ such that:
         """)
         st.latex(r"x \in L \iff f(x) \in L'")
-        st.markdown(r"""
-        (The answer to $x$ for problem $L$ is "yes" **if and only if** the answer to $f(x)$ for problem $L'$ is "yes".)
-        """)
         
     with tab2:
         st.header("Demo: Independent Set $\leftrightarrow$ Vertex Cover")
@@ -812,16 +823,12 @@ def show_reductions():
         ### 1. Define: Independent Set (IS)
         An **Independent Set** is a set of vertices $S \subseteq V$ in a graph $G=(V,E)$
         such that no two vertices in $S$ are connected by an edge.
-        
-        Formally:
         """)
         st.latex(r"S \subseteq V \text{ s.t. } \forall (u, v) \in E, \{u, v\} \not\subseteq S")
         st.markdown(r"""
-        The *optimization* problem is "Find the **maximum** independent set."
         The *decision* problem (NP-Complete) is: "Does $G$ have an independent set of size $k$ or more?"
         
         ### 2. The "Aha!" Moment: The Reduction
-        Look at the definitions of Vertex Cover and Independent Set. They are "mirror images" of each other.
         The reduction is based on this theorem:
         """)
         
@@ -830,24 +837,24 @@ def show_reductions():
         if and only if its complement, $V \setminus S$, is a **Vertex Cover**.
         """)
         
-        st.subheader("Proof (Part 1: IS $\implies$ VC)")
+        st.subheader("Proof (IS $\implies$ VC)")
         st.markdown(r"""
         - **Assume:** $S$ is an Independent Set.
         - **We must show:** Its complement $C = V \setminus S$ is a Vertex Cover.
-        - **Proof:** Take any edge $(u, v) \in E$. Since $S$ is an IS, $u$ and $v$ *cannot* both be in $S$. This means at least one of them *must not* be in $S$.
+        - **Proof:** Take any edge $(u, v) \in E$. Since $S$ is an IS, $u$ and $v$ *cannot* both be in $S$.
+        - This means at least one of them *must not* be in $S$.
         - If at least one of $\{u, v\}$ is *not* in $S$, then at least one of them *must* be in its complement, $C$.
-        - Since this is true for *every* edge, $C$ "covers" all edges.
-        - **Therefore, $C = V \setminus S$ is a Vertex Cover.**
+        - Since this is true for *every* edge, $C = V \setminus S$ is a Vertex Cover.
         """)
         
-        st.subheader("Proof (Part 2: VC $\implies$ IS)")
+        st.subheader("Proof (VC $\implies$ IS)")
         st.markdown(r"""
         - **Assume:** $C$ is a Vertex Cover.
         - **We must show:** Its complement $S = V \setminus C$ is an Independent Set.
         - **Proof:** Take any two vertices $u, v \in S$. We must show there is no edge between them.
         - Assume for contradiction that there *is* an edge $(u, v) \in E$.
         - Because $C$ is a Vertex Cover, it must cover this edge. This means at least one of $u$ or $v$ *must* be in $C$.
-        - But this is a contradiction! We *chose* $u$ and $v$ from $S$, which is $V \setminus C$. By definition, neither of them can be in $C$.
+        - But this is a contradiction! We *chose* $u$ and $v$ from $S$. By definition, neither can be in $C$.
         - The contradiction means our assumption was wrong. There is no edge $(u,v)$.
         - **Therefore, $S = V \setminus C$ is an Independent Set.**
         """)
@@ -860,8 +867,7 @@ def show_reductions():
         This also means $|MaxIS| + |MinVC| = |V|$.
         
         The brute-force $O(2^n)$ algorithm in **Module 2** that finds a *minimum vertex cover*
-        is, by this reduction, *also* an algorithm for finding a *maximum independent set*. You just
-        take the complement of its answer!
+        is, by this reduction, *also* an algorithm for finding a *maximum independent set*.
         """)
 
 # --- Main App ---

@@ -30,7 +30,7 @@ This project is an interactive web application built entirely in Python using th
 
 - Helper Functions: `factorial()`, `generate_random_graph()`, `solve_vc_approx()`, etc.
 
-- Module Functions (`show\_...`): Each function (e.g., `show_home()`, `show_vertex_cover()`, `show_reductions()`) defines one "page" of the app.
+- Module Functions (`show_...`): Each function (e.g., `show_home()`, `show_vertex_cover()`, `show_reductions()`) defines one "page" of the app.
 
 - `main()` **Function:** The app's entry point. It sets up the page layout and sidebar navigation (`st.sidebar.radio`) and calls the correct module function based on the user's selection.
 

@@ -41,35 +41,24 @@ def generate_random_cities(n):
     
 # --- Algorithm for VC Approximation ---
 def solve_vc_approx(adj_list):
-    """
-    Implements the 2-approximation algorithm for Vertex Cover. O(E) time.
-    1. Pick an arbitrary edge (u, v).
-    2. Add both u and v to the cover.
-    3. Remove all edges covered by u or v.
-    4. Repeat until no edges are left.
-    """
+    """Implements the 2-approximation algorithm for Vertex Cover. O(E) time."""
     start_time = time.time()
     op_count = 0
     
-    # Create a set of all unique edges
     edges = set()
     for u, neighbors in adj_list.items():
         for v in neighbors:
-            if u < v: # Avoid duplicate edges and self-loops
+            if u < v: 
                 edges.add(tuple(sorted((u, v))))
                 
     approx_cover = set()
     
     while edges:
         op_count += 1
-        # 1. Pick an arbitrary edge (u, v)
         u, v = edges.pop()
-        
-        # 2. Add both u and v to the cover
         approx_cover.add(u)
         approx_cover.add(v)
         
-        # 3. Remove all edges incident to u or v
         edges_to_remove = set()
         for edge in edges:
             op_count += 1
@@ -86,12 +75,7 @@ def get_dist(city_a, city_b):
     return math.sqrt((city_a['x'] - city_b['x'])**2 + (city_a['y'] - city_b['y'])**2)
 
 def solve_tsp_heuristic(cities):
-    """
-    Implements the Nearest Neighbor heuristic for TSP. O(n^2) time.
-    1. Start at a random city.
-    2. Repeatedly move to the *closest* unvisited city.
-    3. Once all cities are visited, return to the start.
-    """
+    """Implements the Nearest Neighbor heuristic for TSP. O(n^2) time."""
     start_time = time.time()
     op_count = 0
     
@@ -113,7 +97,6 @@ def solve_tsp_heuristic(cities):
         
         current_city_coords = cities[current_city_name]
         
-        # Find the closest unvisited city
         for city_name in unvisited:
             op_count += 1
             city_coords = cities[city_name]
@@ -123,22 +106,91 @@ def solve_tsp_heuristic(cities):
                 min_dist = dist
                 nearest_city = city_name
         
-        # Move to the nearest city
         if nearest_city:
             total_dist += min_dist
             current_city_name = nearest_city
             tour.append(current_city_name)
             unvisited.remove(current_city_name)
         else:
-            # This happens when all cities have been visited
             break
             
-    # Add distance from the last city back to the start
     total_dist += get_dist(cities[current_city_name], cities[start_city])
     tour.append(start_city)
     
     end_time = time.time()
     return tour, total_dist, op_count, (end_time - start_time)
+
+# --- Algorithms for TQBF ---
+
+# This dictionary will act as a mutable state to track stats
+tqbf_stats = {'op_count': 0, 'max_depth': 0}
+
+def evaluate_cnf(formula, assignments):
+    """Evaluates a CNF formula given a full assignment of variables."""
+    tqbf_stats['op_count'] += 1
+    for clause in formula:
+        clause_satisfied = False
+        for literal in clause:
+            var = literal.strip('-')
+            is_negated = literal.startswith('-')
+            
+            if var not in assignments:
+                # This should not happen if called correctly
+                continue 
+                
+            assigned_val = assignments[var]
+            
+            if (is_negated and not assigned_val) or (not is_negated and assigned_val):
+                clause_satisfied = True
+                break
+        
+        if not clause_satisfied:
+            return False
+    return True
+
+def solve_tqbf_recursive(quantifiers, formula, assignments, index, current_depth):
+    """Recursive solver for TQBF."""
+    tqbf_stats['op_count'] += 1
+    
+    # Track maximum recursion depth (as a proxy for space)
+    if current_depth > tqbf_stats['max_depth']:
+        tqbf_stats['max_depth'] = current_depth
+
+    # Base case: All variables are assigned, evaluate the formula
+    if index == len(quantifiers):
+        return evaluate_cnf(formula, assignments)
+
+    var_info = quantifiers[index]
+    var = var_info['var']
+    quantifier = var_info['q']
+
+    if quantifier == '∀':
+        # 'For All' player: must be true for BOTH assignments
+        assignments_true = assignments.copy()
+        assignments_true[var] = True
+        res_true = solve_tqbf_recursive(quantifiers, formula, assignments_true, index + 1, current_depth + 1)
+        
+        assignments_false = assignments.copy()
+        assignments_false[var] = False
+        res_false = solve_tqbf_recursive(quantifiers, formula, assignments_false, index + 1, current_depth + 1)
+        
+        return res_true and res_false
+        
+    elif quantifier == '∃':
+        # 'Exists' player: must be true for AT LEAST ONE assignment
+        assignments_true = assignments.copy()
+        assignments_true[var] = True
+        res_true = solve_tqbf_recursive(quantifiers, formula, assignments_true, index + 1, current_depth + 1)
+        
+        # Short-circuiting: If True, we don't need to check False
+        if res_true:
+            return True
+            
+        assignments_false = assignments.copy()
+        assignments_false[var] = False
+        res_false = solve_tqbf_recursive(quantifiers, formula, assignments_false, index + 1, current_depth + 1)
+        
+        return res_false
 
 
 # --- Module: Home ---
@@ -175,7 +227,7 @@ def show_home():
         - **<span style='color: #f43f5e;'>NP-Complete:</span>**
           These are the "hardest" problems in NP. They have two properties:
           1.  They are in NP.
-          2.  Every other problem in NP can be **reduced** to this problem in polynomial time. (Formally: $L \le_p L_{npc}$ for all $L \in \text{NP}$).
+          2.  Every other problem in NP can be **reduced** to this problem in polynomial time.
         """, unsafe_allow_html=True)
     
     # Right column for "How to Use"
@@ -184,22 +236,25 @@ def show_home():
         st.markdown(r"""
         Follow these steps to build an intuition for complexity:
 
-        1.  **<span style='color: #06b6d4;'>Explore the Charts (Module 1):</span>**
+        1.  **<span style='color: #06b6d4;'>Explore Growth (Module 1):</span>**
             See the difference between polynomial ($O(n^2)$) and exponential ($O(2^n)$) growth.
             
         2.  **<span style='color: #06b6d4;'>Feel the P vs. NP Gap (Module 2):</span>**
             - **Verify (P):** Click 'Verify'. It's instant, $O(|V| \cdot |E|)$.
-            - **Solve (NP):** Click 'Find Optimal Solution'. For a small graph (n=18), you will *feel* the exponential $O(2^n \cdot |E|)$ delay.
+            - **Solve (NP):** Click 'Find Optimal Solution'. For a small graph (n=18), you will *feel* the exponential $O(2^n)$ delay.
             
-        3.  **<span style='color: #06b6d4;'>Compare Brute-Force vs. Heuristic (Module 3):</span>**
-            - **Solve (NP):** Click 'Find Optimal Tour' with 9 cities. It takes a few seconds ($O(n!)$).
-            - **Approx. (P):** Click 'Find Heuristic Tour' with 9 cities. It's *instant* ($O(n^2)$). The answer will be *good*, but may not be the *best* one. This is the real-world tradeoff.
+        3.  **<span style'color: #06b6d4;'>Compare Brute-Force vs. Heuristic (Module 3):</span>**
+            - **Solve (NP):** Click 'Find Optimal Tour' with 9 cities. It takes seconds ($O(n!)$).
+            - **Approx. (P):** Click 'Find Heuristic Tour'. It's *instant* ($O(n^2)$).
             
-        4.  **<span style='color: #06b6d4;'>Experience Reductions (Module 5):</span>**
-            Learn how the **Independent Set** problem is just a "mirror image" of **Vertex Cover**.
+        4.  **<span style='color: #06b6d4;'>See Reductions (Module 5):</span>**
+            Learn how **Independent Set** is a "mirror image" of **Vertex Cover**.
+
+        5.  **<span style='color: #06b6d4;'>Explore PSPACE (Module 6):</span>**
+            See how the TQBF solver uses exponential *time* (recursive calls) but only polynomial *space* (recursion depth).
             
-        5.  **<span style='color: #06b6d4;'>Read the Research (Module 4):</span>**
-            See the actual papers that defined these "hard questions" and read Stephen Cook's thoughts on P vs. NP.
+        6.  **<span style='color: #06b6d4;'>Read the Research (Module 4):</span>**
+            See the actual papers that defined these "hard questions".
         """, unsafe_allow_html=True)
 
     st.divider()
@@ -207,12 +262,11 @@ def show_home():
     st.header("Learn More: Foundational Research")
     st.markdown("These are some of the most important papers in the field of computational complexity:")
     
-    # Corrected syntax: Pass the string directly to st.info()
     st.info(
         """
         **Cook, S. A. (1971). "The complexity of theorem-proving procedures."**
         
-        **Summary:** This is the foundational paper that birthed the field of NP-Completeness. Cook proved that the **Satisfiability (SAT)** problem has a special property: *any* problem in NP can be "reduced" to it. This means if you could solve SAT efficiently, you could solve *every* problem in NP efficiently. He called this property "NP-Complete."
+        **Summary:** This is the foundational paper that birthed the field of NP-Completeness. Cook proved that the **Satisfiability (SAT)** problem has a special property: *any* problem in NP can be "reduced" to it.
         """,
         icon="📄"
     )
@@ -221,7 +275,7 @@ def show_home():
         """
         **Karp, R. M. (1972). "Reducibility among combinatorial problems."**
         
-        **Summary:** Karp's paper showed that Cook's discovery wasn't a fluke. He took the idea of "reducibility" and ran with it, identifying 21 other famous, seemingly unrelated problems (including Vertex Cover and TSP) that were also NP-Complete. This established that a vast "web" of problems were all fundamentally the same hard problem, just in different disguises.
+        **Summary:** Karp's paper showed that Cook's discovery wasn't a fluke. He identified 21 other famous, seemingly unrelated problems (including Vertex Cover and TSP) that were also NP-Complete.
         """,
         icon="📄"
     )
@@ -230,7 +284,7 @@ def show_home():
         """
         **Garey, M. R., & Johnson, D. S. (1979). "Computers and Intractability: A Guide to the Theory of NP-Completeness."**
         
-        **Summary:** This is the "bible" of NP-Completeness. It's not a research paper but a comprehensive textbook that standardized the theory, provided a huge catalog of NP-Complete problems, and gave computer scientists a practical 'how-to' manual for identifying and dealing with intractable problems in their own work.
+        **Summary:** This is the "bible" of NP-Completeness. It's not a research paper but a comprehensive textbook that standardized the theory and gave computer scientists a practical 'how-to' manual.
         """,
         icon="📚"
     )
@@ -256,15 +310,14 @@ def show_visualizer():
     
     df_p = pd.DataFrame(data_p)
     
-    # Create the Altair chart for Polynomial growth
     chart_p = alt.Chart(df_p).mark_line().encode(
         x=alt.X('n', title='n (Input Size)'),
-        y=alt.Y('Operations', title='Operations (Linear Scale)'), # Linear scale
+        y=alt.Y('Operations', title='Operations (Linear Scale)'),
         color='Complexity',
         tooltip=['n', 'Complexity', 'Operations']
     ).properties(
         title="Polynomial Growth (n=1 to 100)"
-    ).interactive() # Enable zoom/pan
+    ).interactive()
 
     st.altair_chart(chart_p, use_container_width=True)
 
@@ -282,19 +335,18 @@ def show_visualizer():
     for n in n_range_np:
         data_np.append({'n': n, 'Operations': n**2, 'Complexity': 'O(n²)'})
         data_np.append({'n': n, 'Operations': 2**n, 'Complexity': 'O(2ⁿ)'})
-        data_np.append({'n': n, 'Operations': factorial(n), 'Complexity': 'O(n!)'}) # factorial() caps at n=20
+        data_np.append({'n': n, 'Operations': factorial(n), 'Complexity': 'O(n!)'}) 
 
     df_np = pd.DataFrame(data_np)
 
-    # Create the Altair chart for Exponential growth
     chart_np = alt.Chart(df_np).mark_line().encode(
         x=alt.X('n', title='n (Input Size)'),
-        y=alt.Y('Operations', scale=alt.Scale(type="log"), title='Operations (Log Scale)'), # Log scale
+        y=alt.Y('Operations', scale=alt.Scale(type="log"), title='Operations (Log Scale)'), 
         color='Complexity',
         tooltip=['n', 'Complexity', 'Operations']
     ).properties(
         title="The P vs. NP 'Explosion' (n=1 to 25)"
-    ).interactive() # Enable zoom/pan
+    ).interactive()
 
     st.altair_chart(chart_np, use_container_width=True)
 
@@ -302,7 +354,6 @@ def show_visualizer():
 def show_vertex_cover():
     st.title("Module 2: P vs. NP (Vertex Cover)")
 
-    # Tabs for theory and demo
     tab1, tab2 = st.tabs(["What is Vertex Cover?", "Interactive Demo"])
 
     # Theory Tab
@@ -353,8 +404,6 @@ def show_vertex_cover():
     with tab2:
         st.header("Graph Generators")
         
-        # Initialize session state for the graph text
-        # Corrected the typo in the default graph JSON ("C" instead of "C")
         if 'vc_graph_text' not in st.session_state:
             st.session_state.vc_graph_text = '{"A": ["B", "C"], "B": ["A", "C", "D"], "C": ["A", "B", "D"], "D": ["B", "C", "E"], "E": ["D"]}'
 
@@ -371,7 +420,6 @@ def show_vertex_cover():
 
         graph_text = st.text_area("Graph JSON (Adjacency List):", value=st.session_state.vc_graph_text, height=150)
         
-        # Section 1: Verify
         st.header("1. Verify a Solution (Polynomial Time)")
         solution_text = st.text_input("Proposed Solution (e.g., A,D):", value="B,C,E")
         
@@ -380,14 +428,12 @@ def show_vertex_cover():
                 adj_list = json.loads(graph_text)
                 solution_set = set(s.strip() for s in solution_text.split(',') if s.strip())
                 
-                # Get all unique edges
                 edges = set()
                 for u, neighbors in adj_list.items():
                     for v in neighbors:
                         edge = tuple(sorted((u, v)))
                         edges.add(edge)
                 
-                # Check if all edges are covered
                 uncovered_edges = []
                 op_count = 0
                 for u, v in edges:
@@ -402,13 +448,11 @@ def show_vertex_cover():
             except Exception as e:
                 st.error(f"Error parsing input: {e}")
 
-        # Section 2: Find
         st.header("2. Find a Solution")
         st.markdown("Compare the P-time approximation with the exponential brute-force solver.")
         
         col1, col2 = st.columns(2)
         
-        # Button for the fast approximation algorithm
         with col1:
             if st.button("Find 2-Approximation (Fast)", use_container_width=True, type="secondary"):
                 with st.spinner("Finding approximation..."):
@@ -419,7 +463,6 @@ def show_vertex_cover():
                     except Exception as e:
                         st.error(f"Error: {e}")
 
-        # Button for the slow optimal (brute-force) algorithm
         with col2:
             if st.button("Find Optimal Solution (Slow)", use_container_width=True, type="primary"):
                 with st.spinner("Solving (Brute Force)... This may take a moment."):
@@ -428,7 +471,6 @@ def show_vertex_cover():
                         vertices = list(adj_list.keys())
                         n = len(vertices)
                         
-                        # Safety cap to prevent browser crash
                         if n > 18:
                             st.error("Graph is too large for client-side brute-force (n > 18). This demonstrates exponential complexity!")
                             return
@@ -443,7 +485,6 @@ def show_vertex_cover():
                         op_count = 0
                         
                         start_time = time.time()
-                        # Iterate through all 2^n subsets
                         for i in range(1 << n):
                             op_count += 1
                             subset = set()
@@ -451,7 +492,6 @@ def show_vertex_cover():
                                 if (i >> j) & 1:
                                     subset.add(vertices[j])
                             
-                            # Check if the current subset is a valid cover
                             is_cover = True
                             for u, v in edges:
                                 op_count += 1
@@ -459,7 +499,6 @@ def show_vertex_cover():
                                     is_cover = False
                                     break
                             
-                            # If it is a cover, check if it's the smallest so far
                             if is_cover:
                                 if smallest_cover is None or len(subset) < len(smallest_cover):
                                     smallest_cover = subset
@@ -519,7 +558,7 @@ def show_tsp():
         st.markdown("The product of all positive integers less than or equal to $n$. ($n! = n \cdot (n-1) \cdot ... \cdot 1$). This function grows *extremely* fast.")
         
         st.markdown("**Heuristic Algorithm**")
-        st.markdown("A fast (P-time) algorithm or 'rule of thumb' for solving a problem. Unlike an approximation algorithm, a heuristic gives *no guarantee* on how close its answer is to the optimal one. The 'Nearest Neighbor' heuristic is simple and fast, but can sometimes produce very poor routes.")
+        st.markdown("A fast (P-time) algorithm or 'rule of thumb' for solving a problem. Unlike an approximation algorithm, a heuristic gives *no guarantee* on how close its answer is to the optimal one.")
 
     # Interactive Demo Tab
     with tab2:
@@ -541,7 +580,6 @@ def show_tsp():
 
         cities_text = st.text_area("Cities JSON:", value=st.session_state.tsp_cities_text, height=150)
 
-        # Section 1: Verify
         st.header("1. Verify a Tour Length (Polynomial Time)")
         tour_text = st.text_input("Proposed Tour (e.g., A,B,C,D,A):", value="A,C,B,D,A")
         
@@ -557,7 +595,6 @@ def show_tsp():
                 total_dist = 0
                 op_count = 0
                 
-                # Add up the distances for each leg of the tour
                 for i in range(len(tour) - 1):
                     op_count += 1
                     city_a_name = tour[i]
@@ -572,13 +609,11 @@ def show_tsp():
             except Exception as e:
                 st.error(f"Error parsing input: {e}")
 
-        # Section 2: Find
         st.header("2. Find a Solution")
         st.markdown("Compare the P-time heuristic with the factorial brute-force solver.")
         
         col1, col2 = st.columns(2)
         
-        # Button for the fast heuristic algorithm
         with col1:
             if st.button("Find Heuristic Tour (Fast)", use_container_width=True, type="secondary"):
                 with st.spinner("Finding heuristic tour (Nearest Neighbor)..."):
@@ -589,7 +624,6 @@ def show_tsp():
                     except Exception as e:
                         st.error(f"Error: {e}")
         
-        # Button for the slow optimal (brute-force) algorithm
         with col2:
             if st.button("Find Optimal Tour (Very Slow)", use_container_width=True, type="primary"):
                 with st.spinner(f"Solving (Brute Force)... This will be very slow if n > 9."):
@@ -598,7 +632,6 @@ def show_tsp():
                         city_names = list(cities.keys())
                         n = len(city_names)
 
-                        # Safety cap to prevent browser crash
                         if n > 9:
                             st.error(f"Too many cities (n={n}). n > 9 will crash your browser with O(n!) complexity. This is the lesson!")
                             return
@@ -611,20 +644,17 @@ def show_tsp():
                         op_count = 0
                         
                         start_time = time.time()
-                        # Check all (n-1)! permutations
                         for perm in permutations(other_cities):
                             op_count += 1
                             current_dist = 0
                             current_tour = [start_city] + list(perm) + [start_city]
                             
-                            # Calculate the total distance for this permutation
                             for i in range(len(current_tour) - 1):
                                 op_count += 1
                                 city_a = cities[current_tour[i]]
                                 city_b = cities[current_tour[i+1]]
                                 current_dist += get_dist(city_a, city_b)
                             
-                            # Update if this is the new shortest tour
                             if current_dist < shortest_dist:
                                 shortest_dist = current_dist
                                 shortest_tour = current_tour
@@ -656,14 +686,13 @@ def show_open_problems():
     This is the most famous problem in computer science. The consensus is that **P $\neq$ NP**, but proving it remains one of the hardest challenges ever conceived.
     """)
     
-    # Corrected syntax: Pass the string directly to st.info()
     st.info(
         """
         **Stephen Cook's View (2000):**
         
         In his paper for the Clay Mathematics Institute (which established the $1M prize),
-        Stephen Cook wrote: *"My guess is that the answer is 'no'. ... a proof that
-        P ≠ NP would be a milestone in mathematics ... a proof that P = NP would be even more
+        Stephen Cook wrote: *"My guess is that the answer is 'no'. ... a proof that P $\neq$ NP
+        would be a milestone in mathematics ... a proof that P = NP would be even more
         stunning. It would mean that ... a computer could find a formal proof of any theorem
         which has a proof of reasonable length."*
         
@@ -693,7 +722,6 @@ def show_open_problems():
     If NP $\neq$ co-NP (which is widely believed), it would imply that proving something is *always* true is fundamentally harder than proving it's *sometimes* true (SAT). It would also prove P $\neq$ NP.
     """)
     
-    # Corrected syntax: Pass the string directly to st.info()
     st.info(
         """
         **Seminal Paper:** Pratt, V. (1975). *Every prime has a succinct certificate*.
@@ -724,7 +752,6 @@ def show_open_problems():
     P vs. NP just asks if there's a *polynomial* algorithm. ETH makes a stronger claim: that 3-SAT *requires* a "strong" exponential-time $O(2^{\delta n})$ algorithm.
     """)
     
-    # Corrected syntax: Pass the string directly to st.info()
     st.info(
         """
         **Seminal Paper:** Impagliazzo, R., & Paturi, R. (1999). *On the complexity of k-SAT*.
@@ -756,7 +783,6 @@ def show_open_problems():
     We strongly believe $\text{P} \neq \text{PSPACE}$, meaning some problems are *fundamentally* space-efficient but time-inefficient.
     """)
     
-    # Corrected syntax: Pass the string directly to st.info()
     st.info(
         """
         **Seminal Paper:** Savitch, W. J. (1970). *Relationships between nondeterministic and deterministic tape complexities*.
@@ -787,7 +813,6 @@ def show_open_problems():
     We know $\text{BPP} \subseteq \text{BQP}$. The big question is whether the inclusion is strict. Shor's algorithm for **integer factorization** is in BQP but is *not* believed to be in BPP.
     """)
     
-    # Corrected syntax: Pass the string directly to st.info()
     st.info(
         """
         **Seminal Papers:**
@@ -818,7 +843,6 @@ def show_open_problems():
     Factoring is in NP (easy to verify) but not believed to be in P. It's also not believed to be NP-Complete.
     """)
     
-    # Corrected syntax: Pass the string directly to st.info()
     st.info(
         """
         **Seminal Paper:** Shor, P. W. (1994). *Algorithms for quantum computation: discrete logarithms and factoring*.
@@ -850,7 +874,6 @@ def show_open_problems():
     This breakthrough strongly suggests the problem is *not* NP-Complete, but it's still not known to be in P.
     """)
     
-    # Corrected syntax: Pass the string directly to st.info()
     st.info(
         """
         **Seminal Paper:** Babai, L. (2015). *Graph Isomorphism in Quasipolynomial Time*.
@@ -936,9 +959,109 @@ def show_reductions():
         
         This also means $|MaxIS| + |MinVC| = |V|$.
         
-        The brute-force $O(2^n)$ algorithm in **Module 2** that finds a *minimum vertex cover*
+        The $O(2^n)$ algorithm in **Module 2** that finds a *minimum vertex cover*
         is, by this reduction, *also* an algorithm for finding a *maximum independent set*.
         """)
+
+# --- Module: PSPACE (TQBF) ---
+def show_pspace():
+    st.title("Module 6: PSPACE-Complete (TQBF)")
+    
+    tab1, tab2 = st.tabs(["What is PSPACE?", "Interactive TQBF Demo"])
+
+    # Theory Tab
+    with tab1:
+        st.header("What is PSPACE?")
+        st.markdown(r"""
+        **PSPACE** is the class of problems solvable by an algorithm that uses a **Polynomial amount of SPACE (memory)**,
+        regardless of how much *time* it takes.
+        
+        - We know $\text{P} \subseteq \text{NP} \subseteq \text{PSPACE}$.
+        - We strongly suspect $\text{P} \neq \text{PSPACE}$ and $\text{NP} \neq \text{PSPACE}$, but it's not proven.
+        
+        ### TQBF: The PSPACE-Complete Problem
+        The "hardest" problem in PSPACE is **TQBF (True Quantified Boolean Formulas)**.
+        It's like SAT, but with alternating "for all" ($\forall$) and "there exists" ($\exists$) quantifiers.
+        """)
+        
+        st.latex(r"\forall x \exists y \forall z \dots \phi(x, y, z, \dots)")
+        
+        st.markdown(r"""
+        ### Time vs. Space: The Key Lesson
+        We can solve TQBF with a simple recursive algorithm (like the one in the demo).
+        - **Time Complexity:** The algorithm branches for every variable, leading to $O(2^n)$ time. **(Exponential!)**
+        - **Space Complexity:** The algorithm only needs to store the current path down the recursion tree. The depth of this tree is $n$ (the number of variables). Therefore, it only uses $O(n)$ space. **(Polynomial!)**
+        
+        TQBF is the perfect example of a problem that is **easy on space** but **hard on time**.
+        """)
+        
+        st.divider()
+        st.header("Key Concepts")
+        
+        st.markdown(r"**Quantified Boolean Formula (QBF)**")
+        st.markdown("A boolean formula (like in SAT) but with quantifiers $\forall$ ('for all') and $\exists$ ('there exists') applied to each variable.")
+
+        st.markdown(r"**Two-Player Game Analogy**")
+        st.markdown(r"""
+        You can think of TQBF as a game:
+        - The **$\exists$ player** wins if the formula is *True*.
+        - The **$\forall$ player** wins if the formula is *False*.
+        
+        The $\exists$ player gets to pick values for $\exists$ variables.
+        The $\forall$ player gets to pick values for $\forall$ variables.
+        
+        The TQBF formula is *True* if the $\exists$ player has a **winning strategy**, no matter what the $\forall$ player does.
+        """)
+
+    # Interactive Demo Tab
+    with tab2:
+        st.header("Interactive TQBF Solver")
+        st.markdown("Note: The formula must be in CNF (an array of clauses).")
+
+        # Default formula: ∀x ∃y (x ∨ y) ∧ (¬x ∨ ¬y)
+        # This is the formula for x XOR y, which is (x=y).
+        # "For all x, does there exist a y such that x=y?" Yes. (True for x=T, y=T; True for x=F, y=F)
+        # Result: True
+        default_tqbf = {
+            "quantifiers": [
+                {"var": "x", "q": "∀"},
+                {"var": "y", "q": "∃"}
+            ],
+            "formula": [
+                ["x", "y"],
+                ["-x", "-y"]
+            ]
+        }
+        
+        tqbf_text = st.text_area("TQBF JSON:", value=json.dumps(default_tqbf, indent=2), height=250)
+        
+        if st.button("Solve TQBF", use_container_width=True, type="primary"):
+            try:
+                data = json.loads(tqbf_text)
+                quantifiers = data['quantifiers']
+                formula = data['formula']
+                
+                # Reset stats for this run
+                tqbf_stats['op_count'] = 0
+                tqbf_stats['max_depth'] = 0
+                
+                with st.spinner("Solving TQBF (Exponential Time, Polynomial Space)..."):
+                    start_time = time.time()
+                    result = solve_tqbf_recursive(quantifiers, formula, {}, 0, 0)
+                    end_time = time.time()
+                
+                if result:
+                    st.success(f"Result: TRUE (Time: {end_time - start_time:.4f}s)")
+                else:
+                    st.error(f"Result: FALSE (Time: {end_time - start_time:.4f}s)")
+                
+                st.subheader("Complexity Stats:")
+                st.metric(label="Total Recursive Calls (Time)", value=f"{tqbf_stats['op_count']}")
+                st.metric(label="Max Recursion Depth (Space)", value=f"{tqbf_stats['max_depth']}")
+
+            except Exception as e:
+                st.error(f"Error parsing or solving TQBF: {e}")
+
 
 # --- Main App ---
 def main():
@@ -952,7 +1075,8 @@ def main():
         "2. P vs. NP (Vertex Cover)", 
         "3. NP-Complete (TSP)",
         "4. Open Problems & The Future",
-        "5. Reductions (IS to VC)"
+        "5. Reductions (IS to VC)",
+        "6. PSPACE (TQBF)"  # New Module
     ])
 
     # Simple router to show the correct module
@@ -968,6 +1092,8 @@ def main():
         show_open_problems()
     elif page == "5. Reductions (IS to VC)":
         show_reductions()
+    elif page == "6. PSPACE (TQBF)":
+        show_pspace()
 
 if __name__ == "__main__":
     main()

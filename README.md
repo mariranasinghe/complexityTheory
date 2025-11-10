@@ -18,21 +18,21 @@ This project is an interactive web application built entirely in Python using th
 
 ### File Structure
 
--app.py: The entire application.
+- app.py: The entire application.
 
--Imports: Loads streamlit, pandas, altair, etc.
+- Imports: Loads streamlit, pandas, altair, etc.
 
--Helper Functions: factorial(), generate_random_graph(), etc.
+- Helper Functions: factorial(), generate_random_graph(), etc.
 
--Module Functions (show\_...): Each function (e.g., show_home(), show_vertex_cover(), show_reductions()) defines one "page" of the app.
+- Module Functions (show\_...): Each function (e.g., show_home(), show_vertex_cover(), show_reductions()) defines one "page" of the app.
 
--main() Function: The app's entry point. It sets up the page layout and sidebar navigation (st.sidebar.radio) and calls the correct module function based on the user's selection.
+- main() Function: The app's entry point. It sets up the page layout and sidebar navigation (st.sidebar.radio) and calls the correct module function based on the user's selection.
 
--requirements.txt: A list of the Python dependencies (streamlit, pandas, numpy, altair) needed to run the project.
+- requirements.txt: A list of the Python dependencies (streamlit, pandas, numpy, altair) needed to run the project.
 
--README.md: This file, explaining the project's Streamlit-based architecture.
+- README.md: This file, explaining the project's Streamlit-based architecture.
 
--CONTRIBUTIONS.md: Explains the purpose of each function within app.py.
+- CONTRIBUTIONS.md: Explains the purpose of each function within app.py.
 
 ### Project Structure Visualization
 

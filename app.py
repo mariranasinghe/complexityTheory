@@ -41,7 +41,24 @@ def generate_random_cities(n):
     
 # --- Algorithm for VC Approximation ---
 def solve_vc_approx(adj_list):
-    """Implements the 2-approximation algorithm for Vertex Cover. O(E) time."""
+    """
+    Implements the 2-approximation algorithm for Vertex Cover.
+
+    This is a greedy algorithm that iterates through available edges,
+    adds both of the edge's vertices to the cover, and then removes
+    all edges incident to those two vertices. This guarantees a
+    cover that is, at most, 2x the size of the optimal cover.
+
+    Args:
+        adj_list (dict): The graph as an adjacency list
+                         e.g., {"A": ["B", "C"], "B": ["A"], "C": ["A"]}
+
+    Returns:
+        tuple: (approx_cover, op_count, time_taken)
+            approx_cover (set): The set of vertices in the cover (e.g., {"A"}).
+            op_count (int): A rough measure of operations for comparison.
+            time_taken (float): The wall-clock time in seconds.
+    """
     start_time = time.time()
     op_count = 0
     

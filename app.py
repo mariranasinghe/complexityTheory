@@ -192,6 +192,71 @@ def solve_tqbf_recursive(quantifiers, formula, assignments, index, current_depth
         
         return res_false
 
+# --- Algorithms for BPP (Primality Testing) ---
+
+def solve_primality_deterministic(n):
+    """Tests primality using trial division. O(sqrt(n)) time."""
+    start_time = time.time()
+    op_count = 0
+    if n < 2:
+        return False, 0, 0
+    if n == 2 or n == 3:
+        return True, 1, 0
+    if n % 2 == 0:
+        return False, 1, (time.time() - start_time)
+    
+    limit = int(math.sqrt(n)) + 1
+    for i in range(3, limit, 2):
+        op_count += 1
+        if n % i == 0:
+            end_time = time.time()
+            return False, op_count, (end_time - start_time)
+            
+    end_time = time.time()
+    return True, op_count, (end_time - start_time)
+
+def solve_primality_bpp(n, k):
+    """Tests primality using Miller-Rabin. O(k * (log n)^3) time."""
+    start_time = time.time()
+    op_count = 0
+
+    if n <= 1: return False, 0, 0
+    if n <= 3: return True, 0, 0
+    if n % 2 == 0: return False, 1, 0
+    
+    # Write n-1 as 2^r * d
+    d = n - 1
+    r = 0
+    while d % 2 == 0:
+        op_count += 1
+        d //= 2
+        r += 1
+    
+    # Run k rounds
+    for _ in range(k):
+        op_count += 1
+        a = random.randint(2, n - 2)
+        x = pow(a, d, n) # x = a^d % n (Efficient modular exponentiation)
+        
+        if x == 1 or x == n - 1:
+            continue
+            
+        # Check for composite
+        is_composite = True
+        for _ in range(r - 1):
+            op_count += 1
+            x = pow(x, 2, n) # x = x^2 % n
+            if x == n - 1:
+                is_composite = False
+                break
+        
+        if is_composite:
+            end_time = time.time()
+            return False, op_count, (end_time - start_time)
+    
+    # If all k rounds pass, it's probably prime
+    end_time = time.time()
+    return True, op_count, (end_time - start_time)
 
 # --- Module: Home ---
 def show_home():
@@ -253,7 +318,10 @@ def show_home():
         5.  **<span style='color: #06b6d4;'>Explore PSPACE (Module 6):</span>**
             See how the TQBF solver uses exponential *time* (recursive calls) but only polynomial *space* (recursion depth).
             
-        6.  **<span style='color: #06b6d4;'>Read the Research (Module 4):</span>**
+        6.  **<span style='color: #06b6d4;'>Explore BPP (Module 7):</span>**
+            See how a "slow" deterministic primality test ($O(\sqrt{n})$) is beaten by a "fast" randomized BPP algorithm.
+            
+        7.  **<span style='color: #06b6d4;'>Read the Research (Module 4):</span>**
             See the actual papers that defined these "hard questions".
         """, unsafe_allow_html=True)
 
@@ -691,7 +759,7 @@ def show_open_problems():
         **Stephen Cook's View (2000):**
         
         In his paper for the Clay Mathematics Institute (which established the $1M prize),
-        Stephen Cook wrote: *"My guess is that the answer is 'no'. ... a proof that P $\neq$ NP
+        Stephen Cook wrote: *"My guess is that the answer is 'no'. ... a proof that P ≠ NP
         would be a milestone in mathematics ... a proof that P = NP would be even more
         stunning. It would mean that ... a computer could find a formal proof of any theorem
         which has a proof of reasonable length."*
@@ -1062,6 +1130,104 @@ def show_pspace():
             except Exception as e:
                 st.error(f"Error parsing or solving TQBF: {e}")
 
+# --- Module: BPP (Randomized Algorithms) ---
+def show_bpp():
+    st.title("Module 7: Randomized Algorithms (BPP)")
+    
+    tab1, tab2 = st.tabs(["What is BPP?", "Interactive Demo (Primality)"])
+
+    # Theory Tab
+    with tab1:
+        st.header("What is BPP?")
+        st.markdown(r"""
+        **BPP** stands for **Bounded-error Probabilistic Polynomial time**.
+        
+        It's the class of *decision problems* that can be solved by an algorithm that:
+        1.  Runs in **polynomial time**.
+        2.  Is allowed to **"flip coins"** (use randomness).
+        3.  Gives the correct "yes" or "no" answer with a high probability (e.g., > 2/3).
+        
+        The probability of failure is "bounded" away from 1/2. By running the algorithm
+        multiple times, we can make the error probability *extremely* small.
+        """)
+        
+        st.header("The Key Example: Primality Testing")
+        st.markdown(r"""
+        **Problem:** Given a large number $n$, is it prime?
+        
+        - **Deterministic (Slow):** The simple **Trial Division** method (checking all divisors up to $\sqrt{n}$)
+          is $O(\sqrt{n})$. This is *exponential* in the number of bits ($b$) of $n$,
+          since $n \approx 2^b$ and $\sqrt{n} \approx 2^{b/2}$.
+          
+        - **Randomized (Fast):** The **Miller-Rabin** algorithm is a BPP algorithm.
+          It runs in polynomial time (e.g., $O(k \cdot (\log n)^3)$, where $k$ is the number of rounds).
+          If it outputs "Composite," it is 100% correct.
+          If it outputs "Probably Prime," it has a small chance ($< (1/4)^k$) of being wrong.
+        """)
+        
+        st.header("P vs. BPP")
+        st.markdown(r"""
+        - We know $\text{P} \subseteq \text{BPP}$. (A deterministic P-time algorithm is just a
+          BPP algorithm that is correct 100% of the time).
+        - We also know $\text{BPP} \subseteq \text{PSPACE}$.
+        
+        **The Open Question:** Does $\text{P} = \text{BPP}$?
+        
+        Most researchers believe **YES**. This is because many "BPP-only" problems
+        have later been "derandomized" (a P-time algorithm was found).
+        """)
+        
+        st.info(
+            """
+            **The AKS Primality Test (2002)**
+            
+            For decades, Primality Testing was the most-cited example of a problem in BPP but not known to be in P.
+            
+            In 2002, Agrawal, Kayal, and Saxena (AKS) proved that **PRIMES is in P**.
+            They found the first-ever deterministic, polynomial-time algorithm for primality testing.
+            This was a *massive* theoretical breakthrough.
+            """
+        )
+
+    # Interactive Demo Tab
+    with tab2:
+        st.header("Interactive Demo: Primality Testing")
+        st.markdown("Compare the 'slow' deterministic algorithm with the 'fast' randomized one. The 'input size' $n$ for complexity is the *number of bits* in the number, not the number itself.")
+        
+        # A 16-digit prime. sqrt(n) is ~31.6 million, so trial division will take a few seconds.
+        number_to_test = st.number_input("Number to Test (n):", min_value=2, value=1000000000000037, step=1)
+        
+        st.divider()
+        
+        st.subheader("1. Deterministic (Trial Division)")
+        st.markdown(r"**Complexity:** $O(\sqrt{n})$, which is $O(2^{b/2})$ where $b$ is the number of bits. **(Exponential-time)**")
+        
+        if st.button("Test (Deterministic)", use_container_width=True, type="secondary"):
+            with st.spinner(f"Running trial division up to sqrt({number_to_test})... This will take a moment."):
+                is_prime, op_count, time_taken = solve_primality_deterministic(number_to_test)
+                
+                if is_prime:
+                    st.success(f"Result: PRIME\nTime: {time_taken:.4f}s\nOperations: ~{op_count}")
+                else:
+                    st.error(f"Result: COMPOSITE\nTime: {time_taken:.4f}s\nOperations: ~{op_count}")
+        
+        st.divider()
+
+        st.subheader("2. Randomized (Miller-Rabin)")
+        st.markdown(r"**Complexity:** $O(k \cdot (\log n)^3)$, where $b = \log n$ is the number of bits. **(Polynomial-time)**")
+        
+        k_rounds = st.slider("Certainty Rounds (k):", min_value=1, max_value=40, value=10)
+        
+        if st.button("Test (Randomized)", use_container_width=True, type="primary"):
+            with st.spinner("Running Miller-Rabin test..."):
+                is_prime, op_count, time_taken = solve_primality_bpp(number_to_test, k_rounds)
+                
+                if is_prime:
+                    st.success(f"Result: PROBABLY PRIME\nTime: {time_taken:.6f}s\nOperations: ~{op_count}")
+                    st.info(f"After {k_rounds} rounds, the probability of this being a composite 'liar' number is less than (1/4)^{k_rounds}.")
+                else:
+                    st.error(f"Result: COMPOSITE (100% certain)\nTime: {time_taken:.6f}s\nOperations: ~{op_count}")
+
 
 # --- Main App ---
 def main():
@@ -1076,7 +1242,8 @@ def main():
         "3. NP-Complete (TSP)",
         "4. Open Problems & The Future",
         "5. Reductions (IS to VC)",
-        "6. PSPACE (TQBF)"  # New Module
+        "6. PSPACE (TQBF)",
+        "7. Randomized Algos (BPP)"  # <-- New Module Added
     ])
 
     # Simple router to show the correct module
@@ -1094,6 +1261,8 @@ def main():
         show_reductions()
     elif page == "6. PSPACE (TQBF)":
         show_pspace()
+    elif page == "7. Randomized Algos (BPP)": # <-- New Module Routed
+        show_bpp()
 
 if __name__ == "__main__":
     main()

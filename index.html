@@ -4,11 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Interactive Complexity Explorer</title>
-    <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Chart.js for the visualizer -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Load MathJax to render LaTeX equations -->
     <script>
       MathJax = {
         tex: {
@@ -139,7 +136,6 @@
     </style>
   </head>
   <body class="h-full flex">
-    <!-- Sidebar Navigation -->
     <nav class="w-64 h-full bg-gray-800 p-4 space-y-2 fixed">
       <h2 class="text-2xl font-bold text-sky-400 mb-6">Complexity Explorer</h2>
       <a
@@ -184,13 +180,16 @@
         class="nav-link block w-full text-left px-4 py-2 rounded-lg text-gray-200 hover:bg-gray-700"
         >6. PSPACE (TQBF)</a
       >
+      <a
+        href="#"
+        data-module="bpp"
+        class="nav-link block w-full text-left px-4 py-2 rounded-lg text-gray-200 hover:bg-gray-700"
+        >7. Randomized Algos (BPP)</a
+      >
     </nav>
 
-    <!-- Main Content Area -->
     <main class="flex-1 ml-64 h-full">
-      <div id="module-content" class="module-content p-8 h-full">
-        <!-- Dynamic content will be loaded here -->
-      </div>
+      <div id="module-content" class="module-content p-8 h-full"></div>
     </main>
 
     <script>
@@ -207,7 +206,8 @@
         tsp: showTSP,
         openProblems: showOpenProblems,
         reductions: showReductions,
-        pspace: showPSPACE, // New module
+        pspace: showPSPACE,
+        bpp: showBPP, // <-- NEW MODULE
       };
 
       // Simple router to show a module
@@ -249,7 +249,6 @@
                 </div>
 
                 <div class="flex flex-wrap -mx-4 mt-8">
-                    <!-- Column 1: Definitions -->
                     <div class="w-full lg:w-1/2 px-4 mb-4 md:mb-0">
                         <div class="bg-gray-800 p-6 rounded-lg h-full">
                             <h3 class="text-xl font-semibold text-gray-200 mb-3">What is Complexity Theory?</h3>
@@ -281,7 +280,6 @@
                         </div>
                     </div>
 
-                    <!-- Column 2: How to Use -->
                     <div class="w-full lg:w-1/2 px-4">
                         <div class="bg-gray-800 p-6 rounded-lg h-full">
                             <h3 class="text-xl font-semibold text-gray-200 mb-3">How To Use This Tool</h3>
@@ -311,6 +309,10 @@
                                     See how the TQBF solver uses exponential *time* (recursive calls) but only polynomial *space* (recursion depth).
                                 </li>
                                 <li>
+                                    <span class="font-bold text-cyan-400">Explore BPP (Module 7):</span>
+                                    See how a "slow" deterministic primality test ($O(\sqrt{n})$) is beaten by a "fast" randomized BPP algorithm.
+                                </li>
+                                <li>
                                     <span class="font-bold text-cyan-400">Read the Research (Module 4):</span>
                                     See the actual papers that defined these "hard questions".
                                 </li>
@@ -319,7 +321,6 @@
                     </div>
                 </div>
 
-                <!-- Foundational Research -->
                 <div class="mt-8 pt-6 border-t border-gray-700">
                     <h3 class="text-2xl font-semibold text-cyan-400 mb-4">Learn More: Foundational Research</h3>
                     <div class="space-y-4 text-gray-300">
@@ -355,7 +356,6 @@
                     A single chart can't show everything. Here are two charts to understand the two key scenarios.
                 </p>
                 
-                <!-- Chart 1: Polynomial -->
                 <h3 class="text-xl font-semibold text-gray-200 mb-3">Chart 1: The 'Fast' Algorithms (Polynomial Time)</h3>
                 <p class="text-gray-300 mb-4">
                     This chart shows *only* the "fast" algorithms on a **linear scale**.
@@ -365,7 +365,6 @@
                     <canvas id="complexity-chart-p"></canvas>
                 </div>
 
-                <!-- Chart 2: P vs NP -->
                 <h3 class="text-xl font-semibold text-gray-200 mb-3">Chart 2: The 'Explosion' (P vs. NP)</h3>
                 <p class="text-gray-300 mb-4">
                     This chart compares $O(n^2)$ to the "slow" ones on a **logarithmic scale**.
@@ -560,172 +559,164 @@
                 <div id="vc-container">
                     <h2 class="text-3xl font-bold mb-4 text-sky-400">Module 2: P vs. NP (Vertex Cover)</h2>
                     
-                    <!-- Tab Navigation -->
                     <div class="flex space-x-2 mb-4">
                         <button class="tab-btn active" data-tab="vc-demo">Interactive Demo</button>
                         <button class="tab-btn" data-tab="vc-what-is">What is Vertex Cover?</button>
-                        <button class="tab-btn" data-tab="vc-concepts">Key Concepts</button>
                     </div>
 
-                    <!-- Tab Content: Interactive Demo -->
-                    <div id="vc-demo" class="tab-content active">
-                        <p class="text-lg text-gray-300 mb-6">
-                            Experiment with the P vs. NP gap. **Verify** (fast) vs. **Solve** (slow) vs. **Approximate** (fast).
+                    <div id="vc-what-is" class="tab-content">
+                        <h3 class="text-2xl font-semibold mb-3">What is Vertex Cover?</h3>
+                        <p class="text-gray-300 mb-4 text-lg">
+                            A <span class="font-bold text-cyan-400">Vertex Cover</span> is a subset of vertices $V' \\subseteq V$ in a graph $G=(V, E)$
+                            such that every edge $(u, v) \\in E$ is "covered" (i.e., at least one of $u$ or $v$ is in $V'$).
                         </p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Left Column: Graph Input -->
-                            <div class="bg-gray-800 p-6 rounded-lg">
-                                <h3 class="text-xl font-semibold mb-4">Graph Generators</h3>
-                                <div class="flex space-x-2 mb-4">
-                                    <button id="vc-gen-random" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold py-2 px-3 rounded-lg">Random (n=10)</button>
-                                    <button id="vc-gen-complete" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold py-2 px-3 rounded-lg">Complete (K5)</button>
-                                    <button id="vc-gen-large" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold py-2 px-3 rounded-lg">Larger (n=15)</button>
-                                </div>
-                                
-                                <label class="block text-sm font-medium text-gray-300">Graph (JSON Adjacency List)</label>
-                                <textarea id="vc-graph" class="w-full h-32 bg-gray-900 text-gray-200 p-2 rounded-lg border border-gray-700">{"A": ["B", "C"], "B": ["A", "C", "D"], "C": ["A", "B", "D"], "D": ["B", "C", "E"], "E": ["D"]}</textarea>
-                                
-                                <div id="vc-output" class="mt-4 p-4 bg-gray-900 rounded-lg text-gray-300 min-h-[50px]"></div>
-                            </div>
-
-                            <!-- Right Column: Actions -->
-                            <div class="bg-gray-800 p-6 rounded-lg space-y-6">
-                                <!-- Verify Action -->
-                                <div>
-                                    <h3 class="text-xl font-semibold mb-2 text-green-400">1. Verify a Solution (Fast - P)</h3>
-                                    <label class="block text-sm font-medium text-gray-300">Proposed Cover (e.g., A,D)</label>
-                                    <input id="vc-solution" type="text" class="w-full bg-gray-900 text-gray-200 p-2 rounded-lg border border-gray-700" value="B,C,E">
-                                    <button id="vc-verify-btn" class="mt-2 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg">Verify (Polynomial Time)</button>
-                                </div>
-
-                                <!-- Find Solution Actions -->
-                                <div>
-                                    <h3 class="text-xl font-semibold mb-2 text-cyan-400">2. Find a Solution</h3>
-                                    <p class="text-sm text-gray-400 mb-3">Compare the fast approximation vs. the slow optimal solver.</p>
-                                    <div class="flex space-x-2">
-                                        <button id="vc-approx-btn" class="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Find 2-Approximation (Fast)</button>
-                                        <button id="vc-solve-btn" class="w-1/2 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Find Optimal Solution (Slow)</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tab Content: What is VC? -->
-                    <div id="vc-what-is" class="tab-content bg-gray-800 p-6 rounded-lg">
-                        <h3 class="text-xl font-semibold mb-2">What is Vertex Cover?</h3>
-                        <p class="mb-4">
-                            A <span class="font-bold text-sky-400">Vertex Cover</span> is a subset of vertices $V' \subseteq V$ in a graph $G=(V, E)$ such that every edge $(u, v) \in E$
-                            is "covered" (i.e., $\\{u, v\\} \cap V' \neq \emptyset$).
+                        <p class="text-gray-400 mb-4 bg-gray-800 p-4 rounded-lg">
+                           $V' \\subseteq V \\text{ s.t. } \\forall (u, v) \\in E, \\{u, v\\} \\cap V' \\neq \\emptyset$
                         </p>
-                        <h4 class="text-lg font-semibold mb-2">Formal Definition</h4>
-                        <p class="mb-4 p-4 bg-gray-900 rounded-lg text-cyan-300">$$V' \subseteq V \\text{ s.t. } \\forall (u, v) \\in E, \\{u, v\\} \\cap V' \\neq \\emptyset$$</p>
                         
-                        <h4 class="text-lg font-semibold mb-2">The NP-Complete Problem</h4>
-                        <p class="mb-2">The *optimization* problem is "Find the *minimum* vertex cover."</p>
-                        <p class="mb-2">The *decision* problem (NP-Complete) is **K-VERTEX-COVER**: "Given $G$ and $k$, does $G$ have a vertex cover of size $k$ or less?"</p>
-                        <p class="mb-4 p-4 bg-gray-900 rounded-lg text-cyan-300">$$\\text{Does a } V' \\subseteq V \\text{ exist s.t. } |V'| \\le k \\text{ and } V' \\text{ is a VC for } G?$$</p>
+                        <h4 class="text-xl font-semibold mb-2">The NP-Complete Problem</h4>
+                        <p class="text-gray-300 mb-4">
+                            The *optimization* problem is "Find the *minimum* vertex cover."
+                            <br>
+                            The *decision* problem (NP-Complete) is **K-VERTEX-COVER**:
+                            "Given $G$ and $k$, does $G$ have a vertex cover of size $k$ or less?"
+                        </p>
                         
-                        <h4 class="text-lg font-semibold mb-2">The P vs. NP vs. Approximation Tradeoff</h4>
-                        <ul class="list-disc list-inside space-y-2">
-                            <li><span class="font-bold text-green-400">Verifying is FAST (in P):</span> Check a solution in $O(|V| + |E|)$ time.</li>
-                            <li><span class="font-bold text-blue-400">Approximating is FAST (in P):</span> Find a *good* solution in $O(|E|)$ time. The 2-approximation algorithm guarantees a cover no more than 2x the optimal size.</li>
-                            <li><span class="font-bold text-red-400">Finding Optimal is SLOW (in NP):</span> Find the *best* solution in $O(2^{|V|} \cdot |E|)$ time (brute force).</li>
+                        <h4 class="text-xl font-semibold mb-2">The P vs. NP vs. Approximation Tradeoff</h4>
+                        <ul class="list-disc list-inside space-y-2 text-gray-300">
+                            <li>
+                                <span class="font-bold text-green-400">Verifying a Solution is FAST (in P):</span>
+                                Given $V'$, check if it's a cover. ($O(|V| + |E|)$ time).
+                            </li>
+                            <li>
+                                <span class="font-bold text-blue-400">Finding an Approx. Solution is FAST (in P):</span>
+                                The 2-approximation algorithm in the demo runs in $O(|E|)$ time and is *guaranteed* to find a cover no more than 2x the optimal size.
+                            </li>
+                            <li>
+                                <span class="font-bold text-red-400">Finding an Optimal Solution is SLOW (in NP):</span>
+                                Finding the *smallest* cover is hard. The brute-force way is $O(2^|V| \cdot |E|)$ time.
+                            </li>
                         </ul>
                     </div>
                     
-                    <!-- Tab Content: Key Concepts -->
-                    <div id="vc-concepts" class="tab-content bg-gray-800 p-6 rounded-lg">
-                        <h3 class="text-xl font-semibold mb-4">Key Concepts</h3>
-                        <dl class="space-y-4">
-                            <div><dt class="font-bold text-sky-400">Graph $G=(V, E)$</dt><dd>A set of **Vertices (V)** (nodes) and **Edges (E)** (links) that connect pairs of vertices.</dd></div>
-                            <div><dt class="font-bold text-sky-400">Adjacency List</dt><dd>A representation of a graph where each vertex has a list of its neighbors (what the JSON represents).</dd></div>
-                            <div><dt class="font-bold text-sky-400">Decision Problem vs. Optimization Problem</dt><dd>An **Optimization Problem** asks for the *best* solution (e.g., "Find the *smallest* cover"). A **Decision Problem** asks a "yes/no" question (e.g., "Is there a cover of size *k* or less?").</dd></div>
-                            <div><dt class="font-bold text-sky-400">Approximation Algorithm</dt><dd>A fast (P-time) algorithm for an NP-hard optimization problem that guarantees a solution 'close' to the optimal one. For Vertex Cover, we have a **2-approximation**, meaning the cover it finds is at most $2 \times$ the size of the *true* smallest cover.</dd></div>
-                        </dl>
+                    <div id="vc-demo" class="tab-content active">
+                        <p class="text-lg text-gray-300 mb-6">
+                            Enter a graph as an adjacency list, or use a generator. Then, try to verify a solution (fast) or find the optimal one (slow).
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-gray-800 p-6 rounded-lg">
+                                <h3 class="text-xl font-semibold mb-4">Graph Generators</h3>
+                                <div class="flex space-x-2 mb-4">
+                                    <button id="vc-gen-random" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-sm font-medium py-2 px-3 rounded-lg">Random (n=10)</button>
+                                    <button id="vc-gen-k5" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-sm font-medium py-2 px-3 rounded-lg">Complete (K5)</button>
+                                    <button id="vc-gen-large" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-sm font-medium py-2 px-3 rounded-lg">Larger (n=15)</button>
+                                </div>
+
+                                <label for="vc-graph" class="block text-sm font-medium text-gray-300 mb-2">Graph JSON (Adjacency List):</label>
+                                <textarea id="vc-graph" rows="6" class="w-full p-2 bg-gray-900 text-gray-200 border border-gray-700 rounded-lg">{"A": ["B", "C"], "B": ["A", "C", "D"], "C": ["A", "B", "D"], "D": ["B", "C", "E"], "E": ["D"]}</textarea>
+                            </div>
+
+                            <div class="bg-gray-800 p-6 rounded-lg">
+                                <h3 class="text-xl font-semibold mb-4">1. Verify a Solution (P-Time)</h3>
+                                <label for="vc-solution" class="block text-sm font-medium text-gray-300 mb-2">Proposed Solution (e.g., A,D):</label>
+                                <div class="flex space-x-2">
+                                    <input type="text" id="vc-solution" value="B,C,E" class="flex-1 p-2 bg-gray-900 text-gray-200 border border-gray-700 rounded-lg">
+                                    <button id="vc-verify-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg">Verify</button>
+                                </div>
+                                
+                                <hr class="my-6 border-gray-700">
+
+                                <h3 class="text-xl font-semibold mb-4">2. Find a Solution</h3>
+                                <div class="flex space-x-2">
+                                    <button id="vc-approx-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">2-Approximation (Fast)</button>
+                                    <button id="vc-solve-btn" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Optimal (Slow)</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="vc-output" class="mt-6 p-4 bg-gray-800 rounded-lg text-gray-300 min-h-[50px]">
+                            Output will appear here.
+                        </div>
                     </div>
                 </div>
             `;
         document.getElementById("module-content").innerHTML = template;
-
-        // Wire up event listeners
-        document
-          .getElementById("vc-verify-btn")
-          .addEventListener("click", verifyVertexCover);
-        document
-          .getElementById("vc-approx-btn")
-          .addEventListener("click", solveVertexCoverApprox);
-        document
-          .getElementById("vc-solve-btn")
-          .addEventListener("click", solveVertexCoverOptimal);
         setupTabs("vc-container");
+
+        // Wire up VC buttons
         const graphText = document.getElementById("vc-graph");
         document
           .getElementById("vc-gen-random")
-          .addEventListener("click", () => {
-            graphText.value = generateRandomGraph(10, 0.3);
-          });
+          .addEventListener(
+            "click",
+            () => (graphText.value = generateRandomGraph(10, 0.3))
+          );
         document
-          .getElementById("vc-gen-complete")
-          .addEventListener("click", () => {
-            graphText.value = generateCompleteGraph(5);
-          });
+          .getElementById("vc-gen-k5")
+          .addEventListener(
+            "click",
+            () => (graphText.value = generateCompleteGraph(5))
+          );
         document
           .getElementById("vc-gen-large")
-          .addEventListener("click", () => {
-            graphText.value = generateRandomGraph(15, 0.2);
-          });
+          .addEventListener(
+            "click",
+            () => (graphText.value = generateRandomGraph(15, 0.2))
+          );
+
+        document
+          .getElementById("vc-verify-btn")
+          .addEventListener("click", verifyVC);
+        document
+          .getElementById("vc-approx-btn")
+          .addEventListener("click", solveVCApprox);
+        document
+          .getElementById("vc-solve-btn")
+          .addEventListener("click", solveVCOptimal);
       }
 
-      // Helper function to get all unique edges from an adjacency list
+      // --- VC Algorithm Implementations ---
       function getVCEdges(adjList) {
         const edges = new Set();
         for (const u in adjList) {
           for (const v of adjList[u]) {
-            // Sort to avoid duplicates like A-B and B-A
-            const uKey = isNaN(Number(u)) ? u : Number(u);
-            const vKey = isNaN(Number(v)) ? v : Number(v);
-            const edge = [uKey, vKey]
-              .sort((a, b) => String(a).localeCompare(String(b)))
-              .join("-");
+            const edge = JSON.stringify([u, v].sort());
             edges.add(edge);
           }
         }
-        return edges;
+        return Array.from(edges).map((e) => JSON.parse(e));
       }
 
-      // P-time algorithm to verify a VC solution
-      function verifyVertexCover() {
+      function verifyVC() {
         const output = document.getElementById("vc-output");
         try {
           const adjList = JSON.parse(document.getElementById("vc-graph").value);
-          const solutionInput = document.getElementById("vc-solution").value;
+          const solutionText = document.getElementById("vc-solution").value;
           const solutionSet = new Set(
-            solutionInput
-              .split(",")
-              .map((s) => s.trim())
-              .filter(Boolean)
+            solutionText.split(",").map((s) => s.trim())
           );
           const edges = getVCEdges(adjList);
           let uncovered = [];
           let opCount = 0;
-          for (const edge of edges) {
+
+          for (const [u, v] of edges) {
             opCount++;
-            const [u, v] = edge.split("-");
             if (!solutionSet.has(u) && !solutionSet.has(v)) {
-              uncovered.push(edge);
+              uncovered.push(`${u}-${v}`);
             }
           }
+
           if (uncovered.length === 0) {
             output.className =
               "mt-4 p-4 bg-green-900 text-green-200 rounded-lg min-h-[50px]";
-            output.innerHTML = `<strong>SUCCESS:</strong> This is a valid vertex cover.<br>(~${opCount} operations, P-time)`;
+            output.innerHTML = `<strong>VERIFICATION SUCCESSFUL:</strong> {${solutionText}} is a valid vertex cover.<br>(~${opCount} operations, $O(|E|)$)`;
           } else {
             output.className =
               "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
-            output.innerHTML = `<strong>FAILED:</strong> This set does not cover:<br>${uncovered.join(
+            output.innerHTML = `<strong>VERIFICATION FAILED:</strong> The set does not cover these edges: ${uncovered.join(
               ", "
-            )}<br>(~${opCount} operations, P-time)`;
+            )}.<br>(~${opCount} operations, $O(|E|)$)`;
           }
         } catch (e) {
           output.className =
@@ -734,53 +725,48 @@
         }
       }
 
-      // P-time 2-approximation algorithm
-      function solveVertexCoverApprox() {
+      function solveVCApprox() {
         const output = document.getElementById("vc-output");
         output.className =
           "mt-4 p-4 bg-yellow-900 text-yellow-200 rounded-lg min-h-[50px]";
-        output.textContent = "Finding 2-approximation (fast)...";
+        output.textContent = "Finding approximation...";
 
         setTimeout(() => {
-          // Use timeout to allow UI to update
           try {
             const adjList = JSON.parse(
               document.getElementById("vc-graph").value
             );
-            let edges = getVCEdges(adjList); // This is a Set
-            const approxCover = new Set();
-            let opCount = 0;
             const startTime = performance.now();
+            let opCount = 0;
+            let edges = new Set(getVCEdges(adjList).map(JSON.stringify));
+            let approxCover = new Set();
 
             while (edges.size > 0) {
               opCount++;
-              // 1. Pick an arbitrary edge
-              const [u, v] = edges.values().next().value.split("-");
-
-              // 2. Add both nodes to cover
+              const [u, v] = JSON.parse(edges.values().next().value);
+              edges.delete(JSON.stringify([u, v]));
               approxCover.add(u);
               approxCover.add(v);
 
-              // 3. Remove all covered edges
-              const edgesToRemove = [];
-              for (const edge of edges) {
+              let edgesToRemove = [];
+              for (const edgeStr of edges) {
                 opCount++;
-                const [e_u, e_v] = edge.split("-");
-                if (approxCover.has(e_u) || approxCover.has(e_v)) {
-                  edgesToRemove.push(edge);
+                const [e1, e2] = JSON.parse(edgeStr);
+                if (e1 === u || e1 === v || e2 === u || e2 === v) {
+                  edgesToRemove.push(edgeStr);
                 }
               }
-              edgesToRemove.forEach((edge) => edges.delete(edge));
+              edgesToRemove.forEach((edgeStr) => edges.delete(edgeStr));
             }
-            const endTime = performance.now();
 
+            const endTime = performance.now();
             output.className =
               "mt-4 p-4 bg-blue-900 text-blue-200 rounded-lg min-h-[50px]";
-            output.innerHTML = `<strong>APPROXIMATION FOUND:</strong> Cover: {${[
+            output.innerHTML = `<strong>APPROXIMATION FOUND:</strong> Cover is {${[
               ...approxCover,
             ].join(", ")}} (Size: ${
               approxCover.size
-            }).<br>(~${opCount} operations, P-time)<br>Time: ${(
+            }).<br>(~${opCount} operations, $O(|E|)$)<br>Time: ${(
               endTime - startTime
             ).toFixed(2)} ms`;
           } catch (e) {
@@ -791,58 +777,51 @@
         }, 50);
       }
 
-      // NP-hard (brute-force) algorithm to find the optimal VC
-      function solveVertexCoverOptimal() {
+      function solveVCOptimal() {
         const output = document.getElementById("vc-output");
         output.className =
           "mt-4 p-4 bg-yellow-900 text-yellow-200 rounded-lg min-h-[50px]";
-        output.textContent = "Solving (brute force)... This may take a moment.";
+        output.textContent = "Solving (Brute Force)... This may take a moment.";
 
         setTimeout(() => {
-          // Use timeout to allow UI to update
           try {
             const adjList = JSON.parse(
               document.getElementById("vc-graph").value
             );
             const vertices = Object.keys(adjList);
+            const edges = getVCEdges(adjList);
             const n = vertices.length;
 
-            // Safety cap
-            if (n > 20) {
+            if (n > 18) {
               output.className =
                 "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
               output.textContent =
-                "Error: Graph is too large for client-side brute force (n > 20). This demonstrates exponential complexity!";
+                "Error: Graph is too large for client-side brute-force (n > 18). This demonstrates exponential complexity!";
               return;
             }
 
-            const edges = getVCEdges(adjList);
-            let smallestCover = null;
-            let opCount = 0;
             const startTime = performance.now();
+            let opCount = 0;
+            let smallestCover = null;
 
-            // Iterate through all 2^n subsets
             for (let i = 0; i < 1 << n; i++) {
               opCount++;
-              const subset = new Set();
+              let subset = new Set();
               for (let j = 0; j < n; j++) {
                 if ((i >> j) & 1) {
                   subset.add(vertices[j]);
                 }
               }
 
-              // Check if this subset is a valid cover
               let isCover = true;
-              for (const edge of edges) {
+              for (const [u, v] of edges) {
                 opCount++;
-                const [u, v] = edge.split("-");
                 if (!subset.has(u) && !subset.has(v)) {
                   isCover = false;
                   break;
                 }
               }
 
-              // If it's a cover, see if it's the smallest
               if (isCover) {
                 if (
                   smallestCover === null ||
@@ -853,7 +832,6 @@
               }
             }
             const endTime = performance.now();
-
             output.className =
               "mt-4 p-4 bg-green-900 text-green-200 rounded-lg min-h-[50px]";
             output.innerHTML = `<strong>OPTIMAL SOLVED:</strong> Cover is {${[
@@ -880,82 +858,109 @@
                     <div class="flex space-x-2 mb-4">
                         <button class="tab-btn active" data-tab="tsp-demo">Interactive Demo</button>
                         <button class="tab-btn" data-tab="tsp-what-is">What is TSP?</button>
-                        <button class="tab-btn" data-tab="tsp-concepts">Key Concepts</button>
                     </div>
 
-                    <!-- Tab Content: Demo -->
+                    <div id="tsp-what-is" class="tab-content">
+                        <h3 class="text-2xl font-semibold mb-3">What is the Traveling Salesperson (TSP)?</h3>
+                        <p class="text-gray-300 mb-4 text-lg">
+                            Given a list of cities and the distances between them, what is the <span class="font-bold text-cyan-400">shortest possible route</span> 
+                            that visits each city exactly once and returns to the origin city?
+                        </p>
+                        <p class="text-gray-400 mb-4 bg-gray-800 p-4 rounded-lg">
+                           Formally: Given a complete weighted graph $G = (V, E, w)$, find a **Hamiltonian cycle**
+                           with the minimum total weight.
+                        </p>
+                        
+                        <h4 class="text-xl font-semibold mb-2">The NP-Complete Problem</h4>
+                        <p class="text-gray-300 mb-4">
+                            The *optimization* problem is "Find the *shortest* tour."
+                            <br>
+                            The *decision* problem (NP-Complete) is **K-TSP**:
+                            "Given $G$, $w$, and $k$, does $G$ have a tour with a total weight less than or equal to $k$?"
+                        </p>
+                        
+                        <h4 class="text-xl font-semibold mb-2">The P vs. NP vs. Heuristic Tradeoff</h4>
+                        <ul class="list-disc list-inside space-y-2 text-gray-300">
+                            <li>
+                                <span class="font-bold text-green-400">Verifying a Solution is FAST (in P):</span>
+                                Given a path $\\pi$, add up the distances ($O(n)$ time).
+                            </li>
+                            <li>
+                                <span class="font-bold text-blue-400">Finding a Heuristic Solution is FAST (in P):</span>
+                                The **Nearest Neighbor** heuristic (always go to the closest unvisited city) is $O(n^2)$ time. It provides a "good enough" solution, but no guarantee on its quality.
+                            </li>
+                            <li>
+                                <span class="font-bold text-red-400">Finding an Optimal Solution is SLOW (in NP):</span>
+                                Finding the *shortest* tour is hard. The brute-force way is to check all $(n-1)!$ possible tours ($O(n!)$ time).
+                            </li>
+                        </ul>
+                    </div>
+                    
                     <div id="tsp-demo" class="tab-content active">
                         <p class="text-lg text-gray-300 mb-6">
-                            Find the shortest route that visits each city once. This is $O(n!)$, which is even worse than $O(2^n)$!
+                            Find the shortest route. This is $O(n!)$, which is even worse than $O(2^n)$!
                         </p>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Left Column: Demo -->
                             <div class="bg-gray-800 p-6 rounded-lg">
                                 <h3 class="text-xl font-semibold mb-4">City Generators</h3>
                                 <div class="flex space-x-2 mb-4">
-                                    <button id="tsp-gen-5" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold py-2 px-3 rounded-lg">5 Random Cities</button>
-                                    <button id="tsp-gen-8" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold py-2 px-3 rounded-lg">8 Random Cities</button>
-                                    <button id="tsp-gen-9" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold py-2 px-3 rounded-lg">9 Random Cities</button>
+                                    <button id="tsp-gen-5" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-sm font-medium py-2 px-3 rounded-lg">5 Random Cities</button>
+                                    <button id="tsp-gen-8" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-sm font-medium py-2 px-3 rounded-lg">8 Random Cities</button>
+                                    <button id="tsp-gen-9" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-sm font-medium py-2 px-3 rounded-lg">9 Random Cities</button>
                                 </div>
-                                <label class="block text-sm font-medium text-gray-300">Cities (JSON with x, y coords)</label>
-                                <textarea id="tsp-cities" class="w-full h-32 bg-gray-900 text-gray-200 p-2 rounded-lg border border-gray-700">{"A": {"x": 0, "y": 0}, "B": {"x": 10, "y": 5}, "C": {"x": 5, "y": 10}, "D": {"x": 15, "y": 0}}</textarea>
-                                <div id="tsp-output" class="mt-4 p-4 bg-gray-900 rounded-lg text-gray-300 min-h-[50px]"></div>
+
+                                <label for="tsp-cities" class="block text-sm font-medium text-gray-300 mb-2">Cities JSON:</label>
+                                <textarea id="tsp-cities" rows="6" class="w-full p-2 bg-gray-900 text-gray-200 border border-gray-700 rounded-lg">{"A": {"x": 0, "y": 0}, "B": {"x": 10, "y": 5}, "C": {"x": 5, "y": 10}, "D": {"x": 15, "y": 0}}</textarea>
                             </div>
-                            <!-- Right Column: Actions -->
-                            <div class="bg-gray-800 p-6 rounded-lg space-y-6">
-                                <div>
-                                    <h3 class="text-xl font-semibold mb-2 text-green-400">1. Verify a Tour Length (Fast - P)</h3>
-                                    <label class="block text-sm font-medium text-gray-300">Proposed Tour (e.g., A,B,C,D,A)</label>
-                                    <input id="tsp-tour" type="text" class="w-full bg-gray-900 text-gray-200 p-2 rounded-lg border border-gray-700" value="A,C,B,D,A">
-                                    <button id="tsp-verify-btn" class="mt-2 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg">Verify (Polynomial Time)</button>
+
+                            <div class="bg-gray-800 p-6 rounded-lg">
+                                <h3 class="text-xl font-semibold mb-4">1. Verify a Tour (P-Time)</h3>
+                                <label for="tsp-tour" class="block text-sm font-medium text-gray-300 mb-2">Proposed Tour (e.g., A,C,B,D,A):</label>
+                                <div class="flex space-x-2">
+                                    <input type="text" id="tsp-tour" value="A,C,B,D,A" class="flex-1 p-2 bg-gray-900 text-gray-200 border border-gray-700 rounded-lg">
+                                    <button id="tsp-verify-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg">Verify</button>
                                 </div>
-                                <div>
-                                    <h3 class="text-xl font-semibold mb-2 text-cyan-400">2. Find a Solution</h3>
-                                    <p class="text-sm text-gray-400 mb-3">Compare the fast heuristic vs. the *very* slow optimal solver.</p>
-                                    <div class="flex space-x-2">
-                                        <button id="tsp-heuristic-btn" class="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Find Heuristic Tour (Fast)</button>
-                                        <button id="tsp-solve-btn" class="w-1/2 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Find Optimal Tour (Very Slow)</button>
-                                    </div>
+                                
+                                <hr class="my-6 border-gray-700">
+
+                                <h3 class="text-xl font-semibold mb-4">2. Find a Solution</h3>
+                                <div class="flex space-x-2">
+                                    <button id="tsp-heuristic-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Heuristic (Fast)</button>
+                                    <button id="tsp-solve-btn" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Optimal (Slow)</button>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Tab Content: What is TSP? -->
-                    <div id="tsp-what-is" class="tab-content bg-gray-800 p-6 rounded-lg">
-                        <h3 class="text-xl font-semibold mb-2">What is the Traveling Salesperson (TSP)?</h3>
-                        <p class="mb-4">
-                            Given a list of cities and the distances between them, what is the <span class="font-bold text-sky-400">shortest possible route</span> 
-                            that visits each city exactly once and returns to the origin city?
-                        </p>
-                        <h4 class="text-lg font-semibold mb-2">Formal Definition</h4>
-                        <p class="mb-2">Given a complete weighted graph $G = (V, E, w)$, find a **Hamiltonian cycle** (a tour that visits every vertex $v \\in V$ exactly once) with the minimum total weight.</p>
-                        <p class="mb-4 p-4 bg-gray-900 rounded-lg text-cyan-300">Find $\\pi$ that minimizes:
-                            $$w(v_{\\pi(n)}, v_{\\pi(1)}) + \\sum_{i=1}^{n-1} w(v_{\\pi(i)}, v_{\\pi(i+1)})$$
-                        </p>
-                        <h4 class="text-lg font-semibold mb-2">The P vs. NP vs. Heuristic Tradeoff</h4>
-                        <ul class="list-disc list-inside space-y-2">
-                            <li><span class="font-bold text-green-400">Verifying is FAST (in P):</span> Check a tour's length in $O(n)$ time.</li>
-                            <li><span class="font-bold text-blue-400">Approximating is FAST (in P):</span> Find a *good* tour using a heuristic like "Nearest Neighbor" in $O(n^2)$ time. This gives *no guarantee* but is often good.</li>
-                            <li><span class="font-bold text-red-400">Finding Optimal is SLOW (in NP):</span> Find the *best* tour in $O(n!)$ time (brute force).</li>
-                        </ul>
-                    </div>
-
-                    <!-- Tab Content: Key Concepts -->
-                    <div id="tsp-concepts" class="tab-content bg-gray-800 p-6 rounded-lg">
-                        <h3 class="text-xl font-semibold mb-4">Key Concepts</h3>
-                        <dl class="space-y-4">
-                            <div><dt class="font-bold text-sky-400">Complete Graph</dt><dd>A graph where every pair of distinct vertices is connected by a unique edge.</dd></div>
-                            <div><dt class="font-bold text-sky-400">Hamiltonian Cycle (or Tour)</dt><dd>A path in a graph that visits each vertex *exactly once* and returns to the starting vertex.</dd></div>
-                            <div><dt class="font-bold text-sky-400">Factorial ($n!$)</dt><dd>The product of all positive integers less than or equal to $n$ ($n! = n \times ... \times 1$). This function grows *extremely* fast.</dd></div>
-                            <div><dt class="font-bold text-sky-400">Heuristic Algorithm</dt><dd>A fast (P-time) algorithm or 'rule of thumb' for solving a problem. Unlike an approximation algorithm, a heuristic gives *no guarantee* on how close its answer is to the optimal one.</dd></div>
-                        </dl>
+                        <div id="tsp-output" class="mt-6 p-4 bg-gray-800 rounded-lg text-gray-300 min-h-[50px]">
+                            Output will appear here.
+                        </div>
                     </div>
                 </div>
             `;
         document.getElementById("module-content").innerHTML = template;
+        setupTabs("tsp-container");
 
-        // Wire up event listeners
+        // Wire up TSP buttons
+        const citiesText = document.getElementById("tsp-cities");
+        document
+          .getElementById("tsp-gen-5")
+          .addEventListener(
+            "click",
+            () => (citiesText.value = generateRandomCities(5))
+          );
+        document
+          .getElementById("tsp-gen-8")
+          .addEventListener(
+            "click",
+            () => (citiesText.value = generateRandomCities(8))
+          );
+        document
+          .getElementById("tsp-gen-9")
+          .addEventListener(
+            "click",
+            () => (citiesText.value = generateRandomCities(9))
+          );
+
         document
           .getElementById("tsp-verify-btn")
           .addEventListener("click", verifyTSP);
@@ -965,20 +970,9 @@
         document
           .getElementById("tsp-solve-btn")
           .addEventListener("click", solveTSPOptimal);
-        setupTabs("tsp-container");
-        const citiesText = document.getElementById("tsp-cities");
-        document.getElementById("tsp-gen-5").addEventListener("click", () => {
-          citiesText.value = generateRandomCities(5);
-        });
-        document.getElementById("tsp-gen-8").addEventListener("click", () => {
-          citiesText.value = generateRandomCities(8);
-        });
-        document.getElementById("tsp-gen-9").addEventListener("click", () => {
-          citiesText.value = generateRandomCities(9);
-        });
       }
 
-      // P-time algorithm to verify a TSP tour
+      // --- TSP Algorithm Implementations ---
       function getDist(cityA, cityB) {
         return Math.sqrt((cityA.x - cityB.x) ** 2 + (cityA.y - cityB.y) ** 2);
       }
@@ -998,6 +992,7 @@
             throw new Error("Tour must have at least 2 cities.");
           if (tour[0] !== tour[tour.length - 1])
             throw new Error("Tour must start and end at the same city.");
+
           let totalDist = 0;
           let opCount = 0;
           for (let i = 0; i < tour.length - 1; i++) {
@@ -1010,11 +1005,11 @@
           }
           output.className =
             "mt-4 p-4 bg-green-900 text-green-200 rounded-lg min-h-[50px]";
-          output.innerHTML = `<strong>VERIFIED:</strong> Tour: ${tour.join(
-            " -> "
-          )}<br>Total Length: ${totalDist.toFixed(
+          output.innerHTML = `<strong>VERIFICATION COMPLETE:</strong> Tour ${tour.join(
+            " &rarr; "
+          )} has length ${totalDist.toFixed(
             2
-          )}<br>(~${opCount} operations, P-time)`;
+          )}.<br>(~${opCount} operations, $O(n)$)`;
         } catch (e) {
           output.className =
             "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
@@ -1022,31 +1017,34 @@
         }
       }
 
-      // P-time Nearest Neighbor heuristic
       function solveTSPHeuristic() {
         const output = document.getElementById("tsp-output");
         output.className =
           "mt-4 p-4 bg-yellow-900 text-yellow-200 rounded-lg min-h-[50px]";
         output.textContent = "Finding heuristic tour (Nearest Neighbor)...";
+
         setTimeout(() => {
           try {
             const cities = JSON.parse(
               document.getElementById("tsp-cities").value
             );
             const cityNames = Object.keys(cities);
-            if (cityNames.length === 0) throw new Error("No cities provided.");
+            if (cityNames.length === 0) throw new Error("No cities to visit.");
+
             const startTime = performance.now();
             let opCount = 0;
             const startCity = cityNames[0];
-            const tour = [startCity];
-            const unvisited = new Set(cityNames.slice(1));
+            let tour = [startCity];
+            let unvisited = new Set(cityNames.slice(1));
             let totalDist = 0;
             let currentCityName = startCity;
+
             while (unvisited.size > 0) {
               opCount++;
               let nearestCity = null;
               let minDist = Infinity;
               const currentCityCoords = cities[currentCityName];
+
               for (const cityName of unvisited) {
                 opCount++;
                 const cityCoords = cities[cityName];
@@ -1056,22 +1054,19 @@
                   nearestCity = cityName;
                 }
               }
-              if (nearestCity) {
-                totalDist += minDist;
-                currentCityName = nearestCity;
-                tour.push(currentCityName);
-                unvisited.delete(currentCityName);
-              } else {
-                break;
-              }
+              totalDist += minDist;
+              currentCityName = nearestCity;
+              tour.push(currentCityName);
+              unvisited.delete(currentCityName);
             }
             totalDist += getDist(cities[currentCityName], cities[startCity]);
             tour.push(startCity);
             const endTime = performance.now();
+
             output.className =
               "mt-4 p-4 bg-blue-900 text-blue-200 rounded-lg min-h-[50px]";
             output.innerHTML = `<strong>HEURISTIC FOUND:</strong> Tour: ${tour.join(
-              " -> "
+              " &rarr; "
             )}<br>Length: ${totalDist.toFixed(
               2
             )}<br>(~${opCount} operations, $O(n^2)$)<br>Time: ${(
@@ -1085,13 +1080,46 @@
         }, 50);
       }
 
-      // NP-hard (brute-force) algorithm to find the optimal TSP tour
+      // Need a permutation helper for TSP
+      function* getPermutations(arr) {
+        if (arr.length === 0) {
+          yield [];
+          return;
+        }
+        const first = arr[0];
+        const rest = arr.slice(1);
+        for (const perm of getPermutations(rest)) {
+          for (let i = 0; i <= perm.length; i++) {
+            yield [...perm.slice(0, i), first, ...perm.slice(i)];
+          }
+        }
+      }
+      // A more efficient permutation generator (Heap's)
+      function* permute(arr) {
+        const c = new Array(arr.length).fill(0);
+        yield arr.slice();
+        let i = 1;
+        while (i < arr.length) {
+          if (c[i] < i) {
+            const k = i % 2 === 0 ? 0 : c[i];
+            [arr[i], arr[k]] = [arr[k], arr[i]]; // swap
+            c[i]++;
+            i = 1;
+            yield arr.slice();
+          } else {
+            c[i] = 0;
+            i++;
+          }
+        }
+      }
+
       function solveTSPOptimal() {
         const output = document.getElementById("tsp-output");
         output.className =
           "mt-4 p-4 bg-yellow-900 text-yellow-200 rounded-lg min-h-[50px]";
         output.textContent =
-          "Solving (brute force)... This will be very slow if n > 9.";
+          "Solving (Brute Force)... This will be very slow if n > 9.";
+
         setTimeout(() => {
           try {
             const cities = JSON.parse(
@@ -1099,12 +1127,11 @@
             );
             const cityNames = Object.keys(cities);
             const n = cityNames.length;
-
-            // Safety cap
             if (n > 9) {
               output.className =
                 "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
-              output.textContent = `Error: Too many cities (n=${n}). n > 9 will crash your browser with O(n!) complexity. This is the lesson!`;
+              output.textContent =
+                "Error: Too many cities (n > 9). n > 9 will crash your browser with O(n!) complexity. This is the lesson!";
               return;
             }
 
@@ -1115,33 +1142,12 @@
             let opCount = 0;
             const startTime = performance.now();
 
-            // Permutation generator
-            function* permute(arr) {
-              const n = arr.length;
-              const c = new Array(n).fill(0);
-              let a = [...arr];
-              yield a;
-              let i = 1;
-              while (i < n) {
-                if (c[i] < i) {
-                  const k = i % 2 === 0 ? 0 : c[i];
-                  [a[i], a[k]] = [a[k], a[i]];
-                  c[i]++;
-                  i = 1;
-                  opCount++;
-                  yield a;
-                } else {
-                  c[i] = 0;
-                  i++;
-                }
-              }
-            }
-
-            // Check all (n-1)! permutations
             for (const perm of permute(otherCities)) {
+              opCount++;
               let currentDist = 0;
-              const currentTour = [startCity, ...perm, startCity];
+              let currentTour = [startCity, ...perm, startCity];
               for (let i = 0; i < currentTour.length - 1; i++) {
+                opCount++;
                 const cityA = cities[currentTour[i]];
                 const cityB = cities[currentTour[i + 1]];
                 currentDist += getDist(cityA, cityB);
@@ -1152,14 +1158,13 @@
               }
             }
             const endTime = performance.now();
-
             output.className =
               "mt-4 p-4 bg-green-900 text-green-200 rounded-lg min-h-[50px]";
             output.innerHTML = `<strong>OPTIMAL SOLVED:</strong> Tour: ${shortestTour.join(
-              " -> "
+              " &rarr; "
             )}<br>Length: ${shortestDist.toFixed(
               2
-            )}<br>(~${opCount} permutations, $O(n!)$)<br>Time: ${(
+            )}<br>(~${opCount} operations, $O(n!)$)<br>Time: ${(
               endTime - startTime
             ).toFixed(2)} ms`;
           } catch (e) {
@@ -1172,254 +1177,265 @@
 
       // --- Module 5: Open Problems ---
       function showOpenProblems() {
-        // This is the HTML template for the Open Problems module
         const template = `
                 <h2 class="text-3xl font-bold mb-4 text-sky-400">Module 4: Open Problems & The Future</h2>
                 <p class="text-lg text-gray-300 mb-6">
-                    Complexity theory is not a "solved" field. Click on the <span class="bg-blue-700 text-blue-100 px-2 py-1 rounded-md text-sm">Define</span> tags to learn more.
+                    Complexity theory is not a "solved" field. It's an active area of research with
+                    some of the deepest, most difficult questions in all of computer science.
                 </p>
-                
+
                 <div class="space-y-8">
-                    <!-- 1. P vs NP -->
                     <div>
-                        <h3 class="text-2xl font-semibold text-gray-200 mb-2">1. Is P = NP?</h3>
-                        <p class="text-gray-300 leading-relaxed">
+                        <h3 class="text-2xl font-semibold mb-2">1. Is P = NP?</h3>
+                        <p class="text-gray-300">
                             **The Question:** Is every problem that can be *verified* quickly also *solvable* quickly?
-                            <br>Formally: Does $\\text{P} = \\text{NP}$?
+                            <br>
+                            **Formally:** Does $\\text{P} = \\text{NP}$?
+                            <br><br>
+                            This is the most famous problem in computer science. The consensus is that **P $\\neq$ NP**, but proving it remains one of the hardest challenges ever conceived.
                         </p>
                         <div class="paper-info">
                             <strong>Stephen Cook's View (2000):</strong>
+                            <br>
                             In his paper for the Clay Mathematics Institute (which established the $1M prize),
-                            Stephen Cook wrote: *"My guess is that the answer is 'no'. ... a proof that P $\\neq$ NP
+                            Stephen Cook wrote: *"My guess is that the answer is 'no'. ... a proof that P ≠ NP
                             would be a milestone in mathematics ... a proof that P = NP would be even more
                             stunning."*
                             <br><br>
                             <strong>Seminal Paper:</strong> Cook, S. A. (2000). *The P vs. NP problem*. Clay Mathematics Institute.
                         </div>
                     </div>
-
-                    <!-- 2. NP vs co-NP -->
+                    
                     <div>
-                        <h3 class="text-2xl font-semibold text-gray-200 mb-2">2. Is NP = co-NP?</h3>
-                        <p class="text-gray-300 leading-relaxed">
+                        <h3 class="text-2xl font-semibold mb-2">2. Is NP = co-NP?</h3>
+                        <p class="text-gray-300">
                             **The Question:** If a problem's "yes" answers are easy to verify, are its "no" answers also easy to verify?
-                            <br>Formally: Does $\\text{NP} = \\text{co-NP}$?
+                            <br>
+                            **Formally:** Does $\\text{NP} = \\text{co-NP}$?
+                            
                             <details class="popover-def">
                                 <summary>Define: co-NP</summary>
-                                <div><strong class="text-white">co-NP</strong> is the class of problems where "no" instances have a short, verifiable proof (a "counterexample"). Example: TAUTOLOGY (Is a formula *always* true? A "no" proof is a single assignment that makes it false).</div>
+                                <div>
+                                    **co-NP** is the class of problems where "no" instances have a short, verifiable proof (a "counterexample").
+                                    <br><br>
+                                    **Example: TAUTOLOGY.**
+                                    - **Problem:** Is this Boolean formula *always* true?
+                                    - **"No" Proof:** If the answer is "no," you can provide a counterexample: an assignment of variables that makes the formula *false*.
+                                    - We can verify this counterexample quickly, so TAUTOLOGY is in co-NP.
+                                </div>
                             </details>
-                        </p>
-                        <div class="paper-info">
-                            <strong>Seminal Paper:</strong> Pratt, V. (1975). *Every prime has a succinct certificate*.
+                            
                             <br><br>
-                            This paper famously showed that PRIMES (checking if a number is prime)
-                            is in both NP and co-NP, long before it was proven to be in P.
-                        </div>
+                            If NP $\\neq$ co-NP (which is widely believed), it would imply that proving something is *always* true is fundamentally harder than proving it's *sometimes* true (SAT). It would also prove P $\\neq$ NP.
+                        </p>
                     </div>
 
-                    <!-- 3. ETH -->
                     <div>
-                        <h3 class="text-2xl font-semibold text-gray-200 mb-2">3. The Exponential Time Hypothesis (ETH)</h3>
-                        <p class="text-gray-300 leading-relaxed">
+                        <h3 class="text-2xl font-semibold mb-2">3. The Exponential Time Hypothesis (ETH)</h3>
+                        <p class="text-gray-300">
                             **The Question:** Does the 3-SAT problem *really* require exponential time to solve?
+                            <br>
+                            **Formally:** The ETH conjectures that there is no algorithm for 3-SAT that runs in *sub-exponential time*.
+                            
                             <details class="popover-def">
                                 <summary>Define: Sub-exponential Time</summary>
-                                <div><strong class="text-white">Sub-exponential Time</strong> is faster than $O(2^{\\delta n})$ but slower than $O(n^k)$. ETH claims 3-SAT *cannot* be solved in this time.</div>
+                                <div>
+                                    An algorithm that is faster than $O(2^{\\delta n})$ for all $\\delta > 0$, but still slower than polynomial time.
+                                    <br><br>
+                                    - **Exponential:** $O(2^n)$
+                                    - **Sub-exponential:** $O(2^{n^{0.5}})$
+                                    - **Polynomial:** $O(n^2)$
+                                </div>
                             </details>
                         </p>
                         <div class="paper-info">
                             <strong>Seminal Paper:</strong> Impagliazzo, R., & Paturi, R. (1999). *On the complexity of k-SAT*.
                             <br><br>
                             This paper introduced the Exponential Time Hypothesis (ETH) and its variant,
-                            the Strong Exponential Time Hypothesis (SETH).
+                            the Strong Exponential Time Hypothesis (SETH), which are now central assumptions
+                            in fine-grained complexity.
                         </div>
                     </div>
 
-                    <!-- 4. P vs PSPACE -->
                     <div>
-                        <h3 class="text-2xl font-semibold text-gray-200 mb-2">4. Is P = PSPACE?</h3>
-                        <p class="text-gray-300 leading-relaxed">
-                            **The Question:** Can every problem solvable with *polynomial memory* also be solved in *polynomial time*?
+                        <h3 class="text-2xl font-semibold mb-2">4. Is P = PSPACE?</h3>
+                        <p class="text-gray-300">
+                            **The Question:** Can every problem that is solvable using a *polynomial amount of memory* also be solved using a *polynomial amount of time*?
+                            <br>
+                            **Formally:** Does $\\text{P} = \\text{PSPACE}$?
+
                             <details class="popover-def">
                                 <summary>Define: PSPACE</summary>
-                                <div><strong class="text-white">PSPACE</strong> is the set of problems solvable with a *polynomial* amount of memory, regardless of time. (e.g., solving chess).</div>
+                                <div>
+                                    **PSPACE** is the set of all problems that can be solved by an algorithm using a *polynomial* amount of memory (space), regardless of how much *time* it takes.
+                                    <br><br>
+                                    We know $\\text{P} \\subseteq \\text{NP} \\subseteq \\text{PSPACE}$.
+                                </div>
                             </details>
-                        </p>
-                        <div class="paper-info">
-                            <strong>Seminal Paper:</strong> Savitch, W. J. (1970). *Relationships between nondeterministic and deterministic tape complexities*.
                             <br><br>
-                            This paper contains **Savitch's Theorem**, which proves $\\text{NSPACE}(S(n)) \\subseteq \\text{DSPACE}(S(n)^2)$, and as a corollary that $\\text{PSPACE} = \\text{NPSPACE}$.
-                        </div>
+                            We strongly believe $\\text{P} \\neq \\text{PSPACE}$, meaning some problems are *fundamentally* space-efficient but time-inefficient.
+                        </p>
                     </div>
 
-                    <!-- 5. BPP vs BQP -->
                     <div>
-                        <h3 class="text-2xl font-semibold text-gray-200 mb-2">5. Is BPP = BQP? (Quantum)</h3>
-                        <p class="text-gray-300 leading-relaxed">
+                        <h3 class="text-2xl font-semibold mb-2">5. Is BPP = BQP? (Quantum Computing)</h3>
+                        <p class="text-gray-300">
                             **The Question:** Can quantum computers solve problems that classical computers can't?
+                            <br>
+                            **Formally:** Does $\\text{BPP} = \\text{BQP}$?
+
                             <details class="popover-def">
                                 <summary>Define: BPP & BQP</summary>
-                                <div><strong class="text-white">BPP:</strong> Problems solvable by a *classical* randomized algorithm in P-time. <br><br> <strong class="text-white">BQP:</strong> Problems solvable by a *quantum* algorithm in P-time.</div>
+                                <div>
+                                    - **BPP (Bounded-error Probabilistic Polynomial time):**
+                                    Problems a *classical* computer can solve efficiently with randomness.
+                                    <br><br>
+                                    - **BQP (Bounded-error Quantum Polynomial time):**
+                                    Problems a *quantum* computer can solve efficiently.
+                                </div>
                             </details>
+                            <br><br>
+                            We know $\\text{BPP} \\subseteq \\text{BQP}$. The big question is whether the inclusion is strict. Shor's algorithm for **integer factorization** is in BQP but is *not* believed to be in BPP.
                         </p>
-                        <div class="paper-info">
-                            <strong>Seminal Papers:</strong>
-                            <br>
-                            1. Bernstein, E., & Vazirani, U. (1997). *Quantum complexity theory*. (Formally defined BQP).
-                            <br>
-                            2. Shor, P. W. (1994). *Algorithms for quantum computation... factoring*. (Showed Factoring is in BQP).
-                        </div>
                     </div>
-                    
-                    <!-- 6. Factoring -->
+
                     <div>
-                        <h3 class="text-2xl font-semibold text-gray-200 mb-2">6. The Status of Integer Factorization</h3>
-                        <p class="text-gray-300 leading-relaxed">
+                        <h3 class="text-2xl font-semibold mb-2">6. The Status of Integer Factorization</h3>
+                        <p class="text-gray-300">
                             **The Question:** Can we factor a large number into its primes in polynomial time (on a classical computer)?
+                            <br><br>
+                            This is the problem that underpins almost all modern cryptography (like RSA). It's in a special class called **NP-Intermediate**.
+
                             <details class="popover-def">
                                 <summary>Define: NP-Intermediate</summary>
-                                <div>Problems in NP that are neither in P nor NP-Complete. Their existence relies on P $\\neq$ NP.</div>
+                                <div>
+                                    Problems that are in **NP**, but are *not* in **P** and are also *not* **NP-Complete**.
+                                    <br><br>
+                                    They are "hard," but not the "hardest" problems in NP.
+                                </div>
                             </details>
-                            <br><br>
-                            This is the problem that underpins RSA cryptography. It's believed to be in NP-Intermediate.
                         </p>
-                        <div class="paper-info">
-                            <strong>Seminal Paper:</strong> Shor, P. W. (1994). *Algorithms for quantum computation... factoring*.
-                            <br><br>
-                            This paper is so important it's cited twice, as it showed Factoring is *easy* for a quantum computer (in BQP), even though it's *hard* for classical computers.
-                        </div>
                     </div>
-                    
-                    <!-- 7. Graph Isomorphism -->
+
                     <div>
-                        <h3 class="text-2xl font-semibold text-gray-200 mb-2">7. The Status of Graph Isomorphism</h3>
-                        <p class="text-gray-300 leading-relaxed">
+                        <h3 class="text-2xl font-semibold mb-2">7. The Status of Graph Isomorphism</h3>
+                        <p class="text-gray-300">
                             **The Question:** Can we efficiently determine if two graphs are identical (just with the nodes labeled differently)?
+                            <br><br>
                             <details class="popover-def">
                                 <summary>Define: Quasi-polynomial Time</summary>
-                                <div>Faster than exponential ($O(2^n)$) but slower than polynomial ($O(n^k)$). Formally: $O(2^{(\\log n)^c})$.</div>
+                                <div>
+                                    An algorithm that is *almost* polynomial.
+                                    - **Polynomial:** $O(n^k)$
+                                    - **Quasi-polynomial:** $O(2^{(\\log n)^c})$
+                                    <br><br>
+                                    This is *much* faster than exponential ($O(2^n)$) but slightly slower than any true polynomial.
+                                </div>
                             </details>
                             <br><br>
-                            This is another famous "NP-Intermediate" candidate.
+                            This is another famous "NP-Intermediate" candidate. In 2015, a "quasi-polynomial" time algorithm was announced.
                         </p>
                         <div class="paper-info">
                             <strong>Seminal Paper:</strong> Babai, L. (2015). *Graph Isomorphism in Quasipolynomial Time*.
                             <br><br>
-                            This paper presented the breakthrough quasi-polynomial algorithm,
-                            strongly suggesting GI is *not* NP-Complete.
+                            This paper presented the breakthrough quasi-polynomial algorithm, strongly suggesting GI is *not* NP-Complete.
                         </div>
                     </div>
                 </div>
             `;
         document.getElementById("module-content").innerHTML = template;
-
-        // Add click-to-close for other popovers
-        document.querySelectorAll("details.popover-def").forEach((detail) => {
-          detail.addEventListener("toggle", (e) => {
-            if (e.target.open) {
-              document
-                .querySelectorAll("details.popover-def[open]")
-                .forEach((openDetail) => {
-                  if (openDetail !== e.target) openDetail.open = false;
-                });
-            }
-          });
-        });
       }
 
       // --- Module 6: Reductions ---
       function showReductions() {
         const template = `
-                <div id="reductions-container">
+                <div id="reduction-container">
                     <h2 class="text-3xl font-bold mb-4 text-sky-400">Module 5: Reductions (Independent Set)</h2>
-                    
+
                     <div class="flex space-x-2 mb-4">
                         <button class="tab-btn active" data-tab="reduction-what-is">What is a Reduction?</button>
                         <button class="tab-btn" data-tab="reduction-demo">Demo: IS $\\leftrightarrow$ VC</button>
                     </div>
 
-                    <!-- Tab Content: What is a Reduction? -->
-                    <div id="reduction-what-is" class="tab-content active bg-gray-800 p-6 rounded-lg">
-                        <h3 class="text-xl font-semibold mb-2">What is a Polynomial-Time Reduction?</h3>
-                        <p class="mb-4">
+                    <div id="reduction-what-is" class="tab-content active">
+                        <h3 class="text-2xl font-semibold mb-3">What is a Polynomial-Time Reduction?</h3>
+                        <p class="text-gray-300 mb-4 text-lg">
                             A **reduction** is a way to solve one problem using an algorithm for *another* problem.
                             A polynomial-time reduction ($L \\le_p L'$) is a "fast" transformation that turns an instance
                             of problem $L$ into an instance of $L'$.
                         </p>
                         
-                        <h4 class="text-lg font-semibold mb-2">Why do this?</h4>
-                        <ol class="list-decimal list-inside space-y-2 mb-4">
-                            <li><strong>To Solve Problems:</strong> If you have a "magic" (fast) solver for $L'$, you can now use it to solve $L$.</li>
-                            <li><strong>To Prove Hardness:</strong> If we know $L$ is "hard" (e.g., NP-Complete), then $L'$ must *also* be "hard".</li>
-                        </ol>
+                        <h4 class="text-xl font-semibold mb-2">Why do this?</h4>
+                        <ul class="list-disc list-inside space-y-2 text-gray-300 mb-4">
+                            <li>
+                                <span class="font-bold text-green-400">To Solve Problems:</span>
+                                If you have a "magic" solver for $L'$, you can now solve $L$.
+                            </li>
+                            <li>
+                                <span class="font-bold text-red-400">To Prove Hardness:</span>
+                                If we know $L$ is "hard" (e.g., NP-Complete), then $L'$ must *also* be "hard." This is how Karp proved 21 problems were NP-Complete.
+                            </li>
+                        </ul>
                         
-                        <p class="mb-2">Formally, $L \\le_p L'$ if there's a P-time
-                        function $f$ that converts any instance $x$ of $L$ into an instance $f(x)$ of $L'$ such that:</p>
-                        <p class="p-4 bg-gray-900 rounded-lg text-cyan-300">
-                            $$x \\in L \\iff f(x) \\in L'$$
+                        <p class="text-gray-300 mb-4">
+                            Formally, $L \\le_p L'$ if there's a P-time
+                            function $f$ that converts any instance $x$ of $L$ into an instance $f(x)$ of $L'$ such that:
+                        </p>
+                        <p class="text-gray-400 mb-4 bg-gray-800 p-4 rounded-lg text-center text-lg">
+                            $x \\in L \\iff f(x) \\in L'$
                         </p>
                     </div>
                     
-                    <!-- Tab Content: Demo -->
-                    <div id="reduction-demo" class="tab-content bg-gray-800 p-6 rounded-lg">
-                        <h3 class="text-xl font-semibold mb-2">Demo: Independent Set $\\leftrightarrow$ Vertex Cover</h3>
-                        <p class="mb-4">
-                            Let's show a simple reduction between two problems. This will prove they are
-                            equally hard and that their optimization problems are linked.
+                    <div id="reduction-demo" class="tab-content">
+                        <h3 class="text-2xl font-semibold mb-3">Demo: Independent Set $\\leftrightarrow$ Vertex Cover</h3>
+                        <p class="text-gray-300 mb-4">
+                            Let's show a simple reduction between two problems. This will prove they are equally hard.
                         </p>
                         
-                        <h4 class="text-lg font-semibold mb-2">1. Define: Independent Set (IS)</h4>
-                        <p class="mb-2">An **Independent Set** is a set of vertices $S \\subseteq V$ in a graph $G=(V,E)$
-                        such that no two vertices in $S$ are connected by an edge.</p>
-                        <p class="mb-4 p-4 bg-gray-900 rounded-lg text-cyan-300">
-                            $$S \\subseteq V \\text{ s.t. } \\forall (u, v) \\in E, \\{u, v\\} \\not\\subseteq S$$
+                        <h4 class="text-xl font-semibold mb-2">1. Define: Independent Set (IS)</h4>
+                        <p class="text-gray-300 mb-4">
+                            An **Independent Set** is a set of vertices $S \\subseteq V$ in a graph $G=(V,E)$
+                            such that no two vertices in $S$ are connected by an edge.
                         </p>
                         
-                        <h4 class="text-lg font-semibold mb-2">2. The "Aha!" Moment: The Reduction</h4>
-                        <p class="mb-4">The reduction is based on this beautiful theorem:</p>
-                        
+                        <h4 class="text-xl font-semibold mb-2">2. The "Aha!" Moment: The Reduction</h4>
+                        <p class="text-gray-300 mb-4">
+                            The reduction is based on this theorem:
+                        </p>
                         <div class="p-4 bg-green-900 text-green-200 rounded-lg mb-4">
-                            <strong>Theorem:</strong> In any graph $G=(V,E)$, a set $S \\subseteq V$ is an **Independent Set**
+                            <strong class="text-lg">Theorem:</strong> In any graph $G=(V,E)$, a set $S \\subseteq V$ is an **Independent Set**
                             if and only if its complement, $V \\setminus S$, is a **Vertex Cover**.
                         </div>
-                        
-                        <h4 class="text-lg font-semibold mb-2">Proof (IS $\\implies$ VC)</h4>
-                        <ol class="list-decimal list-inside space-y-2 mb-4">
+
+                        <h4 class="text-xl font-semibold mb-2">Proof (IS $\\implies$ VC)</h4>
+                        <ul class="list-disc list-inside space-y-2 text-gray-300 mb-4">
                             <li><strong>Assume:</strong> $S$ is an Independent Set.</li>
                             <li><strong>We must show:</strong> Its complement $C = V \\setminus S$ is a Vertex Cover.</li>
-                            <li><strong>Proof:</strong> Take any edge $(u, v) \\in E$. Since $S$ is an IS, $u$ and $v$ *cannot* both be in $S$. At least one of them *must not* be in $S$.</li>
-                            <li>Therefore, at least one of them *must* be in its complement, $C$. **$C$ is a Vertex Cover.**</li>
-                        </ol>
+                            <li><strong>Proof:</strong> Take any edge $(u, v) \\in E$. Since $S$ is an IS, $u$ and $v$ *cannot* both be in $S$.</li>
+                            <li>This means at least one of them *must not* be in $S$.</li>
+                            <li>If at least one of $\\{u, v\\}$ is *not* in $S$, then at least one of them *must* be in its complement, $C$.</li>
+                            <li>Since this is true for *every* edge, $C = V \\setminus S$ is a Vertex Cover.</li>
+                        </ul>
 
-                        <h4 class="text-lg font-semibold mb-2">Proof (VC $\\implies$ IS)</h4>
-                        <ol class="list-decimal list-inside space-y-2 mb-4">
-                            <li><strong>Assume:</strong> $C$ is a Vertex Cover.</li>
-                            <li><strong>We must show:</strong> Its complement $S = V \\setminus C$ is an Independent Set.</li>
-                            <li><strong>Proof:</strong> Take any two vertices $u, v \\in S$. We must show there is no edge between them.</li>
-                            <li>Assume for contradiction that there *is* an edge $(u, v) \\in E$.</li>
-                            <li>Because $C$ is a VC, it must cover this edge (at least one of $u$ or $v$ must be in $C$).</li>
-                            <li>This is a contradiction! We *chose* $u$ and $v$ from $S$, so neither can be in $C$. **$S$ is an Independent Set.**</li>
-                        </ol>
-                        
-                        <h4 class="text-lg font-semibold mb-2">Conclusion</h4>
-                        <p>This proves $\\text{Independent Set} \\le_p \\text{Vertex Cover}$. It also means $|MaxIS| + |MinVC| = |V|$.
-                        <br><br>
-                        The $O(2^n)$ algorithm in **Module 2** that finds a *minimum vertex cover*
-                        is, by this reduction, *also* an algorithm for finding a *maximum independent set*.
-                        </ReadMe>
+                        <h4 class="text-xl font-semibold mb-2">Conclusion</h4>
+                        <p class="text-gray-300 mb-4">
+                            This proves $\\text{Independent Set} \\le_p \\text{Vertex Cover}$ (and vice-versa).
+                            This also means $|MaxIS| + |MinVC| = |V|$.
+                            <br><br>
+                            The $O(2^n)$ algorithm in **Module 2** that finds a *minimum vertex cover*
+                            is, by this reduction, *also* an algorithm for finding a *maximum independent set*.
+                        </loc>
                     </div>
                 </div>
             `;
         document.getElementById("module-content").innerHTML = template;
-        setupTabs("reductions-container");
+        setupTabs("reduction-container");
       }
 
-      // --- Module 7: PSPACE (TQBF) ---
-
-      // This object will hold the stats for the TQBF solver
+      // --- Module 7: PSPACE ---
       let tqbfStats = { opCount: 0, maxDepth: 0 };
 
-      // Helper to evaluate a CNF formula with given assignments
+      // Helper to evaluate CNF
       function evaluateCNF_JS(formula, assignments) {
         tqbfStats.opCount++;
         for (const clause of formula) {
@@ -1427,9 +1443,7 @@
           for (const literal of clause) {
             const varName = literal.replace("-", "");
             const isNegated = literal.startsWith("-");
-
             if (!(varName in assignments)) continue;
-
             const assignedVal = assignments[varName];
             if ((isNegated && !assignedVal) || (!isNegated && assignedVal)) {
               clauseSatisfied = true;
@@ -1440,7 +1454,6 @@
         }
         return true;
       }
-
       // The core recursive TQBF solver
       function solveRecursive_JS(
         quantifiers,
@@ -1473,7 +1486,6 @@
             index + 1,
             currentDepth + 1
           );
-
           let assignmentsFalse = { ...assignments, [varName]: false };
           let resFalse = solveRecursive_JS(
             quantifiers,
@@ -1482,10 +1494,8 @@
             index + 1,
             currentDepth + 1
           );
-
           return resTrue && resFalse;
-        } else {
-          // quantifier === '∃'
+        } else if (quantifier === "∃") {
           // 'Exists' player: must be true for AT LEAST ONE
           let assignmentsTrue = { ...assignments, [varName]: true };
           let resTrue = solveRecursive_JS(
@@ -1495,7 +1505,6 @@
             index + 1,
             currentDepth + 1
           );
-
           if (resTrue) return true; // Short-circuit
 
           let assignmentsFalse = { ...assignments, [varName]: false };
@@ -1506,30 +1515,21 @@
             index + 1,
             currentDepth + 1
           );
-
           return resFalse;
         }
       }
 
-      // Main function to launch the TQBF solver
       function solveTQBF() {
         const output = document.getElementById("tqbf-output");
         output.className =
           "mt-4 p-4 bg-yellow-900 text-yellow-200 rounded-lg min-h-[50px]";
-        output.textContent =
-          "Solving TQBF (Exponential Time, Polynomial Space)...";
+        output.textContent = "Solving TQBF...";
 
         setTimeout(() => {
-          // Timeout for UI update
           try {
-            const data = JSON.parse(
-              document.getElementById("tqbf-input").value
-            );
+            const data = JSON.parse(document.getElementById("tqbf-json").value);
             const { quantifiers, formula } = data;
-
-            // Reset stats
             tqbfStats = { opCount: 0, maxDepth: 0 };
-
             const startTime = performance.now();
             const result = solveRecursive_JS(quantifiers, formula, {}, 0, 0);
             const endTime = performance.now();
@@ -1537,22 +1537,21 @@
             if (result) {
               output.className =
                 "mt-4 p-4 bg-green-900 text-green-200 rounded-lg min-h-[50px]";
-              output.innerHTML = `<strong>Result: TRUE</strong><br>Time: ${(
-                endTime - startTime
-              ).toFixed(2)} ms`;
+              output.innerHTML = `<strong>Result: TRUE</strong>`;
             } else {
               output.className =
                 "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
-              output.innerHTML = `<strong>Result: FALSE</strong><br>Time: ${(
-                endTime - startTime
-              ).toFixed(2)} ms`;
+              output.innerHTML = `<strong>Result: FALSE</strong>`;
             }
+            output.innerHTML += `<br>Time: ${(endTime - startTime).toFixed(
+              2
+            )} ms`;
 
             // Add stats
             output.innerHTML += `<div class="mt-4 pt-4 border-t border-gray-600">
-                        <p><strong>Total Recursive Calls (Time):</strong> ${tqbfStats.opCount}</p>
-                        <p><strong>Max Recursion Depth (Space):</strong> ${tqbfStats.maxDepth}</p>
-                    </div>`;
+                                <p><strong>Total Recursive Calls (Time):</strong> ${tqbfStats.opCount}</p>
+                                <p><strong>Max Recursion Depth (Space):</strong> ${tqbfStats.maxDepth}</p>
+                            </div>`;
           } catch (e) {
             output.className =
               "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
@@ -1571,59 +1570,53 @@
                         <button class="tab-btn" data-tab="pspace-demo">Interactive TQBF Demo</button>
                     </div>
 
-                    <!-- Tab Content: What is PSPACE? -->
-                    <div id="pspace-what-is" class="tab-content active bg-gray-800 p-6 rounded-lg">
-                        <h3 class="text-xl font-semibold mb-2">What is PSPACE?</h3>
-                        <p class="mb-4">
+                    <div id="pspace-what-is" class="tab-content active">
+                        <h3 class="text-2xl font-semibold mb-3">What is PSPACE?</h3>
+                        <p class="text-gray-300 mb-4 text-lg">
                             **PSPACE** is the class of problems solvable by an algorithm that uses a **Polynomial amount of SPACE (memory)**,
                             regardless of how much *time* it takes.
                         </p>
-                        <ul class="list-disc list-inside mb-4">
+                        <ul class="list-disc list-inside space-y-2 text-gray-300 mb-4">
                             <li>We know $\\text{P} \\subseteq \\text{NP} \\subseteq \\text{PSPACE}$.</li>
                             <li>We strongly suspect $\\text{P} \\neq \\text{PSPACE}$ and $\\text{NP} \\neq \\text{PSPACE}$, but it's not proven.</li>
                         </ul>
                         
-                        <h4 class="text-lg font-semibold mb-2">TQBF: The PSPACE-Complete Problem</h4>
-                        <p class="mb-2">
+                        <h4 class="text-xl font-semibold mb-2">TQBF: The PSPACE-Complete Problem</h4>
+                        <p class="text-gray-300 mb-4">
                             The "hardest" problem in PSPACE is **TQBF (True Quantified Boolean Formulas)**.
-                            It's like SAT, but with alternating "for all" ($\\forall$) and "there exists" ($\\exists$) quantifiers.
+                            It's like SAT, but with alternating "for all" ($\forall$) and "there exists" ($\exists$) quantifiers.
                         </p>
-                        <p class="p-4 bg-gray-900 rounded-lg text-cyan-300">
-                            $$\\forall x \\exists y \\forall z \\dots \\phi(x, y, z, \\dots)$$
+                        <p class="text-gray-400 mb-4 bg-gray-800 p-4 rounded-lg text-center text-lg">
+                           $\\forall x \\exists y \\forall z \\dots \\phi(x, y, z, \\dots)$
                         </p>
-                        
-                        <h4 class="text-lg font-semibold my-2">Time vs. Space: The Key Lesson</h4>
-                        <p class="mb-4">
+
+                        <h4 class="text-xl font-semibold mb-2">Time vs. Space: The Key Lesson</h4>
+                        <p class="text-gray-300 mb-4">
                             We can solve TQBF with a simple recursive algorithm (like the one in the demo).
                             <br>
-                            - **Time Complexity:** The algorithm branches for every variable, leading to $O(2^n)$ time. **(Exponential!)**
+                            - <span class="text-red-400 font-bold">Time Complexity:</span> The algorithm branches for every variable, leading to $O(2^n)$ time. **(Exponential!)**
                             <br>
-                            - **Space Complexity:** The algorithm only needs to store the current path down the recursion tree. The depth of this tree is $n$ (the number of variables). Therefore, it only uses $O(n)$ space. **(Polynomial!)**
+                            - <span class="text-green-400 font-bold">Space Complexity:</span> The algorithm only needs to store the current path down the recursion tree. The depth of this tree is $n$. Therefore, it only uses $O(n)$ space. **(Polynomial!)**
                         </p>
-                        <p class="font-bold">TQBF is the perfect example of a problem that is **easy on space** but **hard on time**.</p>
-                        
-                        <h4 class="text-lg font-semibold my-2">Two-Player Game Analogy</h4>
-                        <p>
+
+                        <h4 class="text-xl font-semibold mb-2">Two-Player Game Analogy</h4>
+                        <p class="text-gray-300 mb-4">
                             You can think of TQBF as a game:
-                            <br>
                             - The **$\\exists$ player** wins if the formula is *True*.
-                            <br>
                             - The **$\\forall$ player** wins if the formula is *False*.
-                            <br>
-                            The $\\exists$ player gets to pick values for $\\exists$ variables.
-                            The $\\forall$ player gets to pick values for $\\forall$ variables.
                             <br>
                             The TQBF formula is *True* if the $\\exists$ player has a **winning strategy**, no matter what the $\\forall$ player does.
                         </p>
                     </div>
-                    
-                    <!-- Tab Content: Demo -->
+
                     <div id="pspace-demo" class="tab-content bg-gray-800 p-6 rounded-lg">
                         <h3 class="text-xl font-semibold mb-2">Interactive TQBF Solver</h3>
-                        <p class="text-gray-300 mb-4">Note: The formula must be in CNF (an array of clauses).</p>
+                        <p class="text-gray-300 mb-4">
+                            Note: The formula must be in CNF (an array of clauses).
+                        </p>
                         
-                        <label class="block text-sm font-medium text-gray-300">TQBF JSON:</label>
-                        <textarea id="tqbf-input" class="w-full h-48 bg-gray-900 text-gray-200 p-2 rounded-lg border border-gray-700">
+                        <label for="tqbf-json" class="block text-sm font-medium text-gray-300 mb-2">TQBF JSON:</label>
+                        <textarea id="tqbf-json" rows="12" class="w-full p-2 bg-gray-900 text-gray-200 border border-gray-700 rounded-lg font-mono text-sm">
 {
   "quantifiers": [
     {"var": "x", "q": "∀"},
@@ -1639,7 +1632,7 @@
                         <button id="tqbf-solve-btn" class="mt-4 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Solve TQBF (Exponential Time)</button>
                         
                         <div id="tqbf-output" class="mt-4 p-4 bg-gray-900 rounded-lg text-gray-300 min-h-[50px]">
-                            Click "Solve TQBF" to see the result. The default formula $\\forall x \\exists y (x \lor y) \land (\\neg x \lor \\neg y)$ should evaluate to **True**.
+                            Click "Solve TQBF" to see the result. The default formula $\\forall x \\exists y (x \\lor y) \\land (\\neg x \\lor \\neg y)$ should evaluate to **True**.
                         </div>
                     </div>
                 </div>
@@ -1653,6 +1646,293 @@
           .addEventListener("click", solveTQBF);
       }
 
+      // --- Module 8: BPP (NEW) ---
+
+      // Helper for modular exponentiation using BigInt
+      // (base^exp) % mod
+      function powMod(base, exp, mod) {
+        let b = BigInt(base);
+        let e = BigInt(exp);
+        let m = BigInt(mod);
+        if (m === 0n) throw "Cannot modulo by zero";
+
+        let result = 1n;
+        b = b % m;
+        while (e > 0n) {
+          if (e % 2n === 1n) result = (result * b) % m;
+          e = e >> 1n; // e = e / 2
+          b = (b * b) % m;
+        }
+        return result;
+      }
+
+      // Deterministic Primality Test (Trial Division)
+      function solvePrimalityDeterministic_JS(n_big) {
+        const n = Number(n_big); // Trial division works on standard numbers
+        let opCount = 0;
+        if (n < 2) return { isPrime: false, opCount: 0 };
+        if (n === 2 || n === 3) return { isPrime: true, opCount: 1 };
+        if (n % 2 === 0) return { isPrime: false, opCount: 1 };
+
+        const limit = Math.sqrt(n);
+        for (let i = 3; i <= limit; i += 2) {
+          opCount++;
+          if (n % i === 0) {
+            return { isPrime: false, opCount: opCount };
+          }
+        }
+        return { isPrime: true, opCount: opCount };
+      }
+
+      // Randomized Primality Test (Miller-Rabin)
+      // Needs BigInt
+      function solvePrimalityBPP_JS(n_big, k) {
+        const n = BigInt(n_big);
+        let opCount = 0;
+
+        if (n <= 1n) return { isPrime: false, opCount: 0 };
+        if (n <= 3n) return { isPrime: true, opCount: 0 };
+        if (n % 2n === 0n) return { isPrime: false, opCount: 1 };
+
+        // Write n-1 as 2^r * d
+        let d = n - 1n;
+        let r = 0n;
+        while (d % 2n === 0n) {
+          opCount++;
+          d /= 2n;
+          r++;
+        }
+
+        // Run k rounds
+        for (let i = 0; i < k; i++) {
+          opCount++;
+          // Pick a random witness 'a'
+          // We need a random BigInt between 2 and n-2
+          const a = randomBigInt(2n, n - 2n);
+
+          let x = powMod(a, d, n);
+          if (x === 1n || x === n - 1n) continue;
+
+          let isComposite = true;
+          for (let j = 0n; j < r - 1n; j++) {
+            opCount++;
+            x = powMod(x, 2n, n);
+            if (x === n - 1n) {
+              isComposite = false;
+              break;
+            }
+          }
+
+          if (isComposite) {
+            return { isPrime: false, opCount: opCount }; // Definitely composite
+          }
+        }
+        return { isPrime: true, opCount: opCount }; // Probably prime
+      }
+
+      // Helper to get a random BigInt
+      function randomBigInt(min, max) {
+        // min and max are BigInts
+        const range = max - min + 1n;
+        const bits = range.toString(2).length;
+        let num;
+        do {
+          num = 0n;
+          for (let i = 0; i < bits; i++) {
+            if (Math.random() < 0.5) {
+              num |= 1n << BigInt(i);
+            }
+          }
+        } while (num >= range); // Ensure it's in range
+        return num + min;
+      }
+
+      function runDeterministicTest() {
+        const output = document.getElementById("bpp-output-det");
+        try {
+          const n = BigInt(document.getElementById("bpp-number").value);
+          if (n > 1000000000000000n) {
+            // Safety rail for client-side JS
+            throw new Error(
+              "Number too large for JS trial division (max 10^15). This proves the algorithm is slow!"
+            );
+          }
+          output.className =
+            "mt-4 p-4 bg-yellow-900 text-yellow-200 rounded-lg min-h-[50px]";
+          output.textContent = "Running trial division... This may take time.";
+
+          setTimeout(() => {
+            const startTime = performance.now();
+            const { isPrime, opCount } = solvePrimalityDeterministic_JS(n);
+            const endTime = performance.now();
+
+            if (isPrime) {
+              output.className =
+                "mt-4 p-4 bg-green-900 text-green-200 rounded-lg min-h-[50px]";
+              output.innerHTML = `<strong>Result: PRIME</strong>`;
+            } else {
+              output.className =
+                "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
+              output.innerHTML = `<strong>Result: COMPOSITE</strong>`;
+            }
+            output.innerHTML += `<br>Time: ${(endTime - startTime).toFixed(
+              2
+            )} ms<br>Operations: ~${opCount}`;
+          }, 50);
+        } catch (e) {
+          output.className =
+            "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
+          output.textContent = `Error: ${e.message}`;
+        }
+      }
+
+      function runRandomizedTest() {
+        const output = document.getElementById("bpp-output-rand");
+        try {
+          const n = BigInt(document.getElementById("bpp-number").value);
+          const k = Number(document.getElementById("bpp-k-slider").value);
+
+          output.className =
+            "mt-4 p-4 bg-yellow-900 text-yellow-200 rounded-lg min-h-[50px]";
+          output.textContent = `Running Miller-Rabin with k=${k}...`;
+
+          setTimeout(() => {
+            const startTime = performance.now();
+            const { isPrime, opCount } = solvePrimalityBPP_JS(n, k);
+            const endTime = performance.now();
+
+            if (isPrime) {
+              output.className =
+                "mt-4 p-4 bg-green-900 text-green-200 rounded-lg min-h-[50px]";
+              output.innerHTML = `<strong>Result: PROBABLY PRIME</strong>`;
+              output.innerHTML += `<br><span class="text-sm">Probability of error is < (1/4)^${k}</span>`;
+            } else {
+              output.className =
+                "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
+              output.innerHTML = `<strong>Result: COMPOSITE (100% certain)</strong>`;
+            }
+            output.innerHTML += `<br>Time: ${(endTime - startTime).toFixed(
+              4
+            )} ms<br>Operations: ~${opCount}`;
+          }, 50);
+        } catch (e) {
+          output.className =
+            "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
+          output.textContent = `Error: ${e.message}`;
+        }
+      }
+
+      function showBPP() {
+        const template = `
+                <div id="bpp-container">
+                    <h2 class="text-3xl font-bold mb-4 text-sky-400">Module 7: Randomized Algorithms (BPP)</h2>
+                    
+                    <div class="flex space-x-2 mb-4">
+                        <button class="tab-btn active" data-tab="bpp-what-is">What is BPP?</button>
+                        <button class="tab-btn" data-tab="bpp-demo">Interactive Demo (Primality)</button>
+                    </div>
+
+                    <div id="bpp-what-is" class="tab-content active">
+                        <h3 class="text-2xl font-semibold mb-3">What is BPP?</h3>
+                        <p class="text-gray-300 mb-4 text-lg">
+                            **BPP** stands for **Bounded-error Probabilistic Polynomial time**.
+                            <br><br>
+                            It's the class of *decision problems* that can be solved by an algorithm that:
+                        </p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-300 mb-4">
+                            <li>Runs in **polynomial time**.</li>
+                            <li>Is allowed to **"flip coins"** (use randomness).</li>
+                            <li>Gives the correct "yes" or "no" answer with a high probability (e.g., > 2/3).</li>
+                        </ul>
+                        
+                        <h4 class="text-xl font-semibold mb-2">The Key Example: Primality Testing</h4>
+                        <p class="text-gray-300 mb-4">
+                            **Problem:** Given a large number $n$, is it prime?
+                            <br><br>
+                            - <span class="font-bold text-red-400">Deterministic (Slow):</span> The simple **Trial Division** method (checking all divisors up to $\\sqrt{n}$)
+                            is $O(\\sqrt{n})$. This is *exponential* in the number of bits ($b$) of $n$,
+                            since $n \\approx 2^b$ and $\\sqrt{n} \\approx 2^{b/2}$.
+                            <br><br>
+                            - <span class="font-bold text-green-400">Randomized (Fast):</span> The **Miller-Rabin** algorithm is a BPP algorithm.
+                            It runs in polynomial time ($O(k \cdot (\\log n)^3)$).
+                            If it outputs "Composite," it is 100% correct.
+                            If it outputs "Probably Prime," it has a small chance ($< (1/4)^k$) of being wrong.
+                        </p>
+                        
+                        <h4 class="text-xl font-semibold mb-2">P vs. BPP</h4>
+                        <p class="text-gray-300 mb-4">
+                            We know $\\text{P} \\subseteq \\text{BPP}$. The open question is: **Does $\\text{P} = \\text{BPP}$?**
+                            <br>
+                            Most researchers believe **YES**, as many BPP problems have been "derandomized".
+                        </p>
+                        <div class="paper-info">
+                            <strong>The AKS Primality Test (2002)</strong>
+                            <br><br>
+                            For decades, Primality Testing was the most-cited example of a problem in BPP but not known to be in P.
+                            In 2002, Agrawal, Kayal, and Saxena (AKS) proved that **PRIMES is in P**.
+                            They found the first-ever deterministic, polynomial-time algorithm for primality testing.
+                        </div>
+                    </div>
+
+                    <div id="bpp-demo" class="tab-content bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2">Interactive Demo: Primality Testing</h3>
+                        <p class="text-gray-300 mb-4">
+                           Compare the 'slow' deterministic algorithm with the 'fast' randomized one.
+                           (Note: Trial division is capped at $10^{15}$ in JS to prevent browser crashing).
+                        </p>
+                        
+                        <label for="bpp-number" class="block text-sm font-medium text-gray-300 mb-2">Number to Test (n):</label>
+                        <input type="text" id="bpp-number" value="1000000000000037" class="w-full p-2 bg-gray-900 text-gray-200 border border-gray-700 rounded-lg">
+                        
+                        <hr class="my-6 border-gray-700">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="text-lg font-semibold mb-2">1. Deterministic (Trial Division)</h4>
+                                <p class="text-sm text-gray-400 mb-2">Complexity: $O(\\sqrt{n})$ (Exponential)</p>
+                                <button id="bpp-det-btn" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg">Test (Deterministic)</button>
+                                <div id="bpp-output-det" class="mt-4 p-4 bg-gray-900 rounded-lg text-gray-300 min-h-[50px]">
+                                    Output for deterministic test.
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-lg font-semibold mb-2">2. Randomized (Miller-Rabin)</h4>
+                                <p class="text-sm text-gray-400 mb-2">Complexity: $O(k \cdot (\\log n)^3)$ (Polynomial)</p>
+                                
+                                <label for="bpp-k-slider" class="block text-sm font-medium text-gray-300">Certainty Rounds (k): <span id="bpp-k-value">10</span></label>
+                                <input type="range" id="bpp-k-slider" min="1" max="40" value="10" class="w-full">
+                                
+                                <button id="bpp-rand-btn" class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Test (Randomized)</button>
+                                
+                                <div id="bpp-output-rand" class="mt-4 p-4 bg-gray-900 rounded-lg text-gray-300 min-h-[50px]">
+                                    Output for randomized test.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        document.getElementById("module-content").innerHTML = template;
+        setupTabs("bpp-container");
+
+        // Wire up BPP buttons
+        document
+          .getElementById("bpp-det-btn")
+          .addEventListener("click", runDeterministicTest);
+        document
+          .getElementById("bpp-rand-btn")
+          .addEventListener("click", runRandomizedTest);
+        document
+          .getElementById("bpp-k-slider")
+          .addEventListener(
+            "input",
+            (e) =>
+              (document.getElementById("bpp-k-value").textContent =
+                e.target.value)
+          );
+      }
+
       // --- Initialization ---
 
       // Setup nav link listeners
@@ -1664,8 +1944,8 @@
         });
       });
 
-      // Show home module on initial load
-      window.onload = () => showModule("home");
+      // Show the home module by default
+      showModule("home");
     </script>
   </body>
 </html>

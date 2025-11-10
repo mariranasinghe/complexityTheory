@@ -1,4 +1,4 @@
-## Interactive Complexity Theory Explorer (Python/Streamlit)
+# Interactive Complexity Theory Explorer (Python/Streamlit) 🧩
 
 ### Project Architecture
 

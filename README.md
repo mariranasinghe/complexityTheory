@@ -22,6 +22,8 @@ This project is an interactive web application built entirely in Python using th
    - Approximate (P-time): Finding a good enough solution (via heuristic or approximation) is also fast.
    - Optimal (NP-hard): Finding the perfect solution (via brute force) is intractably slow.
 
+7. **Beylond NP**: The `PSPACE` module introduces a new complexity class and demonstrates the crucial difference between **Time Complexity** (exponential) and **Space Complexity** (polynomial).
+
 ### File Structure
 
 - `app.py`: The entire application.

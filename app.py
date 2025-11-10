@@ -82,18 +82,18 @@ def show_home():
         Follow these steps to build an intuition for complexity:
 
         1.  **<span style='color: #06b6d4;'>Explore the Charts:</span>**
-            Go to **Module 1** and see the difference between polynomial ($O(n^2)$) and exponential ($O(2^n)$) growth. Use the two charts to see the practical difference.
+            Go to **Module 1** and see the difference between polynomial ($O(n^2)$) and exponential ($O(2^n)$) growth.
             
         2.  **<span style='color: #06b6d4;'>Feel the P vs. NP Gap:</span>**
             Go to **Module 2 (Vertex Cover)**.
             - **Verify (P):** Enter a solution and click 'Verify'. It's instant, $O(|V| \cdot |E|)$.
             - **Solve (NP):** Click 'Find Smallest Cover'. For a small graph (n=10), it's fast. Try a larger one (n=18). You will *feel* the exponential $O(2^n \cdot |E|)$ delay.
             
-        3.  **<span style='color: #06b6d4;'>Experience Factorial Explosion:</span>**
-            Go to **Module 3 (TSP)**.
-            - **Generate 5 cities**. The solver is instant.
-            - **Generate 9 cities**. The solver takes a few seconds. ($9! = 362,880$ operations)
-            - **Generate 10 cities**. The time increases 10-fold. ($10! = 3,628,800$ operations). *That* is the $O(n!)$ factorial wall.
+        3.  **<span style='color: #06b6d4;'>Experience Reductions:</span>**
+            Go to **Module 5 (Reductions)**. Learn how the **Independent Set** problem is just a "mirror image" of **Vertex Cover**. This proves that if you can solve one, you can solve the other, making them equally hard.
+            
+        4.  **<span style='color: #06b6d4;'>Experience Factorial Explosion:</span>**
+            Go to **Module 3 (TSP)**. Generate 9 cities. The solver takes a few seconds. ($9!$). Now, generate 10 cities. The time increases 10-fold. ($10!$). *That* is the $O(n!)$ factorial wall.
         """, unsafe_allow_html=True)
 
     st.divider()
@@ -104,11 +104,12 @@ def show_home():
     in the field of computational complexity:
     """)
     
+    # UPDATED Summaries
     st.info(
         """
         **Cook, S. A. (1971). "The complexity of theorem-proving procedures."**
         
-        This is the foundational paper that introduced the concept of NP-Completeness and proved that the **Satisfiability (SAT)** problem is NP-Complete.
+        **Summary:** This is the foundational paper that birthed the field of NP-Completeness. Cook proved that the **Satisfiability (SAT)** problem has a special property: *any* problem in NP can be "reduced" to it. This means if you could solve SAT efficiently, you could solve *every* problem in NP efficiently. He called this property "NP-Complete."
         """,
         icon="📄"
     )
@@ -117,7 +118,7 @@ def show_home():
         """
         **Karp, R. M. (1972). "Reducibility among combinatorial problems."**
         
-        Following Cook's paper, Karp identified 21 other key problems (including Vertex Cover and TSP) that are also NP-Complete, establishing the vastness of the class.
+        **Summary:** Karp's paper showed that Cook's discovery wasn't a fluke. He took the idea of "reducibility" and ran with it, identifying 21 other famous, seemingly unrelated problems (including Vertex Cover and TSP) that were also NP-Complete. This established that a vast "web" of problems were all fundamentally the same hard problem, just in different disguises.
         """,
         icon="📄"
     )
@@ -126,7 +127,7 @@ def show_home():
         """
         **Garey, M. R., & Johnson, D. S. (1979). "Computers and Intractability: A Guide to the Theory of NP-Completeness."**
         
-        This is the classic textbook that is still a standard reference for NP-Complete problems, proofs, and reductions.
+        **Summary:** This is the "bible" of NP-Completeness. It's not a research paper but a comprehensive textbook that standardized the theory, provided a huge catalog of NP-Complete problems, and gave computer scientists a practical 'how-to' manual for identifying and dealing with intractable problems in their own work.
         """,
         icon="📚"
     )
@@ -509,7 +510,7 @@ def show_tsp():
                 except Exception as e:
                     st.error(f"Error parsing input: {e}")
 
-# --- NEW Module: Open Problems (with Popovers) ---
+# --- Module: Open Problems (with Popovers) ---
 def show_open_problems():
     st.title("Module 4: Open Problems & The Future")
     st.markdown("""
@@ -680,6 +681,91 @@ def show_open_problems():
     This breakthrough suggests the problem is *probably* not NP-Complete, but it's still not known to be in P.
     """)
 
+# --- NEW Module: Reductions ---
+def show_reductions():
+    st.title("Module 5: Reductions (Independent Set)")
+    
+    tab1, tab2 = st.tabs(["What is a Reduction?", "Demo: IS ↔ VC"])
+
+    with tab1:
+        st.header("What is a Polynomial-Time Reduction?")
+        st.markdown(r"""
+        A **reduction** is a way to solve one problem using an algorithm for *another* problem.
+        A polynomial-time reduction ($L \le_p L'$) is a "fast" transformation that turns an instance
+        of problem $L$ into an instance of problem $L'$.
+        
+        **Why do this?**
+        1.  **To Solve Problems:** If you have a "magic" solver for $L'$, you can now solve $L$.
+        2.  **To Prove Hardness:** If we know $L$ is "hard" (e.g., NP-Complete), then $L'$ must *also* be "hard." This is how Karp proved 21 problems were NP-Complete.
+        
+        Formally, a problem $L$ is reducible to $L'$ ($L \le_p L'$) if there's a P-time
+        function $f$ that converts any instance $x$ of $L$ into an instance $f(x)$ of $L'$ such that:
+        """)
+        st.latex(r"x \in L \iff f(x) \in L'")
+        st.markdown(r"""
+        (The answer to $x$ for problem $L$ is "yes" **if and only if** the answer to $f(x)$ for problem $L'$ is "yes".)
+        """)
+        
+    with tab2:
+        st.header("Demo: Independent Set $\leftrightarrow$ Vertex Cover")
+        st.markdown(r"""
+        Let's show a simple reduction between two problems. This will prove they are
+        equally hard.
+        
+        ### 1. Define: Independent Set (IS)
+        An **Independent Set** is a set of vertices $S \subseteq V$ in a graph $G=(V,E)$
+        such that no two vertices in $S$ are connected by an edge.
+        
+        Formally:
+        """)
+        st.latex(r"S \subseteq V \text{ s.t. } \forall (u, v) \in E, \{u, v\} \not\subseteq S")
+        st.markdown(r"""
+        The *optimization* problem is "Find the **maximum** independent set."
+        The *decision* problem (NP-Complete) is: "Does $G$ have an independent set of size $k$ or more?"
+        
+        ### 2. The "Aha!" Moment: The Reduction
+        Look at the definitions of Vertex Cover and Independent Set. They are "mirror images" of each other.
+        The reduction is based on this theorem:
+        """)
+        
+        st.success(r"""
+        **Theorem:** In any graph $G=(V,E)$, a set $S \subseteq V$ is an **Independent Set**
+        if and only if its complement, $V \setminus S$, is a **Vertex Cover**.
+        """)
+        
+        st.subheader("Proof (Part 1: IS $\implies$ VC)")
+        st.markdown(r"""
+        - **Assume:** $S$ is an Independent Set.
+        - **We must show:** Its complement $C = V \setminus S$ is a Vertex Cover.
+        - **Proof:** Take any edge $(u, v) \in E$. Since $S$ is an IS, $u$ and $v$ *cannot* both be in $S$. This means at least one of them *must not* be in $S$.
+        - If at least one of $\{u, v\}$ is *not* in $S$, then at least one of them *must* be in its complement, $C$.
+        - Since this is true for *every* edge, $C$ "covers" all edges.
+        - **Therefore, $C = V \setminus S$ is a Vertex Cover.**
+        """)
+        
+        st.subheader("Proof (Part 2: VC $\implies$ IS)")
+        st.markdown(r"""
+        - **Assume:** $C$ is a Vertex Cover.
+        - **We must show:** Its complement $S = V \setminus C$ is an Independent Set.
+        - **Proof:** Take any two vertices $u, v \in S$. We must show there is no edge between them.
+        - Assume for contradiction that there *is* an edge $(u, v) \in E$.
+        - Because $C$ is a Vertex Cover, it must cover this edge. This means at least one of $u$ or $v$ *must* be in $C$.
+        - But this is a contradiction! We *chose* $u$ and $v$ from $S$, which is $V \setminus C$. By definition, neither of them can be in $C$.
+        - The contradiction means our assumption was wrong. There is no edge $(u,v)$.
+        - **Therefore, $S = V \setminus C$ is an Independent Set.**
+        """)
+        
+        st.divider()
+        st.header("Conclusion")
+        st.markdown(r"""
+        This proves $\text{Independent Set} \le_p \text{Vertex Cover}$ (and vice-versa).
+        
+        This also means $|MaxIS| + |MinVC| = |V|$.
+        
+        The brute-force $O(2^n)$ algorithm in **Module 2** that finds a *minimum vertex cover*
+        is, by this reduction, *also* an algorithm for finding a *maximum independent set*. You just
+        take the complement of its answer!
+        """)
 
 # --- Main App ---
 def main():
@@ -692,7 +778,8 @@ def main():
         "1. Time Complexity Visualizer", 
         "2. P vs. NP (Vertex Cover)", 
         "3. NP-Complete (TSP)",
-        "4. Open Problems & The Future"
+        "4. Open Problems & The Future",
+        "5. Reductions (IS to VC)" # NEW MODULE
     ])
 
     if page == "Home: Start Here":
@@ -705,6 +792,8 @@ def main():
         show_tsp()
     elif page == "4. Open Problems & The Future":
         show_open_problems()
+    elif page == "5. Reductions (IS to VC)": # NEW MODULE
+        show_reductions()
 
 if __name__ == "__main__":
     main()

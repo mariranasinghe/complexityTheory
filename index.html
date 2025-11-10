@@ -290,19 +290,19 @@
                                 </li>
                                 <li>
                                     <span class="font-bold text-cyan-400">Feel the P vs. NP Gap (Module 2):</span>
-                                    - **Verify (P):** Click 'Verify'. It's instant ($O(|V| \cdot |E|)$).
+                                    - <strong>Verify (P):</strong> Click 'Verify'. It's instant ($O(|V| \cdot |E|)$).
                                     <br>
-                                    - **Solve (NP):** Click 'Find Optimal'. For a small graph (n=18), you will *feel* the exponential $O(2^n)$ delay.
+                                    - <strong>Solve (NP):</strong> Click 'Find Optimal'. For a small graph (n=18), you will *feel* the exponential $O(2^n)$ delay.
                                 </li>
                                 <li>
                                     <span class="font-bold text-cyan-400">Compare Brute-Force vs. Heuristic (Module 3):</span>
-                                    - **Solve (NP):** Click 'Find Optimal Tour' with 9 cities. It takes seconds ($O(n!)$).
+                                    - <strong>Solve (NP):</strong> Click 'Find Optimal Tour' with 9 cities. It takes seconds ($O(n!)$).
                                     <br>
-                                    - **Approx. (P):** Click 'Find Heuristic Tour'. It's *instant* ($O(n^2)$).
+                                    - <strong>Approx. (P):</strong> Click 'Find Heuristic Tour'. It's *instant* ($O(n^2)$).
                                 </li>
                                 <li>
                                     <span class="font-bold text-cyan-400">See Reductions (Module 5):</span>
-                                    Learn how **Independent Set** is a "mirror image" of **Vertex Cover**.
+                                    Learn how <strong>Independent Set</strong> is a "mirror image" of <strong>Vertex Cover</strong>.
                                 </li>
                                 <li>
                                     <span class="font-bold text-cyan-400">Explore PSPACE (Module 6):</span>
@@ -327,25 +327,26 @@
                         <div class="bg-gray-800 p-4 rounded-lg">
                             <p class="font-semibold text-gray-200">Cook, S. A. (1971). "The complexity of theorem-proving procedures."</p>
                             <p class="text-sm mt-1">
-                                **Summary:** This is the foundational paper that birthed the field of NP-Completeness. Cook proved that the **Satisfiability (SAT)** problem has a special property: *any* problem in NP can be "reduced" to it.
+                                <strong>Summary:</strong> This is the foundational paper that birthed the field of NP-Completeness. Cook proved that the <strong>Satisfiability (SAT)</strong> problem has a special property: *any* problem in NP can be "reduced" to it.
                             </p>
                         </div>
                         <div class="bg-gray-800 p-4 rounded-lg">
                             <p class="font-semibold text-gray-200">Karp, R. M. (1972). "Reducibility among combinatorial problems."</p>
                             <p class="text-sm mt-1">
-                                **Summary:** Karp's paper took Cook's discovery and identified 21 other famous, seemingly unrelated problems (including Vertex Cover and TSP) that were also NP-Complete, establishing the vastness of the class.
+                                <strong>Summary:</strong> Karp's paper took Cook's discovery and identified 21 other famous, seemingly unrelated problems (including Vertex Cover and TSP) that were also NP-Complete, establishing the vastness of the class.
                             </p>
                         </div>
                         <div class="bg-gray-800 p-4 rounded-lg">
                             <p class="font-semibold text-gray-200">Garey, M. R., & Johnson, D. S. (1979). "Computers and Intractability: A Guide to the Theory of NP-Completeness."</p>
                             <p class="text-sm mt-1">
-                                **Summary:** This is the "bible" of NP-Completeness. It's not a research paper but a comprehensive textbook that standardized the theory and gave computer scientists a practical 'how-to' manual for dealing with intractable problems.
+                                <strong>Summary:</strong> This is the "bible" of NP-Completeness. It's not a research paper but a comprehensive textbook that standardized the theory and gave computer scientists a practical 'how-to' manual for dealing with intractable problems.
                             </p>
                         </div>
                     </div>
                 </div>
             `;
         document.getElementById("module-content").innerHTML = template;
+        setupTabs("reduction-container");
       }
 
       // --- Module 2: Time Complexity Visualizer ---
@@ -358,7 +359,7 @@
                 
                 <h3 class="text-xl font-semibold text-gray-200 mb-3">Chart 1: The 'Fast' Algorithms (Polynomial Time)</h3>
                 <p class="text-gray-300 mb-4">
-                    This chart shows *only* the "fast" algorithms on a **linear scale**.
+                    This chart shows *only* the "fast" algorithms on a <strong>linear scale</strong>.
                     This lets you see the real, practical difference between $O(n)$, $O(n \\log n)$, and $O(n^2)$.
                 </p>
                 <div class="bg-gray-800 p-6 rounded-lg mb-8" style="height: 40vh;">
@@ -367,7 +368,7 @@
 
                 <h3 class="text-xl font-semibold text-gray-200 mb-3">Chart 2: The 'Explosion' (P vs. NP)</h3>
                 <p class="text-gray-300 mb-4">
-                    This chart compares $O(n^2)$ to the "slow" ones on a **logarithmic scale**.
+                    This chart compares $O(n^2)$ to the "slow" ones on a <strong>logarithmic scale</strong>.
                     Notice: 1. At small 'n', the lines are jumbled. 2. After $n=20$, $O(n!)$ disappears as it hits infinity.
                 </p>
                 <div class="bg-gray-800 p-6 rounded-lg" style="height: 40vh;">
@@ -578,7 +579,7 @@
                         <p class="text-gray-300 mb-4">
                             The *optimization* problem is "Find the *minimum* vertex cover."
                             <br>
-                            The *decision* problem (NP-Complete) is **K-VERTEX-COVER**:
+                            The *decision* problem (NP-Complete) is <strong>K-VERTEX-COVER</strong>:
                             "Given $G$ and $k$, does $G$ have a vertex cover of size $k$ or less?"
                         </p>
                         
@@ -867,7 +868,7 @@
                             that visits each city exactly once and returns to the origin city?
                         </p>
                         <p class="text-gray-400 mb-4 bg-gray-800 p-4 rounded-lg">
-                           Formally: Given a complete weighted graph $G = (V, E, w)$, find a **Hamiltonian cycle**
+                           Formally: Given a complete weighted graph $G = (V, E, w)$, find a <strong>Hamiltonian cycle</strong>
                            with the minimum total weight.
                         </p>
                         
@@ -875,7 +876,7 @@
                         <p class="text-gray-300 mb-4">
                             The *optimization* problem is "Find the *shortest* tour."
                             <br>
-                            The *decision* problem (NP-Complete) is **K-TSP**:
+                            The *decision* problem (NP-Complete) is <strong>K-TSP</strong>:
                             "Given $G$, $w$, and $k$, does $G$ have a tour with a total weight less than or equal to $k$?"
                         </p>
                         
@@ -887,7 +888,7 @@
                             </li>
                             <li>
                                 <span class="font-bold text-blue-400">Finding a Heuristic Solution is FAST (in P):</span>
-                                The **Nearest Neighbor** heuristic (always go to the closest unvisited city) is $O(n^2)$ time. It provides a "good enough" solution, but no guarantee on its quality.
+                                The <strong>Nearest Neighbor</strong> heuristic (always go to the closest unvisited city) is $O(n^2)$ time. It provides a "good enough" solution, but no guarantee on its quality.
                             </li>
                             <li>
                                 <span class="font-bold text-red-400">Finding an Optimal Solution is SLOW (in NP):</span>
@@ -1188,11 +1189,11 @@
                     <div>
                         <h3 class="text-2xl font-semibold mb-2">1. Is P = NP?</h3>
                         <p class="text-gray-300">
-                            **The Question:** Is every problem that can be *verified* quickly also *solvable* quickly?
+                            <strong>The Question:</strong> Is every problem that can be *verified* quickly also *solvable* quickly?
                             <br>
-                            **Formally:** Does $\\text{P} = \\text{NP}$?
+                            <strong>Formally:</strong> Does $\\text{P} = \\text{NP}$?
                             <br><br>
-                            This is the most famous problem in computer science. The consensus is that **P $\\neq$ NP**, but proving it remains one of the hardest challenges ever conceived.
+                            This is the most famous problem in computer science. The consensus is that <strong>P $\\neq$ NP</strong>, but proving it remains one of the hardest challenges ever conceived.
                         </p>
                         <div class="paper-info">
                             <strong>Stephen Cook's View (2000):</strong>
@@ -1209,18 +1210,18 @@
                     <div>
                         <h3 class="text-2xl font-semibold mb-2">2. Is NP = co-NP?</h3>
                         <p class="text-gray-300">
-                            **The Question:** If a problem's "yes" answers are easy to verify, are its "no" answers also easy to verify?
+                            <strong>The Question:</strong> If a problem's "yes" answers are easy to verify, are its "no" answers also easy to verify?
                             <br>
-                            **Formally:** Does $\\text{NP} = \\text{co-NP}$?
+                            <strong>Formally:</strong> Does $\\text{NP} = \\text{co-NP}$?
                             
                             <details class="popover-def">
                                 <summary>Define: co-NP</summary>
                                 <div>
-                                    **co-NP** is the class of problems where "no" instances have a short, verifiable proof (a "counterexample").
+                                    <strong>co-NP</strong> is the class of problems where "no" instances have a short, verifiable proof (a "counterexample").
                                     <br><br>
-                                    **Example: TAUTOLOGY.**
-                                    - **Problem:** Is this Boolean formula *always* true?
-                                    - **"No" Proof:** If the answer is "no," you can provide a counterexample: an assignment of variables that makes the formula *false*.
+                                    <strong>Example: TAUTOLOGY.</strong>
+                                    - <strong>Problem:</strong> Is this Boolean formula *always* true?
+                                    - <strong>"No" Proof:</strong> If the answer is "no," you can provide a counterexample: an assignment of variables that makes the formula *false*.
                                     - We can verify this counterexample quickly, so TAUTOLOGY is in co-NP.
                                 </div>
                             </details>
@@ -1233,18 +1234,18 @@
                     <div>
                         <h3 class="text-2xl font-semibold mb-2">3. The Exponential Time Hypothesis (ETH)</h3>
                         <p class="text-gray-300">
-                            **The Question:** Does the 3-SAT problem *really* require exponential time to solve?
+                            <strong>The Question:</strong> Does the 3-SAT problem *really* require exponential time to solve?
                             <br>
-                            **Formally:** The ETH conjectures that there is no algorithm for 3-SAT that runs in *sub-exponential time*.
+                            <strong>Formally:</strong> The ETH conjectures that there is no algorithm for 3-SAT that runs in *sub-exponential time*.
                             
                             <details class="popover-def">
                                 <summary>Define: Sub-exponential Time</summary>
                                 <div>
                                     An algorithm that is faster than $O(2^{\\delta n})$ for all $\\delta > 0$, but still slower than polynomial time.
                                     <br><br>
-                                    - **Exponential:** $O(2^n)$
-                                    - **Sub-exponential:** $O(2^{n^{0.5}})$
-                                    - **Polynomial:** $O(n^2)$
+                                    - <strong>Exponential:</strong> $O(2^n)$
+                                    - <strong>Sub-exponential:</strong> $O(2^{n^{0.5}})$
+                                    - <strong>Polynomial:</strong> $O(n^2)$
                                 </div>
                             </details>
                         </p>
@@ -1260,14 +1261,14 @@
                     <div>
                         <h3 class="text-2xl font-semibold mb-2">4. Is P = PSPACE?</h3>
                         <p class="text-gray-300">
-                            **The Question:** Can every problem that is solvable using a *polynomial amount of memory* also be solved using a *polynomial amount of time*?
+                            <strong>The Question:</strong> Can every problem that is solvable using a *polynomial amount of memory* also be solved using a *polynomial amount of time*?
                             <br>
-                            **Formally:** Does $\\text{P} = \\text{PSPACE}$?
+                            <strong>Formally:</strong> Does $\\text{P} = \\text{PSPACE}$?
 
                             <details class="popover-def">
                                 <summary>Define: PSPACE</summary>
                                 <div>
-                                    **PSPACE** is the set of all problems that can be solved by an algorithm using a *polynomial* amount of memory (space), regardless of how much *time* it takes.
+                                    <strong>PSPACE</strong> is the set of all problems that can be solved by an algorithm using a *polynomial* amount of memory (space), regardless of how much *time* it takes.
                                     <br><br>
                                     We know $\\text{P} \\subseteq \\text{NP} \\subseteq \\text{PSPACE}$.
                                 </div>
@@ -1280,36 +1281,36 @@
                     <div>
                         <h3 class="text-2xl font-semibold mb-2">5. Is BPP = BQP? (Quantum Computing)</h3>
                         <p class="text-gray-300">
-                            **The Question:** Can quantum computers solve problems that classical computers can't?
+                            <strong>The Question:</strong> Can quantum computers solve problems that classical computers can't?
                             <br>
-                            **Formally:** Does $\\text{BPP} = \\text{BQP}$?
+                            <strong>Formally:</strong> Does $\\text{BPP} = \\text{BQP}$?
 
                             <details class="popover-def">
                                 <summary>Define: BPP & BQP</summary>
                                 <div>
-                                    - **BPP (Bounded-error Probabilistic Polynomial time):**
+                                    - <strong>BPP (Bounded-error Probabilistic Polynomial time):</strong>
                                     Problems a *classical* computer can solve efficiently with randomness.
                                     <br><br>
-                                    - **BQP (Bounded-error Quantum Polynomial time):**
+                                    - <strong>BQP (Bounded-error Quantum Polynomial time):</strong>
                                     Problems a *quantum* computer can solve efficiently.
                                 </div>
                             </details>
                             <br><br>
-                            We know $\\text{BPP} \\subseteq \\text{BQP}$. The big question is whether the inclusion is strict. Shor's algorithm for **integer factorization** is in BQP but is *not* believed to be in BPP.
+                            We know $\\text{BPP} \\subseteq \\text{BQP}$. The big question is whether the inclusion is strict. Shor's algorithm for <strong>integer factorization</strong> is in BQP but is *not* believed to be in BPP.
                         </p>
                     </div>
 
                     <div>
                         <h3 class="text-2xl font-semibold mb-2">6. The Status of Integer Factorization</h3>
                         <p class="text-gray-300">
-                            **The Question:** Can we factor a large number into its primes in polynomial time (on a classical computer)?
+                            <strong>The Question:</strong> Can we factor a large number into its primes in polynomial time (on a classical computer)?
                             <br><br>
-                            This is the problem that underpins almost all modern cryptography (like RSA). It's in a special class called **NP-Intermediate**.
+                            This is the problem that underpins almost all modern cryptography (like RSA). It's in a special class called <strong>NP-Intermediate</strong>.
 
                             <details class="popover-def">
                                 <summary>Define: NP-Intermediate</summary>
                                 <div>
-                                    Problems that are in **NP**, but are *not* in **P** and are also *not* **NP-Complete**.
+                                    Problems that are in **NP**, but are *not* in <strong>P</strong> and are also *not* <strong>NP-Complete</strong>.
                                     <br><br>
                                     They are "hard," but not the "hardest" problems in NP.
                                 </div>
@@ -1320,14 +1321,14 @@
                     <div>
                         <h3 class="text-2xl font-semibold mb-2">7. The Status of Graph Isomorphism</h3>
                         <p class="text-gray-300">
-                            **The Question:** Can we efficiently determine if two graphs are identical (just with the nodes labeled differently)?
+                            <strong>The Question:</strong> Can we efficiently determine if two graphs are identical (just with the nodes labeled differently)?
                             <br><br>
                             <details class="popover-def">
                                 <summary>Define: Quasi-polynomial Time</summary>
                                 <div>
                                     An algorithm that is *almost* polynomial.
-                                    - **Polynomial:** $O(n^k)$
-                                    - **Quasi-polynomial:** $O(2^{(\\log n)^c})$
+                                    - <strong>Polynomial:</strong> $O(n^k)$
+                                    - <strong>Quasi-polynomial:</strong> $O(2^{(\\log n)^c})$
                                     <br><br>
                                     This is *much* faster than exponential ($O(2^n)$) but slightly slower than any true polynomial.
                                 </div>
@@ -1360,7 +1361,7 @@
                     <div id="reduction-what-is" class="tab-content active">
                         <h3 class="text-2xl font-semibold mb-3">What is a Polynomial-Time Reduction?</h3>
                         <p class="text-gray-300 mb-4 text-lg">
-                            A **reduction** is a way to solve one problem using an algorithm for *another* problem.
+                            A <strong>reduction</strong> is a way to solve one problem using an algorithm for *another* problem.
                             A polynomial-time reduction ($L \\le_p L'$) is a "fast" transformation that turns an instance
                             of problem $L$ into an instance of $L'$.
                         </p>
@@ -1394,7 +1395,7 @@
                         
                         <h4 class="text-xl font-semibold mb-2">1. Define: Independent Set (IS)</h4>
                         <p class="text-gray-300 mb-4">
-                            An **Independent Set** is a set of vertices $S \\subseteq V$ in a graph $G=(V,E)$
+                            An <strong>Independent Set</strong> is a set of vertices $S \\subseteq V$ in a graph $G=(V,E)$
                             such that no two vertices in $S$ are connected by an edge.
                         </p>
                         
@@ -1403,8 +1404,8 @@
                             The reduction is based on this theorem:
                         </p>
                         <div class="p-4 bg-green-900 text-green-200 rounded-lg mb-4">
-                            <strong class="text-lg">Theorem:</strong> In any graph $G=(V,E)$, a set $S \\subseteq V$ is an **Independent Set**
-                            if and only if its complement, $V \\setminus S$, is a **Vertex Cover**.
+                            <strong class="text-lg">Theorem:</strong> In any graph $G=(V,E)$, a set $S \\subseteq V$ is an <strong>Independent Set</strong>
+                            if and only if its complement, $V \\setminus S$, is a <strong>Vertex Cover</strong>.
                         </div>
 
                         <h4 class="text-xl font-semibold mb-2">Proof (IS $\\implies$ VC)</h4>
@@ -1422,7 +1423,7 @@
                             This proves $\\text{Independent Set} \\le_p \\text{Vertex Cover}$ (and vice-versa).
                             This also means $|MaxIS| + |MinVC| = |V|$.
                             <br><br>
-                            The $O(2^n)$ algorithm in **Module 2** that finds a *minimum vertex cover*
+                            The $O(2^n)$ algorithm in <strong>Module 2</strong> that finds a *minimum vertex cover*
                             is, by this reduction, *also* an algorithm for finding a *maximum independent set*.
                         </loc>
                     </div>
@@ -1573,8 +1574,8 @@
                     <div id="pspace-what-is" class="tab-content active">
                         <h3 class="text-2xl font-semibold mb-3">What is PSPACE?</h3>
                         <p class="text-gray-300 mb-4 text-lg">
-                            **PSPACE** is the class of problems solvable by an algorithm that uses a **Polynomial amount of SPACE (memory)**,
-                            regardless of how much *time* it takes.
+                            <strong>PSPACE</strong> is the class of problems solvable by an algorithm that uses a <strong>Polynomial amount of SPACE (memory)</strong>,
+                            regardless of how much <strong>time</strong> it takes.
                         </p>
                         <ul class="list-disc list-inside space-y-2 text-gray-300 mb-4">
                             <li>We know $\\text{P} \\subseteq \\text{NP} \\subseteq \\text{PSPACE}$.</li>
@@ -1583,7 +1584,7 @@
                         
                         <h4 class="text-xl font-semibold mb-2">TQBF: The PSPACE-Complete Problem</h4>
                         <p class="text-gray-300 mb-4">
-                            The "hardest" problem in PSPACE is **TQBF (True Quantified Boolean Formulas)**.
+                            The "hardest" problem in PSPACE is <strong>TQBF (True Quantified Boolean Formulas)</strong>.
                             It's like SAT, but with alternating "for all" ($\forall$) and "there exists" ($\exists$) quantifiers.
                         </p>
                         <p class="text-gray-400 mb-4 bg-gray-800 p-4 rounded-lg text-center text-lg">
@@ -1594,18 +1595,18 @@
                         <p class="text-gray-300 mb-4">
                             We can solve TQBF with a simple recursive algorithm (like the one in the demo).
                             <br>
-                            - <span class="text-red-400 font-bold">Time Complexity:</span> The algorithm branches for every variable, leading to $O(2^n)$ time. **(Exponential!)**
+                            - <span class="text-red-400 font-bold">Time Complexity:</span> The algorithm branches for every variable, leading to $O(2^n)$ time. <strong>(Exponential!)</strong>
                             <br>
-                            - <span class="text-green-400 font-bold">Space Complexity:</span> The algorithm only needs to store the current path down the recursion tree. The depth of this tree is $n$. Therefore, it only uses $O(n)$ space. **(Polynomial!)**
+                            - <span class="text-green-400 font-bold">Space Complexity:</span> The algorithm only needs to store the current path down the recursion tree. The depth of this tree is $n$. Therefore, it only uses $O(n)$ space. <strong>(Polynomial!)</strong>
                         </p>
 
                         <h4 class="text-xl font-semibold mb-2">Two-Player Game Analogy</h4>
                         <p class="text-gray-300 mb-4">
                             You can think of TQBF as a game:
-                            - The **$\\exists$ player** wins if the formula is *True*.
-                            - The **$\\forall$ player** wins if the formula is *False*.
+                            - The <strong>$\\exists$ player</strong> wins if the formula is *True*.
+                            - The <strong>$\\forall$ player</strong> wins if the formula is *False*.
                             <br>
-                            The TQBF formula is *True* if the $\\exists$ player has a **winning strategy**, no matter what the $\\forall$ player does.
+                            The TQBF formula is *True* if the $\\exists$ player has a <strong>winning strategy</strong>, no matter what the $\\forall$ player does.
                         </p>
                     </div>
 
@@ -1632,7 +1633,7 @@
                         <button id="tqbf-solve-btn" class="mt-4 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Solve TQBF (Exponential Time)</button>
                         
                         <div id="tqbf-output" class="mt-4 p-4 bg-gray-900 rounded-lg text-gray-300 min-h-[50px]">
-                            Click "Solve TQBF" to see the result. The default formula $\\forall x \\exists y (x \\lor y) \\land (\\neg x \\lor \\neg y)$ should evaluate to **True**.
+                            Click "Solve TQBF" to see the result. The default formula $\\forall x \\exists y (x \\lor y) \\land (\\neg x \\lor \\neg y)$ should evaluate to <strong>True</strong>.
                         </div>
                     </div>
                 </div>
@@ -1835,25 +1836,25 @@
                     <div id="bpp-what-is" class="tab-content active">
                         <h3 class="text-2xl font-semibold mb-3">What is BPP?</h3>
                         <p class="text-gray-300 mb-4 text-lg">
-                            **BPP** stands for **Bounded-error Probabilistic Polynomial time**.
+                            <strong>BPP</strong> stands for <strong>Bounded-error Probabilistic Polynomial time</strong>.
                             <br><br>
                             It's the class of *decision problems* that can be solved by an algorithm that:
                         </p>
                         <ul class="list-disc list-inside space-y-2 text-gray-300 mb-4">
-                            <li>Runs in **polynomial time**.</li>
-                            <li>Is allowed to **"flip coins"** (use randomness).</li>
+                            <li>Runs in <strong>polynomial time</strong>.</li>
+                            <li>Is allowed to <strong>"flip coins"</strong> (use randomness).</li>
                             <li>Gives the correct "yes" or "no" answer with a high probability (e.g., > 2/3).</li>
                         </ul>
                         
                         <h4 class="text-xl font-semibold mb-2">The Key Example: Primality Testing</h4>
                         <p class="text-gray-300 mb-4">
-                            **Problem:** Given a large number $n$, is it prime?
+                            <strong>Problem:</strong> Given a large number $n$, is it prime?
                             <br><br>
-                            - <span class="font-bold text-red-400">Deterministic (Slow):</span> The simple **Trial Division** method (checking all divisors up to $\\sqrt{n}$)
+                            - <span class="font-bold text-red-400">Deterministic (Slow):</span> The simple <strong>Trial Division</strong> method (checking all divisors up to $\\sqrt{n}$)
                             is $O(\\sqrt{n})$. This is *exponential* in the number of bits ($b$) of $n$,
                             since $n \\approx 2^b$ and $\\sqrt{n} \\approx 2^{b/2}$.
                             <br><br>
-                            - <span class="font-bold text-green-400">Randomized (Fast):</span> The **Miller-Rabin** algorithm is a BPP algorithm.
+                            - <span class="font-bold text-green-400">Randomized (Fast):</span> The <strong>Miller-Rabin</strong> algorithm is a BPP algorithm.
                             It runs in polynomial time ($O(k \cdot (\\log n)^3)$).
                             If it outputs "Composite," it is 100% correct.
                             If it outputs "Probably Prime," it has a small chance ($< (1/4)^k$) of being wrong.
@@ -1861,15 +1862,15 @@
                         
                         <h4 class="text-xl font-semibold mb-2">P vs. BPP</h4>
                         <p class="text-gray-300 mb-4">
-                            We know $\\text{P} \\subseteq \\text{BPP}$. The open question is: **Does $\\text{P} = \\text{BPP}$?**
+                            We know $\\text{P} \\subseteq \\text{BPP}$. The open question is: <strong>Does $\\text{P} = \\text{BPP}$?</strong>
                             <br>
-                            Most researchers believe **YES**, as many BPP problems have been "derandomized".
+                            Most researchers believe <strong>YES</strong>, as many BPP problems have been "derandomized".
                         </p>
                         <div class="paper-info">
                             <strong>The AKS Primality Test (2002)</strong>
                             <br><br>
                             For decades, Primality Testing was the most-cited example of a problem in BPP but not known to be in P.
-                            In 2002, Agrawal, Kayal, and Saxena (AKS) proved that **PRIMES is in P**.
+                            In 2002, Agrawal, Kayal, and Saxena (AKS) proved that <strong>PRIMES is in P</strong>.
                             They found the first-ever deterministic, polynomial-time algorithm for primality testing.
                         </div>
                     </div>

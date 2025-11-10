@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-900">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Complexity Explorer</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Chart.js for the visualizer -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      /* Custom styles for a dark-mode app */
+      body {
+        font-family: "Inter", sans-serif;
+        color: #e0e0e0;
+      }
+      /* Style for the active nav link */
+      .nav-link.active {
+        background-color: #1f2937; /* gray-800 */
+        color: #38bdf8; /* sky-400 */
+      }
+      /* Custom scrollbar for module content */
+      .module-content {
+        overflow-y: auto;
+        max-height: 100vh;
+      }
+      /* Webkit scrollbar styles */
+      .module-content::-webkit-scrollbar {
+        width: 8px;
+      }
+      .module-content::-webkit-scrollbar-track {
+        background: #1f2937; /* gray-800 */
+      }
+      .module-content::-webkit-scrollbar-thumb {
+        background: #4b5563; /* gray-600 */
+        border-radius: 4px;
+      }
+      .module-content::-webkit-scrollbar-thumb:hover {
+        background: #6b7280; /* gray-500 */
+      }
+      /* Custom styles for graph visualization */
+      .graph-node {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #38bdf8; /* sky-400 */
+        color: #0c0a09;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        position: absolute;
+        cursor: grab;
+        user-select: none;
+      }
+      .graph-node.selected {
+        background-color: #f43f5e; /* red-500 */
+      }
+      .graph-edge {
+        position: absolute;
+        background-color: #4b5563; /* gray-600 */
+        height: 2px;
+        transform-origin: 0 0;
+      }
+    </style>
+  </head>
+  <body class="h-full flex">
+    <!-- Sidebar Navigation -->
+    <nav class="w-64 h-full bg-gray-800 p-4 space-y-2 fixed">
+      <h2 class="text-2xl font-bold text-sky-400 mb-6">Complexity Explorer</h2>
+      <a
+        href="#"
+        data-module="home"
+        class="nav-link active block w-full text-left px-4 py-2 rounded-lg text-gray-200 hover:bg-gray-700"
+        >Home</a
+      >
+      <a
+        href="#"
+        data-module="visualizer"
+        class="nav-link block w-full text-left px-4 py-2 rounded-lg text-gray-200 hover:bg-gray-700"
+        >1. Time Complexity Visualizer</a
+      >
+      <a
+        href="#"
+        data-module="vertexCover"
+        class="nav-link block w-full text-left px-4 py-2 rounded-lg text-gray-200 hover:bg-gray-700"
+        >2. P vs. NP (Vertex Cover)</a
+      >
+      <a
+        href="#"
+        data-module="tsp"
+        class="nav-link block w-full text-left px-4 py-2 rounded-lg text-gray-200 hover:bg-gray-700"
+        >3. NP-Complete (TSP)</a
+      >
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 ml-64 h-full">
+      <div id="module-content" class="module-content p-8 h-full">
+        <!-- Dynamic content will be loaded here -->
+      </div>
+    </main>
+
+    <script>
+      // --- Core Application Logic ---
+
+      const modules = {
+        home: showHome,
+        visualizer: showVisualizer,
+        vertexCover: showVertexCover,
+        tsp: showTSP,
+      };
+
+      // Simple router to show a module
+      function showModule(moduleName) {
+        const moduleFunction = modules[moduleName];
+        if (moduleFunction) {
+          moduleFunction();
+          // Update active nav link
+          document.querySelectorAll("nav a").forEach((a) => {
+            a.classList.remove("active", "bg-gray-900", "text-sky-400");
+            if (a.dataset.module === moduleName) {
+              a.classList.add("active", "bg-gray-900", "text-sky-400");
+            }
+          });
+        }
+      }
+
+      // --- Module 1: Home Screen ---
+      // This is where your new HTML has been integrated.
+      function showHome() {
+        const template = `
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold mb-4 text-sky-400">Welcome to the Complexity Explorer!</h2>
+                    <p class="text-lg text-gray-300 mb-8">
+                        An interactive tool for university students to get an intuitive feel for P, NP, and NP-Complete problems.
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap -mx-4 mt-8">
+                    <!-- Column 1: What is P? -->
+                    <div class="w-full md:w-1/2 px-4 mb-4 md:mb-0">
+                        <div class="bg-gray-800 p-6 rounded-lg h-full">
+                            <h3 class="text-xl font-semibold text-gray-200 mb-3">What is Complexity Theory?</h3>
+                            <p class="text-gray-300 mb-4">
+                                It's the study of how "hard" computational problems are. We don't just care if a problem *can* be solved, but
+                                how much time or memory it would take as the input size ('n') grows.
+                            </p>
+                            <ul class="space-y-3">
+                                <li>
+                                    <span class="font-bold text-green-400">P (Polynomial Time):</span>
+                                    <p class="text-sm text-gray-300">"Easy" problems. We can find a solution quickly. ($O(n)$, $O(n^2)$). Example: Sorting a list.</p>
+                                </li>
+                                <li>
+                                    <span class="font-bold text-yellow-400">NP (Nondeterministic Polynomial Time):</span>
+                                    <p class="text-sm text-gray-300">"Hard to solve, easy to check." If given a solution, we can verify if it's correct quickly.</p>
+                                </li>
+                                <li>
+                                    <span class="font-bold text-red-400">NP-Complete:</span>
+                                    <p class="text-sm text-gray-300">The "hardest" problems in NP. If you solve one efficiently, you can solve them all. (e.g., Vertex Cover, TSP).</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: How to Use (This is your new HTML) -->
+                    <div class="w-full md:w-1/2 px-4">
+                        <div class="bg-gray-800 p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-200 mb-3">How To Use This Tool</h3>
+                            <p class="text-gray-300 mb-4">Follow these steps to build an intuition for complexity:</p>
+                            <ol class="list-decimal list-inside text-gray-300 space-y-4">
+                                <li>
+                                    <span class="font-bold text-cyan-400">See "Intractability" in Action:</span>
+                                    Go to <span class="font-semibold">Module 1</span> and set the slider to \`n=10\`. Notice all lines are visible. Now, move the slider to \`n=21\`. The $O(n!)$ line disappears because the number is too large to compute or plot! This is "intractability" in action.
+                                </li>
+                                <li>
+                                    <span class="font-bold text-cyan-400">Feel the P vs. NP Gap:</span>
+                                    Go to <span class="font-semibold">Module 2 (Vertex Cover)</span>. The default graph has 5 vertices. Click <span class="font-semibold text-red-400">'Find Smallest Cover'</span> – it's instant. Now, try to create a graph with 18 vertices in the JSON editor. Click the button again. You will *feel* the exponential $O(2^n)$ delay.
+                                </li>
+                                <li>
+                                    <span class="font-bold text-cyan-400">Experience Factorial Explosion:</span>
+                                    Go to <span class="font-semibold">Module 3 (TSP)</span>. The default has 4 cities ($O(4!)$), which is trivial. Change the JSON to have 9 cities. Click <span class="font-semibold text-red-400">'Find Shortest Tour'</span>. It will take a noticeable few seconds. Now, just add a 10th city. The time will increase 10-fold. An 11th city would be 11x slower than that. *That* is the factorial wall.
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Section for Further Reading (This is your new HTML) -->
+                <div class="mt-8 pt-6 border-t border-gray-700">
+                    <h3 class="text-2xl font-semibold text-cyan-400 mb-4">Learn More: Foundational Research</h3>
+                    <p class="text-gray-300 mb-6">
+                        The concepts in this tool are built on decades of research. These are some of the most important papers
+                        in the field of computational complexity:
+                    </p>
+                    <div class="space-y-4 text-gray-300">
+                        <div class="bg-gray-800 p-4 rounded-lg">
+                            <p class="font-semibold text-gray-200">Cook, S. A. (1971). "The complexity of theorem-proving procedures."</p>
+                            <p class="text-sm mt-1">
+                                In *Proceedings of the third annual ACM symposium on Theory of computing*.
+                                This is the foundational paper that introduced the concept of NP-Completeness and proved that the **Satisfiability (SAT)** problem is NP-Complete.
+                            </p>
+                        </div>
+                        <div class="bg-gray-800 p-4 rounded-lg">
+                            <p class="font-semibold text-gray-200">Karp, R. M. (1972). "Reducibility among combinatorial problems."</p>
+                            <p class="text-sm mt-1">
+                                In *Complexity of computer computations*.
+                                Following Cook's paper, Karp identified 21 other key problems (including Vertex Cover and TSP) that are also NP-Complete, establishing the vastness of the class.
+                            </p>
+                        </div>
+                        <div class="bg-gray-800 p-4 rounded-lg">
+                            <p class="font-semibold text-gray-200">Garey, M. R., & Johnson, D. S. (1979). "Computers and Intractability: A Guide to the Theory of NP-Completeness."</p>
+                            <p class="text-sm mt-1">
+                                This is the classic textbook that is still a standard reference for NP-Complete problems, proofs, and reductions.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        document.getElementById("module-content").innerHTML = template;
+      }
+
+      // --- Module 2: Time Complexity Visualizer ---
+      let complexityChart = null; // Store chart instance to destroy it later
+
+      function showVisualizer() {
+        const template = `
+                <h2 class="text-3xl font-bold mb-4 text-sky-400">Module 1: Time Complexity Visualizer</h2>
+                <p class="text-lg text-gray-300 mb-6">
+                    This chart visualizes the number of "operations" for different complexity classes as the input size 'n' grows.
+                    Use the slider and watch how $O(2^n)$ and $O(n!)$ explode, becoming "intractable."
+                </p>
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <label for="n-slider" class="block text-sm font-medium text-gray-300">Input Size (n): <span id="n-value" class="font-bold text-sky-400">20</span></label>
+                    <input id="n-slider" type="range" min="1" max="50" value="20" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                    <div class="mt-4" style="height: 50vh;">
+                        <canvas id="complexity-chart"></canvas>
+                    </div>
+                </div>
+            `;
+        document.getElementById("module-content").innerHTML = template;
+
+        // Chart.js logic
+        const ctx = document
+          .getElementById("complexity-chart")
+          .getContext("2d");
+        const slider = document.getElementById("n-slider");
+        const nValue = document.getElementById("n-value");
+
+        if (complexityChart) {
+          complexityChart.destroy();
+        }
+
+        function factorial(n) {
+          if (n > 20) return Infinity; // Prevent crashing
+          let result = 1;
+          for (let i = 2; i <= n; i++) result *= i;
+          return result;
+        }
+
+        const datasets = {
+          "O(n)": {
+            borderColor: "#4ade80", // green-400
+            data: [],
+            fn: (n) => n,
+          },
+          "O(n log n)": {
+            borderColor: "#22d3ee", // cyan-400
+            data: [],
+            fn: (n) => n * Math.log2(n),
+          },
+          "O(n^2)": {
+            borderColor: "#facc15", // yellow-400
+            data: [],
+            fn: (n) => n ** 2,
+          },
+          "O(2^n)": {
+            borderColor: "#f87171", // red-400
+            data: [],
+            fn: (n) => 2 ** n,
+          },
+          "O(n!)": {
+            borderColor: "#f472b6", // pink-400
+            data: [],
+            fn: (n) => factorial(n),
+          },
+        };
+
+        function updateChart(nMax) {
+          const labels = Array.from({ length: nMax }, (_, i) => i + 1);
+
+          for (const key in datasets) {
+            datasets[key].data = labels.map((n) => {
+              const val = datasets[key].fn(n);
+              // Cap y-value to prevent chart from becoming unusable
+              return val > 1e100 ? Infinity : val;
+            });
+          }
+
+          complexityChart.data.labels = labels;
+          complexityChart.data.datasets = Object.values(datasets).map((ds) => ({
+            label: ds.label,
+            borderColor: ds.borderColor,
+            data: ds.data,
+            fill: false,
+            borderWidth: 2,
+            tension: 0.1,
+          }));
+          complexityChart.update();
+        }
+
+        complexityChart = new Chart(ctx, {
+          type: "line",
+          data: { labels: [], datasets: [] },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                type: "logarithmic", // Use log scale to see anything
+                beginAtZero: true,
+                grid: { color: "#4b5563" },
+                ticks: { color: "#e0e0e0" },
+              },
+              x: {
+                grid: { color: "#4b5563" },
+                ticks: { color: "#e0e0e0" },
+              },
+            },
+            plugins: {
+              legend: { labels: { color: "#e0e0e0" } },
+            },
+          },
+        });
+
+        // Set labels for datasets
+        Object.keys(datasets).forEach((key) => {
+          datasets[key].label = key;
+        });
+
+        slider.addEventListener("input", (e) => {
+          const n = parseInt(e.target.value, 10);
+          nValue.textContent = n;
+          updateChart(n);
+        });
+
+        // Initial chart render
+        updateChart(20);
+      }
+
+      // --- Module 3: Vertex Cover Problem ---
+      function showVertexCover() {
+        const template = `
+                <h2 class="text-3xl font-bold mb-4 text-sky-400">Module 2: P vs. NP (Vertex Cover)</h2>
+                <p class="text-lg text-gray-300 mb-6">
+                    A <span class="font-bold text-yellow-400">Vertex Cover</span> is a set of vertices where every edge is "covered" (touches one vertex in the set).
+                    This is a classic <span class="font-bold text-red-400">NP-Complete</span> problem.
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Left Column: Demo -->
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-4">Interactive Demo</h3>
+                        <label class="block text-sm font-medium text-gray-300">Graph (JSON Adjacency List)</label>
+                        <textarea id="vc-graph" class="w-full h-32 bg-gray-900 text-gray-200 p-2 rounded-lg border border-gray-700">{"A": ["B", "C"], "B": ["A", "C", "D"], "C": ["A", "B", "D"], "D": ["B", "C", "E"], "E": ["D"]}</textarea>
+                        
+                        <div id="vc-output" class="mt-4 p-4 bg-gray-900 rounded-lg text-gray-300 min-h-[50px]"></div>
+                    </div>
+
+                    <!-- Right Column: Actions -->
+                    <div class="bg-gray-800 p-6 rounded-lg space-y-6">
+                        <!-- Verify Action -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">1. Verify a Solution (Fast - P)</h3>
+                            <p class="text-sm text-gray-400 mb-3">Give me a set, I'll check if it's a cover.</p>
+                            <label class="block text-sm font-medium text-gray-300">Proposed Cover (e.g., A,D)</label>
+                            <input id="vc-solution" type="text" class="w-full bg-gray-900 text-gray-200 p-2 rounded-lg border border-gray-700" value="B,C,E">
+                            <button id="vc-verify-btn" class="mt-2 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg">Verify (Polynomial Time)</button>
+                        </div>
+
+                        <!-- Solve Action -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-red-400">2. Find Smallest Solution (Slow - NP)</h3>
+                            <p class="text-sm text-gray-400 mb-3">Find the *smallest* cover. This is the hard part!</p>
+                            <button id="vc-solve-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Find Smallest Cover (Brute Force)</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        document.getElementById("module-content").innerHTML = template;
+
+        // Event Listeners
+        document
+          .getElementById("vc-verify-btn")
+          .addEventListener("click", verifyVertexCover);
+        document
+          .getElementById("vc-solve-btn")
+          .addEventListener("click", solveVertexCover);
+      }
+
+      function verifyVertexCover() {
+        const output = document.getElementById("vc-output");
+        try {
+          const adjList = JSON.parse(document.getElementById("vc-graph").value);
+          const solutionInput = document.getElementById("vc-solution").value;
+          const solutionSet = new Set(
+            solutionInput
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean)
+          );
+
+          const edges = new Set();
+          for (const u in adjList) {
+            for (const v of adjList[u]) {
+              const edge = [u, v].sort().join("-");
+              edges.add(edge);
+            }
+          }
+
+          let uncovered = [];
+          let opCount = 0;
+          for (const edge of edges) {
+            opCount++;
+            const [u, v] = edge.split("-");
+            if (!solutionSet.has(u) && !solutionSet.has(v)) {
+              uncovered.push(edge);
+            }
+          }
+
+          if (uncovered.length === 0) {
+            output.className =
+              "mt-4 p-4 bg-green-900 text-green-200 rounded-lg min-h-[50px]";
+            output.innerHTML = `<strong>SUCCESS:</strong> This is a valid vertex cover.<br>(~${opCount} operations, P-time)`;
+          } else {
+            output.className =
+              "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
+            output.innerHTML = `<strong>FAILED:</strong> This set does not cover:<br>${uncovered.join(
+              ", "
+            )}<br>(~${opCount} operations, P-time)`;
+          }
+        } catch (e) {
+          output.className =
+            "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
+          output.textContent = `Error: ${e.message}`;
+        }
+      }
+
+      function solveVertexCover() {
+        const output = document.getElementById("vc-output");
+        output.className =
+          "mt-4 p-4 bg-yellow-900 text-yellow-200 rounded-lg min-h-[50px]";
+        output.textContent = "Solving (brute force)... This may take a moment.";
+
+        // Run solver in a timeout to allow UI to update
+        setTimeout(() => {
+          try {
+            const adjList = JSON.parse(
+              document.getElementById("vc-graph").value
+            );
+            const vertices = Object.keys(adjList);
+            const n = vertices.length;
+
+            if (n > 20) {
+              output.className =
+                "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
+              output.textContent =
+                "Error: Graph is too large for client-side brute force (n > 20). This demonstrates exponential complexity!";
+              return;
+            }
+
+            const edges = new Set();
+            for (const u in adjList) {
+              for (const v of adjList[u]) {
+                edges.add([u, v].sort().join("-"));
+              }
+            }
+
+            let smallestCover = null;
+            let opCount = 0;
+
+            // Iterate through all 2^n subsets
+            for (let i = 0; i < 1 << n; i++) {
+              opCount++;
+              const subset = new Set();
+              for (let j = 0; j < n; j++) {
+                if ((i >> j) & 1) {
+                  subset.add(vertices[j]);
+                }
+              }
+
+              // Check if this subset is a cover
+              let isCover = true;
+              for (const edge of edges) {
+                opCount++;
+                const [u, v] = edge.split("-");
+                if (!subset.has(u) && !subset.has(v)) {
+                  isCover = false;
+                  break;
+                }
+              }
+
+              if (isCover) {
+                if (
+                  smallestCover === null ||
+                  subset.size < smallestCover.size
+                ) {
+                  smallestCover = subset;
+                }
+              }
+            }
+
+            output.className =
+              "mt-4 p-4 bg-green-900 text-green-200 rounded-lg min-h-[50px]";
+            output.innerHTML = `<strong>SOLVED:</strong> Smallest cover is {${[
+              ...smallestCover,
+            ].join(", ")}} (Size: ${
+              smallestCover.size
+            }).<br>(~${opCount} operations, $O(2^n)$)`;
+          } catch (e) {
+            output.className =
+              "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
+            output.textContent = `Error: ${e.message}`;
+          }
+        }, 50);
+      }
+
+      // --- Module 4: Traveling Salesperson Problem (TSP) ---
+      function showTSP() {
+        const template = `
+                <h2 class="text-3xl font-bold mb-4 text-sky-400">Module 3: NP-Complete (Traveling Salesperson)</h2>
+                <p class="text-lg text-gray-300 mb-6">
+                    Find the shortest possible route that visits each "city" exactly once and returns to the start.
+                    This is another classic <span class="font-bold text-red-400">NP-Complete</span> problem with $O(n!)$ complexity.
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Left Column: Demo -->
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-4">Interactive Demo</h3>
+                        <label class="block text-sm font-medium text-gray-300">Cities (JSON with x, y coords)</label>
+                        <textarea id="tsp-cities" class="w-full h-32 bg-gray-900 text-gray-200 p-2 rounded-lg border border-gray-700">{"A": {"x": 0, "y": 0}, "B": {"x": 10, "y": 5}, "C": {"x": 5, "y": 10}, "D": {"x": 15, "y": 0}}</textarea>
+                        
+                        <div id="tsp-output" class="mt-4 p-4 bg-gray-900 rounded-lg text-gray-300 min-h-[50px]"></div>
+                    </div>
+
+                    <!-- Right Column: Actions -->
+                    <div class="bg-gray-800 p-6 rounded-lg space-y-6">
+                        <!-- Verify Action -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">1. Verify a Tour Length (Fast - P)</h3>
+                            <p class="text-sm text-gray-400 mb-3">Give me a tour, I'll calculate its length.</p>
+                            <label class="block text-sm font-medium text-gray-300">Proposed Tour (e.g., A,B,C,D,A)</label>
+                            <input id="tsp-tour" type="text" class="w-full bg-gray-900 text-gray-200 p-2 rounded-lg border border-gray-700" value="A,C,B,D,A">
+                            <button id="tsp-verify-btn" class="mt-2 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg">Verify (Polynomial Time)</button>
+                        </div>
+
+                        <!-- Solve Action -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-red-400">2. Find Shortest Tour (Very Slow - NP)</h3>
+                            <p class="text-sm text-gray-400 mb-3">Find the *shortest* tour. This is $O(n!)$, which is even worse than $O(2^n)$!</p>
+                            <button id="tsp-solve-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Find Shortest Tour (Brute Force)</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        document.getElementById("module-content").innerHTML = template;
+
+        // Event Listeners
+        document
+          .getElementById("tsp-verify-btn")
+          .addEventListener("click", verifyTSP);
+        document
+          .getElementById("tsp-solve-btn")
+          .addEventListener("click", solveTSP);
+      }
+
+      function getDist(cityA, cityB) {
+        return Math.sqrt((cityA.x - cityB.x) ** 2 + (cityA.y - cityB.y) ** 2);
+      }
+
+      function verifyTSP() {
+        const output = document.getElementById("tsp-output");
+        try {
+          const cities = JSON.parse(
+            document.getElementById("tsp-cities").value
+          );
+          const tourInput = document.getElementById("tsp-tour").value;
+          const tour = tourInput
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+
+          if (tour.length < 2) {
+            throw new Error("Tour must have at least 2 cities.");
+          }
+
+          let totalDist = 0;
+          let opCount = 0;
+          for (let i = 0; i < tour.length - 1; i++) {
+            opCount++;
+            const cityA = cities[tour[i]];
+            const cityB = cities[tour[i + 1]];
+            if (!cityA || !cityB) {
+              throw new Error(
+                `Invalid city name in tour: ${tour[i]} or ${tour[i + 1]}`
+              );
+            }
+            totalDist += getDist(cityA, cityB);
+          }
+
+          output.className =
+            "mt-4 p-4 bg-green-900 text-green-200 rounded-lg min-h-[50px]";
+          output.innerHTML = `<strong>VERIFIED:</strong> Tour: ${tour.join(
+            " -> "
+          )}<br>Total Length: ${totalDist.toFixed(
+            2
+          )}<br>(~${opCount} operations, P-time)`;
+        } catch (e) {
+          output.className =
+            "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
+          output.textContent = `Error: ${e.message}`;
+        }
+      }
+
+      function solveTSP() {
+        const output = document.getElementById("tsp-output");
+        output.className =
+          "mt-4 p-4 bg-yellow-900 text-yellow-200 rounded-lg min-h-[50px]";
+        output.textContent =
+          "Solving (brute force)... This will be very slow if n > 9.";
+
+        setTimeout(() => {
+          try {
+            const cities = JSON.parse(
+              document.getElementById("tsp-cities").value
+            );
+            const cityNames = Object.keys(cities);
+            const n = cityNames.length;
+
+            if (n > 9) {
+              output.className =
+                "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
+              output.textContent = `Error: Too many cities (n=${n}). n > 9 will crash your browser with O(n!) complexity. This is the lesson!`;
+              return;
+            }
+
+            const startCity = cityNames[0];
+            const otherCities = cityNames.slice(1);
+
+            let shortestDist = Infinity;
+            let shortestTour = [];
+            let opCount = 0;
+
+            // Function to get all permutations
+            function* getPermutations(arr) {
+              if (arr.length === 0) {
+                yield [];
+                return;
+              }
+              for (let i = 0; i < arr.length; i++) {
+                const rest = [...arr.slice(0, i), ...arr.slice(i + 1)];
+                for (const p of getPermutations(rest)) {
+                  yield [arr[i], ...p];
+                }
+              }
+            }
+
+            for (const perm of getPermutations(otherCities)) {
+              opCount++;
+              let currentDist = 0;
+              const currentTour = [startCity, ...perm, startCity];
+
+              for (let i = 0; i < currentTour.length - 1; i++) {
+                opCount++;
+                const cityA = cities[currentTour[i]];
+                const cityB = cities[currentTour[i + 1]];
+                currentDist += getDist(cityA, cityB);
+              }
+
+              if (currentDist < shortestDist) {
+                shortestDist = currentDist;
+                shortestTour = currentTour;
+              }
+            }
+
+            output.className =
+              "mt-4 p-4 bg-green-900 text-green-200 rounded-lg min-h-[50px]";
+            output.innerHTML = `<strong>SOLVED:</strong> Shortest Tour: ${shortestTour.join(
+              " -> "
+            )}<br>Length: ${shortestDist.toFixed(
+              2
+            )}<br>(~${opCount} operations, $O(n!)$)`;
+          } catch (e) {
+            output.className =
+              "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
+            output.textContent = `Error: ${e.message}`;
+          }
+        }, 50);
+      }
+
+      // --- Initialization ---
+
+      // Setup nav link listeners
+      document.querySelectorAll("nav a").forEach((link) => {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          const moduleName = e.target.dataset.module;
+          showModule(moduleName);
+        });
+      });
+
+      // Show home module on initial load
+      window.onload = () => showModule("home");
+    </script>
+  </body>
+</html>

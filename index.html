@@ -46,7 +46,7 @@
       }
       /* Style for the active nav link */
       .nav-link.active {
-        background-color: #1f2937; /* gray-800 */
+        background-color: #111827; /* gray-900 */
         color: #38bdf8; /* sky-400 */
       }
       /* Custom scrollbar for module content */
@@ -76,6 +76,7 @@
         background-color: #374151; /* gray-700 */
         color: #d1d5db; /* gray-300 */
         font-weight: 500;
+        cursor: pointer;
       }
       .tab-btn.active {
         background-color: #38bdf8; /* sky-400 */
@@ -101,8 +102,13 @@
         border-radius: 6px;
         font-size: 0.9em;
         font-weight: 500;
+        -webkit-user-select: none; /* Safari */
+        user-select: none;
       }
-      details.popover-def[open] summary {
+      details.popover-def summary::-webkit-details-marker {
+        display: none; /* Hide the disclosure triangle */
+      }
+      details.popover-def:hover summary {
         background-color: #2563eb; /* blue-600 */
       }
       details.popover-def div {
@@ -153,6 +159,13 @@
         class="nav-link block w-full text-left px-4 py-2 rounded-lg text-gray-200 hover:bg-gray-700"
         >4. Open Problems & The Future</a
       >
+      <!-- NEW MODULE LINK -->
+      <a
+        href="#"
+        data-module="reductions"
+        class="nav-link block w-full text-left px-4 py-2 rounded-lg text-gray-200 hover:bg-gray-700"
+        >5. Reductions (IS to VC)</a
+      >
     </nav>
 
     <!-- Main Content Area -->
@@ -174,6 +187,7 @@
         vertexCover: showVertexCover,
         tsp: showTSP,
         openProblems: showOpenProblems,
+        reductions: showReductions, // NEW MODULE
       };
 
       // Simple router to show a module
@@ -266,12 +280,16 @@
                                     - Click 'Verify'. It's instant ($O(|V| \cdot |E|)$).
                                     - Click 'Solve'. For a small graph (n=10), it's fast. Try a larger one (n=18). You will *feel* the exponential $O(2^n \cdot |E|)$ delay.
                                 </li>
+                                <!-- NEW STEP -->
+                                <li>
+                                    <span class="font-bold text-cyan-400">Experience Reductions:</span>
+                                    Go to <span class="font-semibold">Module 5</span>. Learn how the **Independent Set** problem is just a "mirror image" of **Vertex Cover**. This proves that if you can solve one, you can solve the other, making them equally hard.
+                                </li>
                                 <li>
                                     <span class="font-bold text-cyan-400">Experience Factorial Explosion:</span>
                                     Go to <span class="font-semibold">Module 3 (TSP)</span>.
-                                    - Generate 5 cities. The solver is instant.
-                                    - Generate 9 cities. The solver takes a few seconds ($9! = 362,880$).
-                                    - Generate 10 cities. The time increases 10-fold ($10! = 3,628,800$). *That* is the $O(n!)$ factorial wall.
+                                    - Generate 9 cities. The solver takes a few seconds ($9!$).
+                                    - Generate 10 cities. The time increases 10-fold ($10!$). *That* is the $O(n!)$ factorial wall.
                                 </li>
                             </ol>
                         </div>
@@ -285,13 +303,26 @@
                         The concepts in this tool are built on decades of research. These are some of the most important papers in the field:
                     </p>
                     <div class="space-y-4 text-gray-300">
+                        <!-- UPDATED SUMMARY 1 -->
                         <div class="bg-gray-800 p-4 rounded-lg">
                             <p class="font-semibold text-gray-200">Cook, S. A. (1971). "The complexity of theorem-proving procedures."</p>
-                            <p class="text-sm mt-1">This paper introduced the concept of NP-Completeness and proved that the **Satisfiability (SAT)** problem is NP-Complete.</p>
+                            <p class="text-sm mt-1">
+                                **Summary:** This is the foundational paper that birthed the field of NP-Completeness. Cook proved that the **Satisfiability (SAT)** problem has a special property: *any* problem in NP can be "reduced" to it. This means if you could solve SAT efficiently, you could solve *every* problem in NP efficiently. He called this property "NP-Complete."
+                            </p>
                         </div>
+                        <!-- UPDATED SUMMARY 2 -->
                         <div class="bg-gray-800 p-4 rounded-lg">
                             <p class="font-semibold text-gray-200">Karp, R. M. (1972). "Reducibility among combinatorial problems."</p>
-                            <p class="text-sm mt-1">Karp identified 21 other key problems (including Vertex Cover and TSP) that are also NP-Complete, establishing the vastness of the class.</p>
+                            <p class="text-sm mt-1">
+                                **Summary:** Karp's paper showed that Cook's discovery wasn't a fluke. He took the idea of "reducibility" and ran with it, identifying 21 other famous, seemingly unrelated problems (including Vertex Cover and TSP) that were also NP-Complete. This established that a vast "web" of problems were all fundamentally the same hard problem, just in different disguises.
+                            </p>
+                        </div>
+                        <!-- UPDATED SUMMARY 3 -->
+                        <div class="bg-gray-800 p-4 rounded-lg">
+                            <p class="font-semibold text-gray-200">Garey, M. R., & Johnson, D. S. (1979). "Computers and Intractability: A Guide to the Theory of NP-Completeness."</p>
+                            <p class="text-sm mt-1">
+                                **Summary:** This is the "bible" of NP-Completeness. It's not a research paper but a comprehensive textbook that standardized the theory, provided a huge catalog of NP-Complete problems, and gave computer scientists a practical 'how-to' manual for identifying and dealing with intractable problems in their own work.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -376,6 +407,7 @@
               borderColor: "#4ade80",
               borderWidth: 2,
               fill: false,
+              pointRadius: 0,
             },
             {
               label: "O(n log n)",
@@ -383,6 +415,7 @@
               borderColor: "#22d3ee",
               borderWidth: 2,
               fill: false,
+              pointRadius: 0,
             },
             {
               label: "O(n^2)",
@@ -390,6 +423,7 @@
               borderColor: "#facc15",
               borderWidth: 2,
               fill: false,
+              pointRadius: 0,
             },
           ],
         };
@@ -420,6 +454,7 @@
               borderColor: "#facc15",
               borderWidth: 2,
               fill: false,
+              pointRadius: 0,
             },
             {
               label: "O(2^n)",
@@ -427,6 +462,7 @@
               borderColor: "#f87171",
               borderWidth: 2,
               fill: false,
+              pointRadius: 0,
             },
             {
               label: "O(n!)",
@@ -434,6 +470,7 @@
               borderColor: "#f472b6",
               borderWidth: 2,
               fill: false,
+              pointRadius: 0,
             },
           ],
         };
@@ -573,6 +610,7 @@
                         <h4 class="text-lg font-semibold mb-2">The NP-Complete Problem</h4>
                         <p class="mb-2">The *optimization* problem is "Find the *minimum* vertex cover," (i.e., find a $V'$ that has the smallest possible size $|V'|$).</p>
                         <p class="mb-2">The *decision* problem (which is proven to be NP-Complete) is **K-VERTEX-COVER**: "Given a graph $G$ and an integer $k$, does $G$ have a vertex cover of size $k$ or less?"</p>
+                        <p class="mb-4 p-4 bg-gray-900 rounded-lg text-cyan-300">$$\\text{Does a } V' \\subseteq V \\text{ exist s.t. } |V'| \\le k \\text{ and } V' \\text{ is a VC for } G?$$</p>
                         
                         <h4 class="text-lg font-semibold mb-2">The P vs. NP Demonstration</h4>
                         <ul class="list-disc list-inside space-y-2">
@@ -596,6 +634,10 @@
                             <div>
                                 <dt class="font-bold text-sky-400">Brute Force</dt>
                                 <dd>An algorithm design technique that consists of systematically checking every possible solution to a problem until the correct or best one is found. This is often simple to implement but very slow.</dd>
+                            </div>
+                            <div>
+                                <dt class="font-bold text-sky-400">Decision Problem vs. Optimization Problem</dt>
+                                <dd>An **Optimization Problem** asks for the *best* solution (e.g., "Find the *smallest* vertex cover"). A **Decision Problem** asks a "yes/no" question (e.g., "Is there a vertex cover of size *k* or less?"). NP-Completeness is formally defined using decision problems.</dd>
                             </div>
                         </dl>
                     </div>
@@ -633,7 +675,6 @@
           });
       }
 
-      // (Verification and Solver functions for VC remain the same as previous version)
       function verifyVertexCover() {
         const output = document.getElementById("vc-output");
         try {
@@ -650,9 +691,11 @@
           for (const u in adjList) {
             for (const v of adjList[u]) {
               // Use numbers for sorting if they are numbers, else string sort
-              const uNum = isNaN(u) ? u : Number(u);
-              const vNum = isNaN(v) ? v : Number(v);
-              const edge = [uNum, vNum].sort((a, b) => a - b).join("-");
+              const uKey = isNaN(Number(u)) ? u : Number(u);
+              const vKey = isNaN(Number(v)) ? v : Number(v);
+              const edge = [uKey, vKey]
+                .sort((a, b) => String(a).localeCompare(String(b)))
+                .join("-");
               edges.add(edge);
             }
           }
@@ -710,9 +753,11 @@
             const edges = new Set();
             for (const u in adjList) {
               for (const v of adjList[u]) {
-                const uNum = isNaN(u) ? u : Number(u);
-                const vNum = isNaN(v) ? v : Number(v);
-                const edge = [uNum, vNum].sort((a, b) => a - b).join("-");
+                const uKey = isNaN(Number(u)) ? u : Number(u);
+                const vKey = isNaN(Number(v)) ? v : Number(v);
+                const edge = [uKey, vKey]
+                  .sort((a, b) => String(a).localeCompare(String(b)))
+                  .join("-");
                 edges.add(edge);
               }
             }
@@ -858,6 +903,10 @@
                                 <dt class="font-bold text-sky-400">Permutation</dt>
                                 <dd>An arrangement of items in a specific order. For TSP, each possible tour is a permutation of the cities. The number of permutations of $n$ items is $n!$ (n-factorial).</dd>
                             </div>
+                            <div>
+                                <dt class="font-bold text-sky-400">Factorial ($n!$)</dt>
+                                <dd>The product of all positive integers less than or equal to $n$. ($n! = n \times (n-1) \times ... \times 1$). This function grows *extremely* fast, much faster than $2^n$.</dd>
+                            </div>
                         </dl>
                     </div>
                 </div>
@@ -888,7 +937,6 @@
         });
       }
 
-      // (Verification and Solver functions for TSP remain the same as previous version)
       function getDist(cityA, cityB) {
         return Math.sqrt((cityA.x - cityB.x) ** 2 + (cityA.y - cityB.y) ** 2);
       }
@@ -964,26 +1012,54 @@
             let shortestTour = [];
             let opCount = 0;
 
+            // A simple but inefficient permutation generator
             function* getPermutations(arr) {
               if (arr.length === 0) {
                 yield [];
                 return;
               }
-              for (let i = 0; i < arr.length; i++) {
-                const rest = [...arr.slice(0, i), ...arr.slice(i + 1)];
-                for (const p of getPermutations(rest)) {
-                  yield [arr[i], ...p];
+              const first = arr[0];
+              const rest = arr.slice(1);
+
+              for (const p of getPermutations(rest)) {
+                for (let i = 0; i <= p.length; i++) {
+                  opCount++; // Count permutations as operations
+                  const start = p.slice(0, i);
+                  const end = p.slice(i);
+                  yield [...start, first, ...end];
                 }
               }
             }
 
-            for (const perm of getPermutations(otherCities)) {
-              opCount++;
+            // A more efficient permutation generator (Heap's Algorithm)
+            function* permute(arr) {
+              const n = arr.length;
+              const c = new Array(n).fill(0);
+              let a = [...arr];
+
+              yield a; // Yield the initial array
+
+              let i = 1;
+              while (i < n) {
+                if (c[i] < i) {
+                  const k = i % 2 === 0 ? 0 : c[i];
+                  [a[i], a[k]] = [a[k], a[i]]; // Swap
+                  c[i]++;
+                  i = 1;
+                  opCount++;
+                  yield a;
+                } else {
+                  c[i] = 0;
+                  i++;
+                }
+              }
+            }
+
+            for (const perm of permute(otherCities)) {
               let currentDist = 0;
               const currentTour = [startCity, ...perm, startCity];
 
               for (let i = 0; i < currentTour.length - 1; i++) {
-                opCount++;
                 const cityA = cities[currentTour[i]];
                 const cityB = cities[currentTour[i + 1]];
                 currentDist += getDist(cityA, cityB);
@@ -1001,7 +1077,7 @@
               " -> "
             )}<br>Length: ${shortestDist.toFixed(
               2
-            )}<br>(~${opCount} operations, $O(n!)$)`;
+            )}<br>(~${opCount} permutations checked, $O(n!)$)`;
           } catch (e) {
             output.className =
               "mt-4 p-4 bg-red-900 text-red-200 rounded-lg min-h-[50px]";
@@ -1010,7 +1086,7 @@
         }, 50);
       }
 
-      // --- Module 5: Open Problems (NEW) ---
+      // --- Module 5: Open Problems ---
       function showOpenProblems() {
         const template = `
                 <h2 class="text-3xl font-bold mb-4 text-sky-400">Module 4: Open Problems & The Future</h2>
@@ -1023,7 +1099,7 @@
                 <div class="space-y-8">
                     <div>
                         <h3 class="text-2xl font-semibold text-gray-200 mb-2">1. Is P = NP?</h3>
-                        <p>
+                        <p class="text-gray-300 leading-relaxed">
                             **The Question:** Is every problem that can be *verified* quickly also *solvable* quickly?
                             <br>Formally: Does $\\text{P} = \\text{NP}$?
                             <br><br>
@@ -1033,7 +1109,7 @@
 
                     <div>
                         <h3 class="text-2xl font-semibold text-gray-200 mb-2">2. Is NP = co-NP?</h3>
-                        <p>
+                        <p class="text-gray-300 leading-relaxed">
                             **The Question:** If a problem's "yes" answers are easy to verify, are its "no" answers also easy to verify?
                             <br>Formally: Does $\\text{NP} = \\text{co-NP}$?
                             
@@ -1052,13 +1128,13 @@
 
                     <div>
                         <h3 class="text-2xl font-semibold text-gray-200 mb-2">3. The Exponential Time Hypothesis (ETH)</h3>
-                        <p>
+                        <p class="text-gray-300 leading-relaxed">
                             **The Question:** Does the 3-SAT problem *really* require exponential time to solve?
                             
                             <details class="popover-def">
                                 <summary>Define: Sub-exponential Time</summary>
                                 <div>
-                                    <strong class="text-white">Sub-exponential Time</strong> is faster than $O(2^n)$ but slower than $O(n^k)$.
+                                    <strong class="text-white">Sub-exponential Time</strong> is faster than $O(2^{\\delta n})$ for all $\\delta > 0$, but slower than $O(n^k)$.
                                     <br><br>
                                     ETH claims you can't even get a "mildly" exponential algorithm like $O(2^{\\sqrt{n}})$ for 3-SAT. You're stuck with "strong" exponential time.
                                 </div>
@@ -1070,7 +1146,7 @@
 
                     <div>
                         <h3 class="text-2xl font-semibold text-gray-200 mb-2">4. Is P = PSPACE?</h3>
-                        <p>
+                        <p class="text-gray-300 leading-relaxed">
                             **The Question:** Can every problem solvable with *polynomial memory* also be solved in *polynomial time*?
                             
                             <details class="popover-def">
@@ -1088,7 +1164,7 @@
 
                     <div>
                         <h3 class="text-2xl font-semibold text-gray-200 mb-2">5. Is BPP = BQP? (Quantum)</h3>
-                        <p>
+                        <p class="text-gray-300 leading-relaxed">
                             **The Question:** Can quantum computers solve problems that classical computers can't?
                             
                             <details class="popover-def">
@@ -1101,6 +1177,42 @@
                             </details>
                             <br><br>
                             Shor's algorithm for **integer factorization** is in BQP but is *not* believed to be in BPP. If $\\text{BPP} \\neq \\text{BQP}$, it proves quantum computers have a fundamental speedup.
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-2xl font-semibold text-gray-200 mb-2">6. The Status of Integer Factorization</h3>
+                        <p class="text-gray-300 leading-relaxed">
+                            **The Question:** Can we factor a large number into its primes in polynomial time (on a classical computer)?
+                            
+                            <details class="popover-def">
+                                <summary>Define: NP-Intermediate</summary>
+                                <div>
+                                    <strong class="text-white">NP-Intermediate</strong> are problems in NP that are neither in P nor NP-Complete.
+                                    <br><br>
+                                    They are "hard," but not the "hardest." A fast solver for factoring *would not* mean a fast solver for SAT. Their existence relies on P $\\neq$ NP.
+                                </div>
+                            </details>
+                            <br><br>
+                            This is the problem that underpins almost all modern cryptography (like RSA). It's in NP, but not believed to be in P or NP-Complete. (It is, however, in BQP).
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-2xl font-semibold text-gray-200 mb-2">7. The Status of Graph Isomorphism</h3>
+                        <p class="text-gray-300 leading-relaxed">
+                            **The Question:** Can we efficiently determine if two graphs are identical (just with the nodes labeled differently)?
+                            
+                            <details class="popover-def">
+                                <summary>Define: Quasi-polynomial Time</summary>
+                                <div>
+                                    <strong class="text-white">Quasi-polynomial Time</strong> is $O(2^{(\\log n)^c})$.
+                                    <br><br>
+                                    This is *much* faster than exponential ($O(2^n)$) but slightly slower than any true polynomial ($O(n^k)$).
+                                </div>
+                            </details>
+                            <br><br>
+                            This is another famous "NP-Intermediate" candidate. In 2015, a "quasi-polynomial" time algorithm was announced, strongly suggesting it is *not* NP-Complete, but it's still not known to be in P.
                         </p>
                     </div>
                 </div>
@@ -1119,6 +1231,101 @@
             }
           });
         });
+      }
+
+      // --- NEW Module 6: Reductions ---
+      function showReductions() {
+        const template = `
+                <div id="reductions-container">
+                    <h2 class="text-3xl font-bold mb-4 text-sky-400">Module 5: Reductions (Independent Set)</h2>
+                    
+                    <!-- Tab Buttons -->
+                    <div class="flex space-x-2 mb-4">
+                        <button class="tab-btn active" data-tab="reduction-what-is">What is a Reduction?</button>
+                        <button class="tab-btn" data-tab="reduction-demo">Demo: IS $\\leftrightarrow$ VC</button>
+                    </div>
+
+                    <!-- Tab Content: What is a Reduction? -->
+                    <div id="reduction-what-is" class="tab-content active bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2">What is a Polynomial-Time Reduction?</h3>
+                        <p class="mb-4">
+                            A **reduction** is a way to solve one problem using an algorithm for *another* problem.
+                            A polynomial-time reduction ($L \\le_p L'$) is a "fast" transformation that turns an instance
+                            of problem $L$ into an instance of problem $L'$.
+                        </p>
+                        
+                        <h4 class="text-lg font-semibold mb-2">Why do this?</h4>
+                        <ol class="list-decimal list-inside space-y-2 mb-4">
+                            <li><strong>To Solve Problems:</strong> If you have a "magic" (fast) solver for problem $L'$, you can now use it to solve problem $L$ for free.</li>
+                            <li><strong>To Prove Hardness:</strong> This is the big one. If we know $L$ is "hard" (e.g., NP-Complete), and we can reduce $L$ to $L'$, then $L'$ must *also* be "hard".</li>
+                        </ol>
+                        
+                        <p class="mb-2">Formally, a problem $L$ is reducible to $L'$ ($L \\le_p L'$) if there's a P-time
+                        function $f$ that converts any instance $x$ of $L$ into an instance $f(x)$ of $L'$ such that:</p>
+                        <p class="p-4 bg-gray-900 rounded-lg text-cyan-300">
+                            $$x \\in L \\iff f(x) \\in L'$$
+                        </p>
+                        <p class="mt-2">(The answer to $x$ for problem $L$ is "yes" **if and only if** the answer to $f(x)$ for problem $L'$ is "yes".)</p>
+                    </div>
+                    
+                    <!-- Tab Content: Demo -->
+                    <div id="reduction-demo" class="tab-content bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2">Demo: Independent Set $\\leftrightarrow$ Vertex Cover</h3>
+                        <p class="mb-4">
+                            Let's show a simple reduction between two problems. This will prove they are
+                            equally hard and that their optimization problems are linked.
+                        </p>
+                        
+                        <h4 class="text-lg font-semibold mb-2">1. Define: Independent Set (IS)</h4>
+                        <p class="mb-2">An **Independent Set** is a set of vertices $S \\subseteq V$ in a graph $G=(V,E)$
+                        such that no two vertices in $S$ are connected by an edge.</p>
+                        <p class="mb-4 p-4 bg-gray-900 rounded-lg text-cyan-300">
+                            $$S \\subseteq V \\text{ s.t. } \\forall (u, v) \\in E, \\{u, v\\} \\not\\subseteq S$$
+                        </p>
+                        <p class="mb-4">The *decision* problem (NP-Complete) is: "Does $G$ have an independent set of size $k$ or more?"</p>
+                        
+                        <h4 class="text-lg font-semibold mb-2">2. The "Aha!" Moment: The Reduction</h4>
+                        <p class="mb-4">Look at the definitions of Vertex Cover (Module 2) and Independent Set. They are "mirror images" of each other. The reduction is based on this beautiful theorem:</p>
+                        
+                        <div class="p-4 bg-green-900 text-green-200 rounded-lg mb-4">
+                            <strong>Theorem:</strong> In any graph $G=(V,E)$, a set $S \\subseteq V$ is an **Independent Set**
+                            if and only if its complement, $V \\setminus S$, is a **Vertex Cover**.
+                        </div>
+                        
+                        <h4 class="text-lg font-semibold mb-2">Proof (Part 1: IS $\\implies$ VC)</h4>
+                        <ol class="list-decimal list-inside space-y-2 mb-4">
+                            <li><strong>Assume:</strong> $S$ is an Independent Set.</li>
+                            <li><strong>We must show:</strong> Its complement $C = V \\setminus S$ is a Vertex Cover.</li>
+                            <li><strong>Proof:</strong> Take any edge $(u, v) \\in E$. Since $S$ is an IS, $u$ and $v$ *cannot* both be in $S$.</li>
+                            <li>This means at least one of them *must not* be in $S$.</li>
+                            <li>If at least one of $\{u, v\}$ is *not* in $S$, then at least one of them *must* be in its complement, $C$.</li>
+                            <li>Since this is true for *every* edge, $C$ "covers" all edges. **Therefore, $C = V \\setminus S$ is a Vertex Cover.**</li>
+                        </ol>
+
+                        <h4 class="text-lg font-semibold mb-2">Proof (Part 2: VC $\\implies$ IS)</h4>
+                        <ol class="list-decimal list-inside space-y-2 mb-4">
+                            <li><strong>Assume:</strong> $C$ is a Vertex Cover.</li>
+                            <li><strong>We must show:</strong> Its complement $S = V \\setminus C$ is an Independent Set.</li>
+                            <li><strong>Proof:</strong> Take any two vertices $u, v \\in S$. We must show there is no edge between them.</li>
+                            <li>Assume for contradiction that there *is* an edge $(u, v) \\in E$.</li>
+                            <li>Because $C$ is a VC, it must cover this edge. This means at least one of $u$ or $v$ *must* be in $C$.</li>
+                            <li>But this is a contradiction! We *chose* $u$ and $v$ from $S$, which is $V \\setminus C$. By definition, neither can be in $C$.</li>
+                            <li>The contradiction means our assumption was wrong. There is no edge $(u,v)$. **Therefore, $S = V \\setminus C$ is an Independent Set.**</li>
+                        </ol>
+                        
+                        <h4 class="text-lg font-semibold mb-2">Conclusion</h4>
+                        <p>This proves $\\text{Independent Set} \\le_p \\text{Vertex Cover}$ (and vice-versa). It also means $|MaxIS| + |MinVC| = |V|$.
+                        <br><br>
+                        The brute-force $O(2^n)$ algorithm in **Module 2** that finds a *minimum vertex cover*
+                        is, by this reduction, *also* an algorithm for finding a *maximum independent set*. You just
+                        take the complement of its answer!</p>
+                    </div>
+                </div>
+            `;
+        document.getElementById("module-content").innerHTML = template;
+
+        // Wire up tab switching
+        setupTabs("reductions-container");
       }
 
       // --- Initialization ---
